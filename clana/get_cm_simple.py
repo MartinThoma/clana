@@ -11,8 +11,9 @@ import os
 import sys
 
 # 3rd party modules
-import numpy as np
 import click
+import numpy as np
+import sklearn.metrics
 
 # internal modules
 import clana.utils
@@ -76,13 +77,13 @@ def calculate_cm(label_filepath, gt_filepath, predictions_filepath):
     label_filepath = os.path.abspath(label_filepath)
     labels = clana.utils.load_labels(label_filepath, 0)
 
-    with open(predictions_filepath, 'r') as fp:
-        reader = csv.reader(fp, delimiter=';', quotechar='"')
-        predictions = [row[0] for row in reader]
-
     with open(gt_filepath, 'r') as fp:
         reader = csv.reader(fp, delimiter=';', quotechar='"')
         truths = [row[0] for row in reader]
+
+    with open(predictions_filepath, 'r') as fp:
+        reader = csv.reader(fp, delimiter=';', quotechar='"')
+        predictions = [row[0] for row in reader]
 
     label2i = {}  # map a label to 0, ..., n
     for i, label in enumerate(labels):
@@ -106,6 +107,10 @@ def calculate_cm(label_filepath, gt_filepath, predictions_filepath):
             logging.error('Could not find label "{}" in file "{}" => '
                           'Add class UNK'
                           .format(label, label_filepath))
+
+    report = sklearn.metrics.classification_report(truths, predictions,
+                                                   labels=labels)
+    print(report)
 
     cm = np.zeros((n, n), dtype=int)
 
@@ -141,6 +146,6 @@ def get_parser():
 if __name__ == "__main__":
     args = get_parser().parse_args()
     main(args.label_filepath,
-                      args.gt_filepath,
-                      args.predictions_filepath,
-                      )
+         args.gt_filepath,
+         args.predictions_filepath,
+         )

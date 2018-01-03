@@ -12,18 +12,18 @@ For more information, see
 
 # core modules
 import json
-import numpy as np
-import matplotlib.pyplot as plt
-import random
-random.seed(0)
 import logging
-import sys
 import os
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-from sklearn.metrics import silhouette_score
+import random
+import sys
+random.seed(0)
 
 # 3rd party modules
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+from sklearn.metrics import silhouette_score
 import click
+import matplotlib.pyplot as plt
+import numpy as np
 
 # internal modules
 import clana.utils
@@ -31,6 +31,117 @@ import clana.utils
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     level=logging.DEBUG,
                     stream=sys.stdout)
+
+
+@click.command(name='visualize', help=__doc__)
+@click.option('--cm_file',
+              required=True)
+@click.option('--perm_file',
+              help='json file which defines a permutation to start with.',
+              default='')
+@click.option('--steps',
+              default=1000,
+              show_default=True,
+              help='Number of steps to find a good permutation.')
+@click.option('--labels_file',
+              default='')
+@click.option('--limit_classes',
+              help='Limit the number of classes in the output')
+def main(cm_file, perm_file, steps, labels_file, limit_classes=None):
+    """Run optimization and generate output."""
+    # Load confusion matrix
+    with open(cm_file) as f:
+        cm = json.load(f)
+        cm = np.array(cm)
+
+    n = len(cm)
+    make_max = float('inf')
+    for i in range(n):
+        for j in range(n):
+            if i == j:
+                continue
+            cm[i][j] = min(cm[i][j], make_max)
+
+    cm_orig = cm.copy()
+
+    # Load permutation
+    if os.path.isfile(perm_file):
+        with open(perm_file) as data_file:
+            perm = json.load(data_file)
+    else:
+        perm = list(range(len(cm)))
+
+    # Load labels
+    labels = clana.utils.load_labels(labels_file, len(cm))
+    labels.append('UNK')
+
+    get_cm_problems(cm, labels)
+
+    weights = calculate_weight_matrix(len(cm))
+    print("Score: {}".format(calculate_score(cm, weights)))
+    result = simulated_annealing(cm, perm,
+                                 score=calculate_score,
+                                 deterministic=True,
+                                 steps=steps)
+    print("Score: {}".format(calculate_score(result['cm'], weights)))
+    print("Perm: {}".format(list(result['perm'])))
+    labels = [labels[i] for i in result['perm']]
+    class_indices = list(range(len(labels)))
+    class_indices = [class_indices[i] for i in result['perm']]
+    print("Classes: {}".format(labels))
+    acc = get_accuracy(cm_orig)
+    print("Accuracy: {:0.2f}%".format(acc * 100))
+    start = 0
+    if limit_classes is None:
+        limit_classes = len(cm)
+    plot_cm(result['cm'][start:limit_classes, start:limit_classes],
+            zero_diagonal=False, labels=labels[start:limit_classes])
+    create_html_cm(result['cm'][start:limit_classes, start:limit_classes],
+                   zero_diagonal=False, labels=labels[start:limit_classes])
+    grouping = extract_clusters(result['cm'], labels)
+    y_pred = [0]
+    cluster_i = 0
+    for el in grouping:
+        if el == 1:
+            cluster_i += 1
+        y_pred.append(cluster_i)
+    print("silhouette_score={}".format(silhouette_score(cm, y_pred)))
+    # Store grouping as hierarchy
+    with open('hierarchy.tmp.json', 'w') as outfile:
+        hierarchy = apply_grouping(class_indices, grouping)
+        hierarchy = _remove_single_element_groups(hierarchy)
+        str_ = json.dumps(hierarchy,
+                          indent=4, sort_keys=True,
+                          separators=(',', ':'), ensure_ascii=False)
+        outfile.write(str_)
+
+    # Print nice
+    for group in apply_grouping(labels, grouping):
+        print(u"\t{}: {}".format(len(group), [el for el in group]))
+
+
+def get_cm_problems(cm, labels):
+    """
+    Find problems of a classifier by analzing its confusion matrix.
+
+    Parameters
+    ----------
+    cm : numpy array
+    labels : list of str
+    """
+    n = len(cm)
+    for i in range(n):
+        if sum(cm[i]) == 0:
+            logging.warning("The class '{}' was not in the dataset."
+                            .format(labels[i]))
+    cm = cm.transpose()
+    never_predicted = []
+    for i in range(n):
+        if sum(cm[i]) == 0:
+            never_predicted.append(labels[i])
+    if len(never_predicted) > 0:
+        logging.warning("The following classes were never predicted: {}"
+                        .format(never_predicted))
 
 
 def get_accuracy(cm):
@@ -275,7 +386,16 @@ def simulated_annealing(current_cm,
 
 
 def plot_cm(cm, zero_diagonal=False, labels=None):
-    """Plot a confusion matrix."""
+    """
+    Plot a confusion matrix.
+
+    Parameters
+    ----------
+    cm : ndarray
+    zero_diagonal : bool, optional (default: False)
+    labels : list of str, optional
+        If this is not given, then numbers are assigned to the classes
+    """
     n = len(cm)
     if zero_diagonal:
         for i in range(n):
@@ -304,6 +424,104 @@ def plot_cm(cm, zero_diagonal=False, labels=None):
     plt.tight_layout()
 
     plt.savefig('confusion_matrix.tmp.png', format='png')
+
+
+def create_html_cm(cm, zero_diagonal=False, labels=None):
+    """
+    Plot a confusion matrix.
+
+    Parameters
+    ----------
+    cm : ndarray
+    zero_diagonal : bool, optional (default: False)
+        If this is set to True, then the diagonal is overwritten with zeroes.
+    labels : list of str, optional
+        If this is not given, then numbers are assigned to the classes
+    """
+    n = len(cm)
+    if zero_diagonal:
+        for i in range(n):
+            cm[i][i] = 0
+
+    if labels is None:
+        labels = [i for i in range(len(cm))]
+
+    html = """<html><head><style>
+                table {
+                  overflow: hidden;
+                }
+
+                tr:hover {
+                  background-color: #ffa;
+                }
+
+                td, th {
+                  position: relative;
+                }
+                td:hover::after,
+                th:hover::after {
+                  content: "";
+                  position: absolute;
+                  background-color: #ffa;
+                  left: 0;
+                  top: -5000px;
+                  height: 10000px;
+                  width: 100%;
+                  z-index: -1;
+                }
+                </style>\n</head>\n"""
+    html += '<body>'
+    html += '<table class="table">\n'
+    html += '<thead>\n'
+    html += '<tr><th>&nbsp;</th>'
+    cm_t = cm.transpose()
+    for i, label in enumerate(labels):
+        precision = cm[i][i] / float(sum(cm_t[i]))
+        style = ''
+        if precision < 0.2:
+            style += 'background-color: red;'
+        elif precision > 0.98:
+            style += 'background-color: green;'
+        html += ('<th title="precision={precision}" style="{style}">'
+                 '{label}</th>'
+                 .format(label=label,
+                         precision=precision,
+                         style=style))
+    html += '<th>support</th></tr>\n'
+    html += '</thead>\n'
+    html += '<tbody>\n'
+    for i, label, row in zip(range(len(labels)), labels, cm):
+        row_str = [str(el) for el in row]
+        support = sum(row)
+        recall = cm[i][i] / float(support)
+        style = ""
+        if recall < 0.2:
+            style += "background-color: red;"
+        elif recall >= 0.98:
+            style += "background-color: green;"
+        html += ('<tr><th title="recall={recall:.2f}" style="{style}">'
+                 '{label}</th>'
+                 .format(label=label, recall=recall, style=style))
+        for j, pred_label, el in zip(range(len(labels)), labels, row_str):
+            if el == '0':
+                el = ''
+            style = ""
+            if i == j:
+                style += "border: 1px solid black;"
+            html += ('<td title="{true}, {pred}" style="{style}">{count}</td>'
+                     .format(true=label,
+                             pred=pred_label,
+                             count=el,
+                             style=style))
+        html += '<td>{support}</td>\n'.format(support=support)
+        html += '</tr>\n'
+    html += '</tbody>\n'
+    html += '</table>\n'
+    html += '</body>\n'
+    html += '</html>\n'
+
+    with open('cm_analysis.html', 'w') as f:
+        f.write(html)
 
 
 def extract_clusters(cm, labels, steps=10**4, lambda_=0.013):
@@ -484,125 +702,6 @@ def _remove_single_element_groups(hierarchy):
     return h_new
 
 
-@click.command(name='visualize', help=__doc__)
-@click.option('--cm_file',
-              required=True)
-@click.option('--perm_file',
-              help='json file which defines a permutation to start with.',
-              default='')
-@click.option('--steps',
-              default=1000,
-              show_default=True,
-              help='Number of steps to find a good permutation.')
-@click.option('--labels_file',
-              default='')
-@click.option('--limit_classes')
-def main(cm_file, perm_file, steps, labels_file, limit_classes=None):
-    """Run optimization and generate output."""
-    # Load confusion matrix
-    with open(cm_file) as f:
-        cm = json.load(f)
-        cm = np.array(cm)
-
-    n = len(cm)
-    make_max = float('inf')
-    for i in range(n):
-        for j in range(n):
-            if i == j:
-                continue
-            cm[i][j] = min(cm[i][j], make_max)
-
-    cm_orig = cm.copy()
-
-    # Load permutation
-    if os.path.isfile(perm_file):
-        with open(perm_file) as data_file:
-            perm = json.load(data_file)
-    else:
-        perm = list(range(len(cm)))
-
-    # Load labels
-    labels = clana.utils.load_labels(labels_file, len(cm))
-    labels.append('UNK')
-
-    weights = calculate_weight_matrix(len(cm))
-    print("Score: {}".format(calculate_score(cm, weights)))
-    result = simulated_annealing(cm, perm,
-                                 score=calculate_score,
-                                 deterministic=True,
-                                 steps=steps)
-    print("Score: {}".format(calculate_score(result['cm'], weights)))
-    print("Perm: {}".format(list(result['perm'])))
-    labels = [labels[i] for i in result['perm']]
-    class_indices = list(range(len(labels)))
-    class_indices = [class_indices[i] for i in result['perm']]
-    print("Classes: {}".format(labels))
-    acc = get_accuracy(cm_orig)
-    print("Accuracy: {:0.2f}%".format(acc * 100))
-    start = 0
-    if limit_classes is None:
-        limit_classes = len(cm)
-    plot_cm(result['cm'][start:limit_classes, start:limit_classes],
-            zero_diagonal=True, labels=labels[start:limit_classes])
-    grouping = extract_clusters(result['cm'], labels)
-    y_pred = [0]
-    cluster_i = 0
-    for el in grouping:
-        if el == 1:
-            cluster_i += 1
-        y_pred.append(cluster_i)
-    print("silhouette_score={}".format(silhouette_score(cm, y_pred)))
-    # Store grouping as hierarchy
-    with open('hierarchy.tmp.json', 'w') as outfile:
-        hierarchy = apply_grouping(class_indices, grouping)
-        hierarchy = _remove_single_element_groups(hierarchy)
-        str_ = json.dumps(hierarchy,
-                          indent=4, sort_keys=True,
-                          separators=(',', ':'), ensure_ascii=False)
-        outfile.write(str_)
-
-    # Print nice
-    for group in apply_grouping(labels, grouping):
-        print(u"\t{}: {}".format(len(group), [el for el in group]))
-
-
-def get_parser():
-    """Get parser object for script xy.py."""
-    from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-    parser = ArgumentParser(description=__doc__,
-                            formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--cm",
-                        dest="cm_file",
-                        help=("path of a json file with a confusion matrix"),
-                        metavar="cm.json",
-                        required=True)
-    parser.add_argument("--perm",
-                        dest="perm_file",
-                        help=("path of a json file with a permutation to "
-                              "start with"),
-                        metavar="perm.json",
-                        default="")
-    parser.add_argument("--labels",
-                        dest="labels_file",
-                        help=("path of a csv file with a list of label "
-                              "names"),
-                        metavar="labels.csv",
-                        default="")
-    parser.add_argument("-n",
-                        dest="n",
-                        default=4 * 10**5,
-                        type=int,
-                        help="number of steps to iterate")
-    parser.add_argument("--limit",
-                        dest="limit_classes",
-                        type=int,
-                        help="Limit the number of classes in the output")
-    return parser
-
-
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
-    # args = get_parser().parse_args()
-    # main(args.cm_file, args.perm_file, args.n, args.labels_file,
-    #      args.limit_classes)
