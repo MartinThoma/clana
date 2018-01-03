@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+
+"""
+clan is a toolkit for classifier analysis.
+
+It specifies some file formats and comes with some tools for typical tasks of
+classifier analysis.
+"""
+
+# 3rd party modules
+import click
+
+# internal modules
+import clan
+import clan.visualize_cm
+import clan.get_cm_simple
+
+
+@click.group()
+@click.version_option(version=clan.__version__)
+def entry_point():
+    pass
+
+entry_point.add_command(clan.visualize_cm.main)
+entry_point.add_command(clan.get_cm_simple.main)
+
+
+if __name__ == '__main__':
+    entry_point()

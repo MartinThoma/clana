@@ -8,11 +8,11 @@ prediction. The order matters.
 ## Specification
 
 * One label per line
-* It is a CSV file with `;` as a delimiter and `"` as a quoting character.
-* The first value is a long version of the label. It has to be unique over all
-  long versions.
-* The second value is a short version of the label. It has to be unique over
+* It is a CSV file with `;` as the delimiter and `"` as the quoting character.
+* The first value is a short version of the label. It has to be unique over
   all short versions.
+* The second value is a long version of the label. It has to be unique over all
+  long versions.
 
 
 ## Example
@@ -52,6 +52,8 @@ French;fr
 
 # Classification Dump Format
 
+TODO: THIS IS WAY TOO BIG!
+
 The classification dump format is a text format. It describes what the output
 of a classifier for some inputs.
 
@@ -60,7 +62,7 @@ of a classifier for some inputs.
 The Classification Dump Format is a text format.
 
 * Each line contains exactly one output of the classifier for one input.
-* It is a CSV file with `;` as a delimiter and `"` as a quoting character.
+* It is a CSV file with `;` as the delimiter and `"` as the quoting character.
 * The first value is an identifier for the input. It is no longer than 60
   characters.
 * The second and following values are the outputs for each label. Each of those
@@ -83,7 +85,7 @@ ground truth of data.
 ## Specification
 
 * Each line contains the ground truth of exactly one element.
-* It is a CSV file with `;` as a delimiter and `"` as a quoting character.
+* It is a CSV file with `;` as the delimiter and `"` as the quoting character.
 * The first value is an identifier for the input. It is no longer than 60
   characters.
 * The second and following values are the outputs for each label. Each of those
