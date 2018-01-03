@@ -15,7 +15,7 @@ import numpy as np
 import click
 
 # internal modules
-import clan.utils
+import clana.utils
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     level=logging.DEBUG,
@@ -74,7 +74,7 @@ def calculate_cm(label_filepath, gt_filepath, predictions_filepath):
     """
     # Read CSV files
     label_filepath = os.path.abspath(label_filepath)
-    labels = clan.utils.load_labels(label_filepath, 0)
+    labels = clana.utils.load_labels(label_filepath, 0)
 
     with open(predictions_filepath, 'r') as fp:
         reader = csv.reader(fp, delimiter=';', quotechar='"')

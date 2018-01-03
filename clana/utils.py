@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Utility functions for clan."""
+"""Utility functions for clana."""
 
 # core modules
 import csv

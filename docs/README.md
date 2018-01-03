@@ -1,10 +1,10 @@
-`clan` is a toolkit for classifier analysis. It specifies some [file formats](file-formats.md)
+`clana` is a toolkit for classifier analysis. It specifies some [file formats](file-formats.md)
 and comes with some tools for typical tasks of classifier analysis.
 
 ## Data distribution
 
 ```
-$ clan distribution --gt gt.csv --labels labels.csv [--out out/] [--long]
+$ clana distribution --gt gt.csv --labels labels.csv [--out out/] [--long]
 ```
 
 prints one line per label, e.g.
@@ -25,7 +25,7 @@ It uses the short labels, except `--long` is added to the command.
 ## Metrics
 
 ```
-$ clan metrics --gt gt.csv --preds preds.csv
+$ clana metrics --gt gt.csv --preds preds.csv
 ```
 
 gives the following metrics by

@@ -26,7 +26,7 @@ from sklearn.metrics import silhouette_score
 import click
 
 # internal modules
-import clan.utils
+import clana.utils
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     level=logging.DEBUG,
@@ -493,7 +493,7 @@ def _remove_single_element_groups(hierarchy):
 @click.option('--steps',
               default=1000,
               show_default=True,
-              help='Number of steps to find a good permutation^')
+              help='Number of steps to find a good permutation.')
 @click.option('--labels_file',
               default='')
 @click.option('--limit_classes')
@@ -522,7 +522,7 @@ def main(cm_file, perm_file, steps, labels_file, limit_classes=None):
         perm = list(range(len(cm)))
 
     # Load labels
-    labels = clan.utils.load_labels(labels_file, len(cm))
+    labels = clana.utils.load_labels(labels_file, len(cm))
     labels.append('UNK')
 
     weights = calculate_weight_matrix(len(cm))

@@ -11,18 +11,18 @@ classifier analysis.
 import click
 
 # internal modules
-import clan
-import clan.visualize_cm
-import clan.get_cm_simple
+import clana
+import clana.visualize_cm
+import clana.get_cm_simple
 
 
 @click.group()
-@click.version_option(version=clan.__version__)
+@click.version_option(version=clana.__version__)
 def entry_point():
     pass
 
-entry_point.add_command(clan.visualize_cm.main)
-entry_point.add_command(clan.get_cm_simple.main)
+entry_point.add_command(clana.visualize_cm.main)
+entry_point.add_command(clana.get_cm_simple.main)
 
 
 if __name__ == '__main__':

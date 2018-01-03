@@ -1,4 +1,4 @@
-The following file formats are used within `clan`.
+The following file formats are used within `clana`.
 
 # Label Format
 

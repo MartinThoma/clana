@@ -14,26 +14,30 @@ except IOError:
     README = ''
 
 # internal modules
-import clan
+import clana
 
 config = {
-    'name': 'clan',
-    'version': clan.__version__,
+    'name': 'clana',
+    'version': clana.__version__,
     'author': 'Martin Thoma',
     'author_email': 'info@martin-thoma.de',
     'maintainer': 'Martin Thoma',
     'maintainer_email': 'info@martin-thoma.de',
     'packages': find_packages(),
-    'scripts': ['bin/clan'],
+    'scripts': ['bin/clana'],
     # 'package_data': {'hwrt': ['templates/*', 'misc/*']},
     'platforms': ['Linux'],
-    'url': 'https://github.com/MartinThoma/clan',
+    'url': 'https://github.com/MartinThoma/clana',
     'license': 'MIT',
     'description': 'A toolkit for classifier analysis',
     'long_description': README,
     'install_requires': [
         'numpy',
         'PyYAML',
+        'matplotlib',
+        'sklearn',
+        'scipy',
+        'click',
     ],
     'keywords': ['Machine Learning', 'Data Science'],
     'download_url': 'https://github.com/MartinThoma/language-identification',
