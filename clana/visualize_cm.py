@@ -16,7 +16,6 @@ import logging
 import os
 import random
 import sys
-random.seed(0)
 
 # 3rd party modules
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -28,6 +27,7 @@ import numpy as np
 # internal modules
 import clana.utils
 
+random.seed(0)
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     level=logging.DEBUG,
                     stream=sys.stdout)
@@ -45,9 +45,15 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
               help='Number of steps to find a good permutation.')
 @click.option('--labels_file',
               default='')
+@click.option('--zero_diagonal', is_flag=True)
 @click.option('--limit_classes',
               help='Limit the number of classes in the output')
-def main(cm_file, perm_file, steps, labels_file, limit_classes=None):
+def main(cm_file,
+         perm_file,
+         steps,
+         labels_file,
+         zero_diagonal,
+         limit_classes=None):
     """Run optimization and generate output."""
     # Load confusion matrix
     with open(cm_file) as f:
@@ -95,9 +101,10 @@ def main(cm_file, perm_file, steps, labels_file, limit_classes=None):
     if limit_classes is None:
         limit_classes = len(cm)
     plot_cm(result['cm'][start:limit_classes, start:limit_classes],
-            zero_diagonal=False, labels=labels[start:limit_classes])
+            zero_diagonal=zero_diagonal, labels=labels[start:limit_classes])
     create_html_cm(result['cm'][start:limit_classes, start:limit_classes],
-                   zero_diagonal=False, labels=labels[start:limit_classes])
+                   zero_diagonal=zero_diagonal,
+                   labels=labels[start:limit_classes])
     grouping = extract_clusters(result['cm'], labels)
     y_pred = [0]
     cluster_i = 0
@@ -174,9 +181,9 @@ def calculate_weight_matrix(n):
     Examples
     --------
     >>> calculate_weight_matrix(3)
-    array([[ 0.  ,  1.01,  2.02],
-           [ 1.01,  0.  ,  1.03],
-           [ 2.02,  1.03,  0.  ]])
+    array([[0.  , 1.01, 2.02],
+           [1.01, 0.  , 1.03],
+           [2.02, 1.03, 0.  ]])
     """
     weights = np.abs(np.arange(n) - np.arange(n)[:, None])
     weights = np.array(weights, dtype=np.float)
@@ -438,13 +445,10 @@ def create_html_cm(cm, zero_diagonal=False, labels=None):
     labels : list of str, optional
         If this is not given, then numbers are assigned to the classes
     """
-    n = len(cm)
-    if zero_diagonal:
-        for i in range(n):
-            cm[i][i] = 0
-
     if labels is None:
         labels = [i for i in range(len(cm))]
+
+    el_max = 200
 
     html = """<html><head><style>
                 table {
@@ -471,7 +475,7 @@ def create_html_cm(cm, zero_diagonal=False, labels=None):
                 }
                 </style>\n</head>\n"""
     html += '<body>'
-    html += '<table class="table">\n'
+    html += '<table class="table" id="display-table">\n'
     html += '<thead>\n'
     html += '<tr><th>&nbsp;</th>'
     cm_t = cm.transpose()
@@ -503,9 +507,13 @@ def create_html_cm(cm, zero_diagonal=False, labels=None):
                  '{label}</th>'
                  .format(label=label, recall=recall, style=style))
         for j, pred_label, el in zip(range(len(labels)), labels, row_str):
+            style = ''
             if el == '0':
                 el = ''
-            style = ""
+            else:
+                style += ("background-color: {};"
+                          .format(get_color_code(float(el), el_max)))
+
             if i == j:
                 style += "border: 1px solid black;"
             html += ('<td title="{true}, {pred}" style="{style}">{count}</td>'
@@ -518,10 +526,79 @@ def create_html_cm(cm, zero_diagonal=False, labels=None):
     html += '</tbody>\n'
     html += '</table>\n'
     html += '</body>\n'
+    html += """<script>function highlight_row() {
+    var table = document.getElementById('display-table');
+    var cells = table.getElementsByTagName('td');
+
+    for (var i = 0; i < cells.length; i++) {
+        // Take each cell
+        var cell = cells[i];
+        // do something on onclick event for cell
+        cell.onclick = function () {
+            // Get the row id where the cell exists
+            var rowId = this.parentNode.rowIndex;
+
+            var rowsNotSelected = table.getElementsByTagName('tr');
+            for (var row = 0; row < rowsNotSelected.length; row++) {
+                rowsNotSelected[row].style.backgroundColor = "";
+                rowsNotSelected[row].classList.remove('selected');
+            }
+            var rowSelected = table.getElementsByTagName('tr')[rowId];
+            rowSelected.style.backgroundColor = "yellow";
+            rowSelected.className += " selected";
+            this.className += " selected";
+        }
+    }
+
+} //end of function
+
+window.onload = highlight_row;</script>"""
     html += '</html>\n'
 
     with open('cm_analysis.html', 'w') as f:
         f.write(html)
+
+
+def get_color(white_to_black):
+    """
+    Get grayscale color.
+
+    Parameters
+    ----------
+    white_to_black : float
+
+    Returns
+    -------
+    color : tuple
+    """
+    assert 0 <= white_to_black <= 1
+    # in HSV, red is 0 deg and green is 120 deg (out of 360);
+    # divide red_to_green with 3 to map [0, 1] to [0, 1./3.]
+    # hue = red_to_green / 3.0
+    # r, g, b = colorsys.hsv_to_rgb(hue, 0, 1)
+    # return map(lambda x: int(255 * x), (r, g, b))
+
+    index = 255 - int(255 * white_to_black)
+    r, g, b = index, index, index
+    return int(r), int(g), int(b)
+
+
+def get_color_code(val, max_val):
+    """
+    Get a HTML color code which is between 0 and max_val.
+
+    Parameters
+    ----------
+    val : number
+    max_val : number
+
+    Returns
+    -------
+    color_code : str
+    """
+    value = min(1.0, float(val) / max_val)
+    r, g, b = get_color(value)
+    return "#{:02x}{:02x}{:02x}".format(r, g, b)
 
 
 def extract_clusters(cm, labels, steps=10**4, lambda_=0.013):

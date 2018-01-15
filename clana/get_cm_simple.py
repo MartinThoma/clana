@@ -24,22 +24,32 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
 
 
 @click.command(name='get-cm-simple', help=__doc__)
-@click.option('--label_filepath',
+@click.option('--labels',
               required=True,
               type=click.Path(exists=True),
               help='CSV file with delimiter ;')
-@click.option('--gt_filepath',
+@click.option('--gt',
               required=True,
               type=click.Path(exists=True),
               help='CSV file with delimiter ;')
-@click.option('--predictions_filepath',
+@click.option('--predictions',
               required=True,
               type=click.Path(exists=True),
               help='CSV file with delimiter ;')
-def main(label_filepath, gt_filepath, predictions_filepath):
-    cm = calculate_cm(label_filepath,
-                      gt_filepath,
-                      predictions_filepath)
+def main(labels, gt, predictions):
+    """
+    Get a simple confunsion matrix.
+
+    Parameters
+    ----------
+    labels : str
+        Path to a CSV file with delimiter ;
+    gt : str
+        Path to a CSV file with delimiter ;
+    predictions : str
+        Path to a CSV file with delimiter ;
+    """
+    cm = calculate_cm(labels, gt, predictions)
     # Write JSON file
     cm_filepath = os.path.abspath('cm.json')
     logging.info("Write results to '{}'.".format(cm_filepath))
@@ -50,7 +60,10 @@ def main(label_filepath, gt_filepath, predictions_filepath):
     print(cm)
 
 
-def calculate_cm(label_filepath, gt_filepath, predictions_filepath):
+def calculate_cm(label_filepath,
+                 gt_filepath,
+                 predictions_filepath,
+                 replace_unk_preds=False):
     """
     Calculate a confusion matrix.
 
@@ -68,6 +81,9 @@ def calculate_cm(label_filepath, gt_filepath, predictions_filepath):
         CSV file with delimter ; and quoting char "
         The first field is an identifier, the second one is the index of the
         predicted label
+    replace_unk_preds : bool, optional (default: True)
+        If a prediction is not in the labels in label_filepath, replace it
+        with UNK
 
     Returns
     -------
@@ -89,6 +105,15 @@ def calculate_cm(label_filepath, gt_filepath, predictions_filepath):
     for i, label in enumerate(labels):
         label2i[label] = i
 
+    if replace_unk_preds:
+        preds = []
+        for pred in predictions:
+            if label in label2i:
+                preds.append(label)
+            else:
+                preds.append('UNK')
+        predictions = preds
+
     # Sanity check
     assert len(predictions) == len(truths), \
         "len(predictions) = {} != {} = len(truths)".format(len(predictions),
@@ -108,9 +133,22 @@ def calculate_cm(label_filepath, gt_filepath, predictions_filepath):
                           'Add class UNK'
                           .format(label, label_filepath))
 
+    # TODO: do no always filter
+    filter_data_unk = True
+    if filter_data_unk:
+        truths2, predictions2 = [], []
+        for tru, pred in zip(truths, predictions):
+            if pred != 'UNK':  # TODO: tru != 'UNK'!!!
+                truths2.append(tru)
+                predictions2.append(pred)
+        truths = truths2
+        predictions = predictions2
+
     report = sklearn.metrics.classification_report(truths, predictions,
                                                    labels=labels)
     print(report)
+    print("Accuracy: {:.2f}%"
+          .format(sklearn.metrics.accuracy_score(truths, predictions) * 100))
 
     cm = np.zeros((n, n), dtype=int)
 

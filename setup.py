@@ -1,8 +1,13 @@
+"""CLANA is a toolkit for classifier analysis."""
+
 from setuptools import find_packages
 from setuptools import setup
 import os
 # We need io.open() (Python 3's default open) to specify file encodings
 import io
+
+# internal modules
+import clana
 
 here = os.path.abspath(os.path.dirname(__file__))
 try:
@@ -12,9 +17,6 @@ try:
         README = f.read()
 except IOError:
     README = ''
-
-# internal modules
-import clana
 
 config = {
     'name': 'clana',
@@ -29,7 +31,7 @@ config = {
     'platforms': ['Linux'],
     'url': 'https://github.com/MartinThoma/clana',
     'license': 'MIT',
-    'description': 'A toolkit for classifier analysis',
+    'description': __doc__,
     'long_description': README,
     'install_requires': [
         'numpy',
