@@ -1,7 +1,18 @@
+# clana
+
 `clana` is a toolkit for classifier analysis. It specifies some [file formats](file-formats.md)
 and comes with some tools for typical tasks of classifier analysis.
 
-## Data distribution
+## Installation
+
+```
+$ git clone https://github.com/MartinThoma/clana.git; cd clana
+$ pip install -e . --user
+```
+
+## Usage
+
+### Data distribution
 
 ```
 $ clana distribution --gt gt.csv --labels labels.csv [--out out/] [--long]
@@ -22,7 +33,7 @@ the most common class, the second bar is the second most common class, ...
 It uses the short labels, except `--long` is added to the command.
 
 
-## Metrics
+### Metrics
 
 ```
 $ clana metrics --gt gt.csv --preds preds.csv
@@ -36,6 +47,6 @@ gives the following metrics by
 * Line 4: F1-Score
 * Line 5: Mean accuracy
 
-## Visualizations
+### Visualizations
 
 See [visualizations](visualizations.md)
