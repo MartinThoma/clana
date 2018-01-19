@@ -36,7 +36,11 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
               required=True,
               type=click.Path(exists=True),
               help='CSV file with delimiter ;')
-def main(labels, gt, predictions):
+@click.option('--clean',
+              default=False,
+              is_flag=True,
+              help='Remove classes that the classifier doesn\'t know')
+def main(labels, gt, predictions, clean):
     """
     Get a simple confunsion matrix.
 
@@ -48,8 +52,10 @@ def main(labels, gt, predictions):
         Path to a CSV file with delimiter ;
     predictions : str
         Path to a CSV file with delimiter ;
+    clean : bool, optional (default: False)
+        Remove classes that the classifier doesn't know
     """
-    cm = calculate_cm(labels, gt, predictions)
+    cm = calculate_cm(labels, gt, predictions, clean=False)
     # Write JSON file
     cm_filepath = os.path.abspath('cm.json')
     logging.info("Write results to '{}'.".format(cm_filepath))
@@ -63,7 +69,8 @@ def main(labels, gt, predictions):
 def calculate_cm(label_filepath,
                  gt_filepath,
                  predictions_filepath,
-                 replace_unk_preds=False):
+                 replace_unk_preds=False,
+                 clean=False):
     """
     Calculate a confusion matrix.
 
@@ -84,6 +91,8 @@ def calculate_cm(label_filepath,
     replace_unk_preds : bool, optional (default: True)
         If a prediction is not in the labels in label_filepath, replace it
         with UNK
+    clean : bool, optional (default: False)
+        Remove classes that the classifier doesn't know
 
     Returns
     -------
@@ -104,6 +113,17 @@ def calculate_cm(label_filepath,
     label2i = {}  # map a label to 0, ..., n
     for i, label in enumerate(labels):
         label2i[label] = i
+
+    if clean:
+        logging.debug('@' * 120)
+        preds = []
+        truths_tmp = []
+        for tru, pred in zip(truths, predictions):
+            if tru in predictions:
+                truths_tmp.append(tru)
+                preds.append(pred)
+        predictions = preds
+        truths = truths_tmp
 
     if replace_unk_preds:
         preds = []
@@ -138,7 +158,7 @@ def calculate_cm(label_filepath,
     if filter_data_unk:
         truths2, predictions2 = [], []
         for tru, pred in zip(truths, predictions):
-            if pred != 'UNK':  # TODO: tru != 'UNK'!!!
+            if pred != 'unk':  # TODO: tru != 'UNK'!!!
                 truths2.append(tru)
                 predictions2.append(pred)
         truths = truths2
@@ -156,34 +176,3 @@ def calculate_cm(label_filepath,
         cm[label2i[truth_label]][label2i[pred_label]] += 1
 
     return cm
-
-
-def get_parser():
-    """Get parser object for script xy.py."""
-    from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-    parser = ArgumentParser(description=__doc__,
-                            formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-p", "--predictions",
-                        dest="predictions_filepath",
-                        help="",
-                        required=True,
-                        metavar="FILE")
-    parser.add_argument("-t", "--truth",
-                        dest="gt_filepath",
-                        help="CSV file with delimiter ;",
-                        required=True,
-                        metavar="FILE")
-    parser.add_argument("--labels",
-                        dest="label_filepath",
-                        help="CSV file with delimiter ;",
-                        required=True,
-                        metavar="FILE")
-    return parser
-
-
-if __name__ == "__main__":
-    args = get_parser().parse_args()
-    main(args.label_filepath,
-         args.gt_filepath,
-         args.predictions_filepath,
-         )

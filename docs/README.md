@@ -12,6 +12,20 @@ $ pip install -e . --user
 
 ## Usage
 
+```
+clana --help
+Usage: clana [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --version  Show the version and exit.
+  --help     Show this message and exit.
+
+Commands:
+  get-cm-simple  Calculate the confusion matrix.
+  visualize      Optimize confusion matrix.
+```
+
+
 ### Data distribution
 
 ```

@@ -34,16 +34,16 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
 
 
 @click.command(name='visualize', help=__doc__)
-@click.option('--cm_file',
+@click.option('--cm', 'cm_file',
               required=True)
-@click.option('--perm_file',
+@click.option('--perm', 'perm_file',
               help='json file which defines a permutation to start with.',
               default='')
 @click.option('--steps',
               default=1000,
               show_default=True,
               help='Number of steps to find a good permutation.')
-@click.option('--labels_file',
+@click.option('--labels', 'labels_file',
               default='')
 @click.option('--zero_diagonal', is_flag=True)
 @click.option('--limit_classes',
