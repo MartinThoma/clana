@@ -294,7 +294,6 @@ def move(cm, from_start, from_end, insert_pos):
     else:
         p_new = (list(range(from_start, from_end + 1)) +
                  list(range(insert_pos, from_start)))
-    # print(p_new)
     p_old = sorted(p_new)
     # swap columns
     cm[:, p_old] = cm[:, p_new]
@@ -374,7 +373,7 @@ def simulated_annealing(current_cm,
     best_score = current_score
     best_perm = current_perm
 
-    print('## Starting Score: {:0.2f}%'.format(current_score))
+    logging.info('## Starting Score: {:0.2f}%'.format(current_score))
     for step in range(steps):
         tmp_cm = np.array(current_cm, copy=True)
 
@@ -472,7 +471,8 @@ def plot_cm(cm, zero_diagonal=False, labels=None):
     plt.colorbar(res, cax=cax)
     plt.tight_layout()
 
-    plt.savefig('confusion_matrix.tmp.png', format='png')
+    cfg = clana.utils.load_cfg()
+    plt.savefig(cfg['visualize']['save_path'], format='png')
 
 
 def create_html_cm(cm, zero_diagonal=False, labels=None):
@@ -597,7 +597,8 @@ def create_html_cm(cm, zero_diagonal=False, labels=None):
 window.onload = highlight_row;</script>"""
     html += '</html>\n'
 
-    with open('cm_analysis.html', 'w') as f:
+    cfg = clana.utils.load_cfg()
+    with open(cfg['visualize']['html_save_path'], 'w') as f:
         f.write(html)
 
 
@@ -690,6 +691,8 @@ def extract_clusters(cm,
     -------
     clustes : list of lists of labels
     """
+    cfg = clana.utils.load_cfg()
+
     def create_weight_matrix(grouping):
         n = len(grouping) + 1
         weight_matrix = np.zeros((n, n))
@@ -818,7 +821,7 @@ def extract_clusters(cm,
         if interactive:
             thres = find_thres_interactive(cm, labels)
         else:
-            thres = find_thres(cm, 0.1)  # hyper-parameter
+            thres = find_thres(cm, cfg['visualize']['threshold'])
         logging.info("Found threshold for local connection: {}".format(thres))
         best_grouping = split_at_con_thres(cm, thres, labels,
                                            interactive=interactive)
