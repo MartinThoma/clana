@@ -2,13 +2,14 @@
 
 from setuptools import find_packages
 from setuptools import setup
+import io
 import os
 
 here = os.path.abspath(os.path.dirname(__file__))
 try:
     # obtain long description from README and CHANGES
     # Specify encoding to get a unicode type in Python 2 and a str in Python 3
-    with open(os.path.join(here, 'README.md'), 'r', encoding='utf-8') as f:
+    with io.open(os.path.join(here, 'README.md'), 'r', encoding='utf-8') as f:
         README = f.read()
 except IOError:
     README = ''
