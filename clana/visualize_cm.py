@@ -84,19 +84,19 @@ def main(cm_file,
     get_cm_problems(cm, labels)
 
     weights = calculate_weight_matrix(len(cm))
-    print("Score: {}".format(calculate_score(cm, weights)))
+    print('Score: {}'.format(calculate_score(cm, weights)))
     result = simulated_annealing(cm, perm,
                                  score=calculate_score,
                                  deterministic=True,
                                  steps=steps)
-    print("Score: {}".format(calculate_score(result['cm'], weights)))
-    print("Perm: {}".format(list(result['perm'])))
+    print('Score: {}'.format(calculate_score(result['cm'], weights)))
+    print('Perm: {}'.format(list(result['perm'])))
     labels = [labels[i] for i in result['perm']]
     class_indices = list(range(len(labels)))
     class_indices = [class_indices[i] for i in result['perm']]
-    print("Classes: {}".format(labels))
+    print('Classes: {}'.format(labels))
     acc = get_accuracy(cm_orig)
-    print("Accuracy: {:0.2f}%".format(acc * 100))
+    print('Accuracy: {:0.2f}%'.format(acc * 100))
     start = 0
     if limit_classes is None:
         limit_classes = len(cm)
@@ -112,7 +112,7 @@ def main(cm_file,
         if el == 1:
             cluster_i += 1
         y_pred.append(cluster_i)
-    print("silhouette_score={}".format(silhouette_score(cm, y_pred)))
+    print('silhouette_score={}'.format(silhouette_score(cm, y_pred)))
     # Store grouping as hierarchy
     with open('hierarchy.tmp.json', 'w') as outfile:
         hierarchy = apply_grouping(class_indices, grouping)
@@ -133,7 +133,7 @@ def get_cm_problems(cm, labels):
 
     Parameters
     ----------
-    cm : numpy array
+    cm : ndarray
     labels : list of str
     """
     n = len(cm)
@@ -152,7 +152,27 @@ def get_cm_problems(cm, labels):
 
 
 def get_accuracy(cm):
-    """Get the accuaracy by the confusion matrix cm."""
+    """
+    Get the accuaracy by the confusion matrix cm.
+
+    Parameters
+    ----------
+    cm : ndarray
+
+    Returns
+    -------
+    accuracy : float
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> cm = np.array([[10, 20], [30, 40]])
+    >>> get_accuracy(cm)
+    0.5
+    >>> cm = np.array([[20, 10], [30, 40]])
+    >>> get_accuracy(cm)
+    0.6
+    """
     return float(sum([cm[i][i] for i in range(len(cm))])) / float(cm.sum())
 
 
@@ -219,7 +239,22 @@ def swap(cm, i, j):
 
 
 def move_1d(perm, from_start, from_end, insert_pos):
-    """Move a block in a list."""
+    """
+    Move a block in a list.
+
+    Parameters
+    ----------
+    perm : list
+        Permutation
+    from_start : int
+    from_end : int
+    insert_pos : int
+
+    Returns
+    -------
+    perm : list
+        The new permutation
+    """
     assert insert_pos < from_start or insert_pos > from_end
     if insert_pos > from_end:
         p_new = (list(range(from_end + 1, insert_pos + 1)) +
@@ -235,6 +270,13 @@ def move_1d(perm, from_start, from_end, insert_pos):
 def move(cm, from_start, from_end, insert_pos):
     """
     Move rows from_start - from_end to insert_pos in-place.
+
+    Parameters
+    ----------
+    cm : ndarray
+    from_start : int
+    from_end : int
+    insert_pos : int
 
     Examples
     --------
@@ -303,7 +345,7 @@ def simulated_annealing(current_cm,
 
     Parameters
     ----------
-    current_cm : numpy array
+    current_cm : ndarray
     current_perm : None or iterable, optional (default: None)
     steps : int, optional (default: 2 * 10**4)
     temp : float > 0.0, optional (default: 100.0)
@@ -332,7 +374,7 @@ def simulated_annealing(current_cm,
     best_score = current_score
     best_perm = current_perm
 
-    print("## Starting Score: {:0.2f}%".format(current_score))
+    print('## Starting Score: {:0.2f}%'.format(current_score))
     for step in range(steps):
         tmp_cm = np.array(current_cm, copy=True)
 
@@ -570,6 +612,15 @@ def get_color(white_to_black):
     Returns
     -------
     color : tuple
+
+    Examples
+    --------
+    >>> get_color(0)
+    (255, 255, 255)
+    >>> get_color(0.5)
+    (128, 128, 128)
+    >>> get_color(1)
+    (0, 0, 0)
     """
     assert 0 <= white_to_black <= 1
     # in HSV, red is 0 deg and green is 120 deg (out of 360);
@@ -595,26 +646,49 @@ def get_color_code(val, max_val):
     Returns
     -------
     color_code : str
+
+    Examples
+    --------
+    >>> get_color_code(0, 100)
+    '#ffffff'
+    >>> get_color_code(100, 100)
+    '#000000'
+    >>> get_color_code(50, 100)
+    '#808080'
     """
     value = min(1.0, float(val) / max_val)
     r, g, b = get_color(value)
     return "#{:02x}{:02x}{:02x}".format(r, g, b)
 
 
-def extract_clusters(cm, labels, steps=10**4, lambda_=0.013):
+def extract_clusters(cm,
+                     labels,
+                     steps=10**4,
+                     lambda_=0.013,
+                     method='local-connectivity',
+                     interactive=False):
     """
     Find clusters in cm.
-
-    Parameters
-    ----------
-    lambda_ : float
-        The closer to 0, the more groups
-        The bigger, the bigger groups
 
     Idea:
         mininmize lambda (error between clusters) - (count of clusters)
         s.t.: Each inter-cluster accuracy has to be lower than the overall
               accuracy
+
+    Parameters
+    ----------
+    cm : ndarray
+    labels : list
+    steps : int
+    lambda_ : float
+        The closer to 0, the more groups
+        The bigger, the bigger groups
+    method : {'local-connectivity', 'energy'}
+    interactive : bool
+
+    Returns
+    -------
+    clustes : list of lists of labels
     """
     def create_weight_matrix(grouping):
         n = len(grouping) + 1
@@ -641,7 +715,7 @@ def extract_clusters(cm, labels, steps=10**4, lambda_=0.013):
 
         Parameters
         ----------
-        cm : numpy array
+        cm : ndarray
         percentage : float
             Probability that two neighboring classes belong togehter
         """
@@ -658,7 +732,7 @@ def extract_clusters(cm, labels, steps=10**4, lambda_=0.013):
 
         Parameters
         ----------
-        cm : numpy array
+        cm : ndarray
         percentage : float
             Probability that two neighboring classes belong togehter
         """
@@ -675,7 +749,7 @@ def extract_clusters(cm, labels, steps=10**4, lambda_=0.013):
         neg_low = 0
         # neg_up = n - 1
         while pos_up - 1 > neg_low:
-            print("pos_up={}, neg_low={}, pos_str={}"
+            print('pos_up={}, neg_low={}, pos_str={}'
                   .format(pos_up, neg_low, pos_str))
             pos = int((pos_up + neg_low) / 2)
             con_str, (i1, i2) = con[pos]
@@ -725,9 +799,6 @@ def extract_clusters(cm, labels, steps=10**4, lambda_=0.013):
                 grouping.append(el < thres)
         return grouping
 
-    method = 'local-connectivity'
-    interactive = False
-
     if method == 'energy':
         n = len(cm)
         grouping = np.zeros(n - 1)
@@ -751,12 +822,28 @@ def extract_clusters(cm, labels, steps=10**4, lambda_=0.013):
         logging.info("Found threshold for local connection: {}".format(thres))
         best_grouping = split_at_con_thres(cm, thres, labels,
                                            interactive=interactive)
+    else:
+        raise NotImplementedError('method=\'{}\''.format(method))
     logging.info("Found {} clusters".format(sum(best_grouping) + 1))
     return best_grouping
 
 
 def apply_grouping(labels, grouping):
-    """Return list of grouped labels."""
+    """
+    Return list of grouped labels.
+
+    Parameters
+    ----------
+    labels : list
+    grouping : list of bool
+
+    Examples
+    --------
+    >>> labels = ['de', 'en', 'fr']
+    >>> grouping = [False, True]
+    >>> apply_grouping(labels, grouping)
+    [['de', 'en'], ['fr']]
+    """
     groups = []
     current_group = [labels[0]]
     for label, cut in zip(labels[1:], grouping):
@@ -770,6 +857,23 @@ def apply_grouping(labels, grouping):
 
 
 def _remove_single_element_groups(hierarchy):
+    """
+    Flatten sub-lists of length 1.
+
+    Parameters
+    ----------
+    hierarchy : list of lists
+
+    Returns
+    -------
+    hierarchy : list of el / lists
+
+    Examples
+    --------
+    >>> hierarchy = [[0], [1, 2]]
+    >>> _remove_single_element_groups(hierarchy)
+    [0, [1, 2]]
+    """
     h_new = []
     for el in hierarchy:
         if len(el) > 1:
@@ -777,8 +881,3 @@ def _remove_single_element_groups(hierarchy):
         else:
             h_new.append(el[0])
     return h_new
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

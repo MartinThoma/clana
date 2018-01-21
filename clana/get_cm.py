@@ -6,6 +6,7 @@
 # core modules
 import csv
 import json
+import logging
 
 # 3rd party modules
 import numpy as np
@@ -82,8 +83,9 @@ if __name__ == "__main__":
     args = get_parser().parse_args()
     cm = calculate_cm(args.cm_dump_filepath, args.gt_filepath, args.n)
     # Write JSON file
-    with open('cm.json', 'w') as outfile:
+    path = 'cm.json'
+    with open(path, 'w') as outfile:
         str_ = json.dumps(cm.tolist(), indent=2,
                           separators=(',', ': '), ensure_ascii=False)
         outfile.write(str_)
-    print(cm)
+    logging.info('cm was written to \'{}\''.format(path))

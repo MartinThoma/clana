@@ -24,15 +24,15 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
 
 
 @click.command(name='get-cm-simple', help=__doc__)
-@click.option('--labels',
+@click.option('--labels', 'label_filepath',
               required=True,
               type=click.Path(exists=True),
               help='CSV file with delimiter ;')
-@click.option('--gt',
+@click.option('--gt', 'gt_filepath',
               required=True,
               type=click.Path(exists=True),
               help='CSV file with delimiter ;')
-@click.option('--predictions',
+@click.option('--predictions', 'predictions_filepath',
               required=True,
               type=click.Path(exists=True),
               help='CSV file with delimiter ;')
@@ -40,22 +40,34 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
               default=False,
               is_flag=True,
               help='Remove classes that the classifier doesn\'t know')
-def main(labels, gt, predictions, clean):
+def main(label_filepath, gt_filepath, predictions_filepath, clean):
     """
     Get a simple confunsion matrix.
 
     Parameters
     ----------
-    labels : str
+    label_filepath : str
         Path to a CSV file with delimiter ;
-    gt : str
+    gt_filepath : str
         Path to a CSV file with delimiter ;
     predictions : str
         Path to a CSV file with delimiter ;
     clean : bool, optional (default: False)
         Remove classes that the classifier doesn't know
     """
-    cm = calculate_cm(labels, gt, predictions, clean=False)
+    label_filepath = os.path.abspath(label_filepath)
+    labels = clana.utils.load_labels(label_filepath, 0)
+
+    # Read CSV files
+    with open(gt_filepath, 'r') as fp:
+        reader = csv.reader(fp, delimiter=';', quotechar='"')
+        truths = [row[0] for row in reader]
+
+    with open(predictions_filepath, 'r') as fp:
+        reader = csv.reader(fp, delimiter=';', quotechar='"')
+        predictions = [row[0] for row in reader]
+
+    cm = calculate_cm(labels, truths, predictions, clean=False)
     # Write JSON file
     cm_filepath = os.path.abspath('cm.json')
     logging.info("Write results to '{}'.".format(cm_filepath))
@@ -66,9 +78,9 @@ def main(labels, gt, predictions, clean):
     print(cm)
 
 
-def calculate_cm(label_filepath,
-                 gt_filepath,
-                 predictions_filepath,
+def calculate_cm(labels,
+                 truths,
+                 predictions,
                  replace_unk_preds=False,
                  clean=False):
     """
@@ -76,18 +88,9 @@ def calculate_cm(label_filepath,
 
     Parameters
     ----------
-    label_filepath : str
-        CSV file with delimter ; and quoting char "
-        The first field is an identifier, the second one is the index of the
-        ground truth
-    gt_filepath : str
-        CSV file with delimter ; and quoting char "
-        The first field is an identifier, the second one is the index of the
-        ground truth
-    predictions_filepath : str
-        CSV file with delimter ; and quoting char "
-        The first field is an identifier, the second one is the index of the
-        predicted label
+    labels : list
+    truths : list
+    predictions : list
     replace_unk_preds : bool, optional (default: True)
         If a prediction is not in the labels in label_filepath, replace it
         with UNK
@@ -98,24 +101,18 @@ def calculate_cm(label_filepath,
     -------
     confusion_matrix : numpy array (n x n)
     """
-    # Read CSV files
-    label_filepath = os.path.abspath(label_filepath)
-    labels = clana.utils.load_labels(label_filepath, 0)
-
-    with open(gt_filepath, 'r') as fp:
-        reader = csv.reader(fp, delimiter=';', quotechar='"')
-        truths = [row[0] for row in reader]
-
-    with open(predictions_filepath, 'r') as fp:
-        reader = csv.reader(fp, delimiter=';', quotechar='"')
-        predictions = [row[0] for row in reader]
+    # Check data
+    if len(predictions) != len(truths):
+        msg = ('len(predictions) = {} != {} = len(truths)"'
+               .format(len(predictions), len(truths)))
+        raise ValueError(msg)
 
     label2i = {}  # map a label to 0, ..., n
     for i, label in enumerate(labels):
         label2i[label] = i
 
     if clean:
-        logging.debug('@' * 120)
+        logging.debug('@' * 80)
         preds = []
         truths_tmp = []
         for tru, pred in zip(truths, predictions):
@@ -135,13 +132,9 @@ def calculate_cm(label_filepath,
         predictions = preds
 
     # Sanity check
-    assert len(predictions) == len(truths), \
-        "len(predictions) = {} != {} = len(truths)".format(len(predictions),
-                                                           len(truths))
     for label in truths:
         if label not in label2i:
-            logging.error('Could not find label "{}" in file "{}"'
-                          .format(label, label_filepath))
+            logging.error('Could not find label \'{}\''.format(label))
             sys.exit(-1)
 
     n = len(labels)
@@ -149,9 +142,9 @@ def calculate_cm(label_filepath,
         if label not in label2i:
             label2i[label] = len(labels)
             n = len(labels) + 1
-            logging.error('Could not find label "{}" in file "{}" => '
+            logging.error('Could not find label \'{}\' in labels file => '
                           'Add class UNK'
-                          .format(label, label_filepath))
+                          .format(label))
 
     # TODO: do no always filter
     filter_data_unk = True
