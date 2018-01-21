@@ -4,7 +4,12 @@
 
 # core modules
 import csv
+import logging
 import os
+import pkg_resources
+
+# 3rd party modules
+import yaml
 
 
 def load_labels(labels_file, n):
@@ -31,3 +36,47 @@ def load_labels(labels_file, n):
     else:
         labels = list(range(n))
     return labels
+
+
+def load_cfg(yaml_filepath=None):
+    """
+    Load a YAML configuration file.
+
+    Parameters
+    ----------
+    yaml_filepath : str, optional (default: package config file)
+
+    Returns
+    -------
+    cfg : dict
+    """
+    if yaml_filepath is None:
+        yaml_filepath = pkg_resources.resource_filename('clana', 'config.yaml')
+    # Read YAML experiment definition file
+    with open(yaml_filepath, 'r') as stream:
+        cfg = yaml.load(stream)
+    cfg = make_paths_absolute(os.path.dirname(yaml_filepath), cfg)
+    return cfg
+
+
+def make_paths_absolute(dir_, cfg):
+    """
+    Make all values for keys ending with `_path` absolute to dir_.
+
+    Parameters
+    ----------
+    dir_ : str
+    cfg : dict
+    Returns
+    -------
+    cfg : dict
+    """
+    for key in cfg.keys():
+        if hasattr(key, 'endswith') and key.endswith("_path"):
+            cfg[key] = os.path.join(dir_, cfg[key])
+            cfg[key] = os.path.abspath(cfg[key])
+            if not os.path.isfile(cfg[key]):
+                logging.error("%s does not exist.", cfg[key])
+        if type(cfg[key]) is dict:
+            cfg[key] = make_paths_absolute(dir_, cfg[key])
+    return cfg

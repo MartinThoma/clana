@@ -6,6 +6,8 @@ clan is a toolkit for classifier analysis.
 It specifies some file formats and comes with some tools for typical tasks of
 classifier analysis.
 """
+# core modules
+import logging.config
 
 # 3rd party modules
 import click
@@ -15,6 +17,10 @@ import clana
 import clana.visualize_cm
 import clana.get_cm
 import clana.get_cm_simple
+
+
+config = clana.utils.load_cfg()
+logging.config.dictConfig(config['LOGGING'])
 
 
 @click.group()
