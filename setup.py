@@ -3,8 +3,6 @@
 from setuptools import find_packages
 from setuptools import setup
 import os
-# We need io.open() (Python 3's default open) to specify file encodings
-import io
 
 # internal modules
 import clana
@@ -13,7 +11,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 try:
     # obtain long description from README and CHANGES
     # Specify encoding to get a unicode type in Python 2 and a str in Python 3
-    with io.open(os.path.join(here, 'README.md'), 'r', encoding='utf-8') as f:
+    with open(os.path.join(here, 'README.md'), 'r', encoding='utf-8') as f:
         README = f.read()
 except IOError:
     README = ''
@@ -27,19 +25,18 @@ config = {
     'maintainer_email': 'info@martin-thoma.de',
     'packages': find_packages(),
     'scripts': ['bin/clana'],
-    # 'package_data': {'hwrt': ['templates/*', 'misc/*']},
     'platforms': ['Linux'],
     'url': 'https://github.com/MartinThoma/clana',
     'license': 'MIT',
     'description': __doc__,
     'long_description': README,
     'install_requires': [
-        'numpy',
-        'PyYAML',
-        'matplotlib',
-        'sklearn',
-        'scipy',
-        'click',
+        'click>=6.7',
+        'matplotlib>=2.1.1',
+        'numpy>=1.14.0',
+        'PyYAML>=3.12',
+        'scikit-learn>=0.19.1',
+        'scipy>=1.0.0',
     ],
     'keywords': ['Machine Learning', 'Data Science'],
     'download_url': 'https://github.com/MartinThoma/language-identification',
