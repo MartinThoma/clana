@@ -4,9 +4,6 @@ from setuptools import find_packages
 from setuptools import setup
 import os
 
-# internal modules
-import clana
-
 here = os.path.abspath(os.path.dirname(__file__))
 try:
     # obtain long description from README and CHANGES
@@ -18,7 +15,7 @@ except IOError:
 
 config = {
     'name': 'clana',
-    'version': clana.__version__,
+    'version': '0.1.0',
     'author': 'Martin Thoma',
     'author_email': 'info@martin-thoma.de',
     'maintainer': 'Martin Thoma',
@@ -40,7 +37,7 @@ config = {
     ],
     'keywords': ['Machine Learning', 'Data Science'],
     'download_url': 'https://github.com/MartinThoma/language-identification',
-    'classifiers': ['Development Status :: 1 - Planning',
+    'classifiers': ['Development Status :: 2 - Pre-Alpha',
                     'Environment :: Console',
                     'Intended Audience :: Developers',
                     'Intended Audience :: Science/Research',
