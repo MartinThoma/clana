@@ -2,6 +2,7 @@ visualize:
   threshold: 0.1
   save_path: 'confusion_matrix.tmp.png'
   html_save_path: 'cm_analysis.html'
+  hierarchy_path: 'hierarchy.tmp.json'
 LOGGING:
   version: 1
   disable_existing_loggers: False

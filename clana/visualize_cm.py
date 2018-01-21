@@ -35,9 +35,11 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
 
 @click.command(name='visualize', help=__doc__)
 @click.option('--cm', 'cm_file',
+              type=click.Path(exists=True),
               required=True)
 @click.option('--perm', 'perm_file',
               help='json file which defines a permutation to start with.',
+              type=click.Path(),
               default='')
 @click.option('--steps',
               default=1000,
@@ -47,6 +49,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
               default='')
 @click.option('--zero_diagonal', is_flag=True)
 @click.option('--limit_classes',
+              type=int,
               help='Limit the number of classes in the output')
 def main(cm_file,
          perm_file,
@@ -94,7 +97,7 @@ def main(cm_file,
     labels = [labels[i] for i in result['perm']]
     class_indices = list(range(len(labels)))
     class_indices = [class_indices[i] for i in result['perm']]
-    print('Classes: {}'.format(labels))
+    logging.info('Classes: {}'.format(labels))
     acc = get_accuracy(cm_orig)
     print('Accuracy: {:0.2f}%'.format(acc * 100))
     start = 0
@@ -112,9 +115,10 @@ def main(cm_file,
         if el == 1:
             cluster_i += 1
         y_pred.append(cluster_i)
-    print('silhouette_score={}'.format(silhouette_score(cm, y_pred)))
+    logging.info('silhouette_score={}'.format(silhouette_score(cm, y_pred)))
     # Store grouping as hierarchy
-    with open('hierarchy.tmp.json', 'w') as outfile:
+    cfg = clana.utils.load_cfg()
+    with open(cfg['visualize']['hierarchy_path'], 'w') as outfile:
         hierarchy = apply_grouping(class_indices, grouping)
         hierarchy = _remove_single_element_groups(hierarchy)
         str_ = json.dumps(hierarchy,
@@ -373,7 +377,7 @@ def simulated_annealing(current_cm,
     best_score = current_score
     best_perm = current_perm
 
-    logging.info('## Starting Score: {:0.2f}%'.format(current_score))
+    logging.info('## Starting Score: {:0.2f}'.format(current_score))
     for step in range(steps):
         tmp_cm = np.array(current_cm, copy=True)
 
@@ -472,6 +476,7 @@ def plot_cm(cm, zero_diagonal=False, labels=None):
     plt.tight_layout()
 
     cfg = clana.utils.load_cfg()
+    logging.info('Save figure at \'{}\''.format(cfg['visualize']['save_path']))
     plt.savefig(cfg['visualize']['save_path'], format='png')
 
 

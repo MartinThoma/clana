@@ -4,7 +4,6 @@
 
 # core modules
 import csv
-import logging
 import os
 import pkg_resources
 
@@ -75,8 +74,6 @@ def make_paths_absolute(dir_, cfg):
         if hasattr(key, 'endswith') and key.endswith("_path"):
             cfg[key] = os.path.join(dir_, cfg[key])
             cfg[key] = os.path.abspath(cfg[key])
-            if not os.path.isfile(cfg[key]):
-                logging.error("%s does not exist.", cfg[key])
         if type(cfg[key]) is dict:
             cfg[key] = make_paths_absolute(dir_, cfg[key])
     return cfg

@@ -5,6 +5,14 @@ and comes with some tools for typical tasks of classifier analysis.
 
 ## Installation
 
+The recommended way to install clana is:
+
+```
+$ pip install clana --user
+```
+
+If you want the latest version:
+
 ```
 $ git clone https://github.com/MartinThoma/clana.git; cd clana
 $ pip install -e . --user
@@ -21,9 +29,14 @@ Options:
   --help     Show this message and exit.
 
 Commands:
-  get-cm-simple  Calculate the confusion matrix.
+  get-cm         Calculate the confusion matrix (CSV inputs).
+  get-cm-simple  Calculate the confusion matrix (one label per...
   visualize      Optimize confusion matrix.
 ```
+
+The visualize command gives you images like this:
+
+![Confusion Matrix after Confusion Matrix Ordering of the WiLI-2018 dataset](cm-wili-2018.png)
 
 
 ### Data distribution

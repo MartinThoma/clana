@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Calculate the confusion matrix."""
+"""Calculate the confusion matrix (one label per line)."""
 
 # core modules
 import csv
