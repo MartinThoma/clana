@@ -13,6 +13,7 @@ import click
 # internal modules
 import clana
 import clana.visualize_cm
+import clana.get_cm
 import clana.get_cm_simple
 
 
@@ -22,6 +23,7 @@ def entry_point():
     pass
 
 entry_point.add_command(clana.get_cm_simple.main)
+entry_point.add_command(clana.get_cm.main)
 entry_point.add_command(clana.visualize_cm.main)
 
 
