@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/102892750.svg)](https://zenodo.org/badge/latestdoi/102892750)
+
 # clana
 
 `clana` is a toolkit for classifier analysis. It specifies some [file formats](file-formats.md)
