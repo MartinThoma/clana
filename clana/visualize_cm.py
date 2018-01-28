@@ -477,7 +477,8 @@ def plot_cm(cm, zero_diagonal=False, labels=None):
 
     cfg = clana.utils.load_cfg()
     logging.info('Save figure at \'{}\''.format(cfg['visualize']['save_path']))
-    plt.savefig(cfg['visualize']['save_path'], format='png')
+    plt.savefig(cfg['visualize']['save_path'],
+                format=cfg['visualize']['format'])
 
 
 def create_html_cm(cm, zero_diagonal=False, labels=None):
