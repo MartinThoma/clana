@@ -17,6 +17,7 @@ import clana
 import clana.visualize_cm
 import clana.get_cm
 import clana.get_cm_simple
+import clana.distribution
 
 
 config = clana.utils.load_cfg()
@@ -31,6 +32,7 @@ def entry_point():
 entry_point.add_command(clana.get_cm_simple.main)
 entry_point.add_command(clana.get_cm.main)
 entry_point.add_command(clana.visualize_cm.main)
+entry_point.add_command(clana.distribution.cli)
 
 
 if __name__ == '__main__':
