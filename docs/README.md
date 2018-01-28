@@ -79,3 +79,8 @@ gives the following metrics by
 ### Visualizations
 
 See [visualizations](visualizations.md)
+
+
+## Development
+
+Check tests with `tox`.
