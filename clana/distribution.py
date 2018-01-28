@@ -7,20 +7,20 @@ import click
 
 
 @click.command(name='distribution', help=__doc__)
-@click.option('--labels', 'filepath',
+@click.option('--gt', 'gt_filepath',
               required=True,
               type=click.Path(exists=True),
               help='List of labels for the dataset')
-def cli(filepath):
+def cli(gt_filepath):
     """
     Command line interface to get the distribution of classes in a file.
 
     Parameters
     ----------
-    filepath : str
+    gt_filepath : str
     """
     # Read text file
-    with open(filepath, 'r') as fp:
+    with open(gt_filepath, 'r') as fp:
         read_lines = fp.readlines()
         labels = [line.rstrip('\n') for line in read_lines]
 
@@ -53,6 +53,12 @@ def get_distribution(labels):
     -------
     distribution : dict
         Maps (label => count)
+
+    Examples
+    --------
+    >>> dist = get_distribution(['de', 'de', 'en'])
+    >>> sorted(dist.items())
+    [('de', 2), ('en', 1)]
     """
     distribution = {}
     for label in labels:

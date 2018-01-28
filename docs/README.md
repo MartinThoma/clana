@@ -31,6 +31,7 @@ Options:
   --help     Show this message and exit.
 
 Commands:
+  distribution   Get the distribution of classes in a dataset.
   get-cm         Calculate the confusion matrix (CSV inputs).
   get-cm-simple  Calculate the confusion matrix (one label per...
   visualize      Optimize confusion matrix.
