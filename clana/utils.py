@@ -66,13 +66,17 @@ def make_paths_absolute(dir_, cfg):
     ----------
     dir_ : str
     cfg : dict
+
     Returns
     -------
     cfg : dict
     """
     for key in cfg.keys():
         if hasattr(key, 'endswith') and key.endswith("_path"):
-            cfg[key] = os.path.join(dir_, cfg[key])
+            if cfg[key].startswith('~'):
+                cfg[key] = os.path.expanduser(cfg[key])
+            else:
+                cfg[key] = os.path.join(dir_, cfg[key])
             cfg[key] = os.path.abspath(cfg[key])
         if type(cfg[key]) is dict:
             cfg[key] = make_paths_absolute(dir_, cfg[key])

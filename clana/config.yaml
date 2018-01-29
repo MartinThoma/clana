@@ -1,9 +1,9 @@
 visualize:
   threshold: 0.1
-  save_path: 'confusion_matrix.tmp.png'
-  html_save_path: 'cm_analysis.html'
-  hierarchy_path: 'hierarchy.tmp.json'
-  format: 'pdf'
+  format: 'pdf'  # one of: pdf, png
+  save_path: '~/confusion_matrix.tmp.pdf'  # make sure this is consistent with the format
+  html_save_path: '~/cm_analysis.html'
+  hierarchy_path: '~/hierarchy.tmp.json'
 LOGGING:
   version: 1
   disable_existing_loggers: False
