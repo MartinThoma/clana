@@ -21,6 +21,8 @@ import sys
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from sklearn.metrics import silhouette_score
 import click
+import matplotlib
+matplotlib.use('Agg')  # noqa
 import matplotlib.pyplot as plt
 import numpy as np
 

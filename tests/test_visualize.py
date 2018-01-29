@@ -58,3 +58,13 @@ class VisualizeTest(unittest.TestCase):
                                             labels=list(range(n)),
                                             steps=10,
                                             method='energy')
+
+    def test_plot_cm(self):
+        n = 25
+        cm = np.random.randint(low=0, high=100, size=(n, n))
+        clana.visualize_cm.plot_cm(cm, zero_diagonal=True, labels=None)
+
+    def test_plot_cm_big(self):
+        n = 5
+        cm = np.random.randint(low=0, high=100, size=(n, n))
+        clana.visualize_cm.plot_cm(cm, zero_diagonal=True, labels=None)
