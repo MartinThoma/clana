@@ -1,8 +1,11 @@
 # core modules
+import pkg_resources
 import unittest
 
 # 3rd party modules
+from click.testing import CliRunner
 import numpy as np
+import pytest
 
 # internal modules
 import clana.visualize_cm
@@ -20,7 +23,7 @@ class VisualizeTest(unittest.TestCase):
         labels = ['0', '1']
         clana.visualize_cm.get_cm_problems(cm, labels)
 
-    def text_move_1d(self):
+    def test_move_1d(self):  # TODO
         perm = [8, 7, 6, 1, 2]
         from_start = 1
         from_end = 2
@@ -68,3 +71,12 @@ class VisualizeTest(unittest.TestCase):
         n = 5
         cm = np.random.randint(low=0, high=100, size=(n, n))
         clana.visualize_cm.plot_cm(cm, zero_diagonal=True, labels=None)
+
+    def test_main(self):
+        path = '../tests/examples/wili-cld2-cm.json'
+        cm_path = pkg_resources.resource_filename('clana', path)
+
+        runner = CliRunner()
+        result = runner.invoke(clana.visualize_cm.main,
+                               ['--cm', cm_path,
+                                '--steps', 100])
