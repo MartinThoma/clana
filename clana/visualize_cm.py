@@ -250,7 +250,7 @@ def move_1d(perm, from_start, from_end, insert_pos):
 
     Parameters
     ----------
-    perm : list
+    perm : ndarray
         Permutation
     from_start : int
     from_end : int
@@ -258,7 +258,7 @@ def move_1d(perm, from_start, from_end, insert_pos):
 
     Returns
     -------
-    perm : list
+    perm : ndarray
         The new permutation
     """
     assert insert_pos < from_start or insert_pos > from_end

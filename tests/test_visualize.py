@@ -5,7 +5,6 @@ import unittest
 # 3rd party modules
 from click.testing import CliRunner
 import numpy as np
-import pytest
 
 # internal modules
 import clana.visualize_cm
@@ -23,8 +22,8 @@ class VisualizeTest(unittest.TestCase):
         labels = ['0', '1']
         clana.visualize_cm.get_cm_problems(cm, labels)
 
-    def test_move_1d(self):  # TODO
-        perm = [8, 7, 6, 1, 2]
+    def test_move_1d(self):
+        perm = np.array([8, 7, 6, 1, 2])
         from_start = 1
         from_end = 2
         insert_pos = 0
@@ -32,6 +31,7 @@ class VisualizeTest(unittest.TestCase):
                                               from_start,
                                               from_end,
                                               insert_pos)
+        new_perm = new_perm.tolist()
         self.assertEqual(new_perm, [7, 6, 8, 1, 2])
 
     def test_simulated_annealing(self):
