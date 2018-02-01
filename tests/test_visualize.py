@@ -76,7 +76,11 @@ class VisualizeTest(unittest.TestCase):
         path = '../tests/examples/wili-cld2-cm.json'
         cm_path = pkg_resources.resource_filename('clana', path)
 
+        path = '../tests/examples/perm.json'
+        perm_path = pkg_resources.resource_filename('clana', path)
+
         runner = CliRunner()
         result = runner.invoke(clana.visualize_cm.main,
                                ['--cm', cm_path,
-                                '--steps', 100])
+                                '--steps', 100,
+                                '--perm', perm_path])
