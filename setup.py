@@ -9,14 +9,15 @@ here = os.path.abspath(os.path.dirname(__file__))
 try:
     # obtain long description from README and CHANGES
     # Specify encoding to get a unicode type in Python 2 and a str in Python 3
-    with io.open(os.path.join(here, 'README.md'), 'r', encoding='utf-8') as f:
+    readme_path = os.path.join(here, 'docs/README.md')
+    with io.open(readme_path, 'r', encoding='utf-8') as f:
         README = f.read()
 except IOError:
     README = ''
 
 config = {
     'name': 'clana',
-    'version': '0.2.0',
+    'version': '0.2.1',
     'author': 'Martin Thoma',
     'author_email': 'info@martin-thoma.de',
     'maintainer': 'Martin Thoma',
@@ -28,6 +29,7 @@ config = {
     'license': 'MIT',
     'description': __doc__,
     'long_description': README,
+    'long_description_content_type': 'text/markdown',
     'install_requires': [
         'click>=6.7',
         'matplotlib>=2.1.1',
