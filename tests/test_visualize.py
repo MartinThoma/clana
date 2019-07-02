@@ -7,7 +7,7 @@ from click.testing import CliRunner
 import numpy as np
 
 # internal modules
-import clana.visualize_cm
+import clana.cli
 
 
 class VisualizeTest(unittest.TestCase):
@@ -80,7 +80,7 @@ class VisualizeTest(unittest.TestCase):
         perm_path = pkg_resources.resource_filename('clana', path)
 
         runner = CliRunner()
-        result = runner.invoke(clana.visualize_cm.main,
+        result = runner.invoke(clana.cli.visualize,
                                ['--cm', cm_path,
                                 '--steps', 100,
                                 '--perm', perm_path])

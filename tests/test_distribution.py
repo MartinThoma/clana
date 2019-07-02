@@ -6,7 +6,7 @@ import unittest
 from click.testing import CliRunner
 
 # internal modules
-import clana.distribution
+import clana.cli
 
 
 class DistributionTest(unittest.TestCase):
@@ -16,5 +16,5 @@ class DistributionTest(unittest.TestCase):
 
         path = '../tests/examples/wili-y_train.txt'
         y_train_path = pkg_resources.resource_filename('clana', path)
-        result = runner.invoke(clana.distribution.cli,
+        result = runner.invoke(clana.cli.distribution,
                                ['--gt', y_train_path])

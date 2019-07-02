@@ -8,7 +8,7 @@ import numpy as np
 import numpy.testing
 
 # internal modules
-import clana.get_cm_simple
+import clana.cli
 
 
 class GetCMTest(unittest.TestCase):
@@ -29,7 +29,7 @@ class GetCMTest(unittest.TestCase):
         predictions_filepath = pkg_resources.resource_filename('clana', path)
 
         runner = CliRunner()
-        result = runner.invoke(clana.get_cm_simple.main,
+        result = runner.invoke(clana.cli.get_cm_simple,
                                ['--labels', labels_path,
                                 '--gt', gt_filepath,
                                 '--predictions', predictions_filepath])

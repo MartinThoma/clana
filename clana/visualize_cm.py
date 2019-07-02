@@ -15,12 +15,10 @@ import json
 import logging
 import os
 import random
-import sys
 
 # 3rd party modules
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from sklearn.metrics import silhouette_score
-import click
 import matplotlib
 matplotlib.use('Agg')  # noqa
 import matplotlib.pyplot as plt
@@ -29,30 +27,7 @@ import numpy as np
 # internal modules
 import clana.utils
 
-random.seed(0)
-logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
-                    level=logging.DEBUG,
-                    stream=sys.stdout)
 
-
-@click.command(name='visualize', help=__doc__)
-@click.option('--cm', 'cm_file',
-              type=click.Path(exists=True),
-              required=True)
-@click.option('--perm', 'perm_file',
-              help='json file which defines a permutation to start with.',
-              type=click.Path(),
-              default='')
-@click.option('--steps',
-              default=1000,
-              show_default=True,
-              help='Number of steps to find a good permutation.')
-@click.option('--labels', 'labels_file',
-              default='')
-@click.option('--zero_diagonal', is_flag=True)
-@click.option('--limit_classes',
-              type=int,
-              help='Limit the number of classes in the output')
 def main(cm_file,
          perm_file,
          steps,

@@ -11,35 +11,13 @@ import os
 import sys
 
 # 3rd party modules
-import click
 import numpy as np
 import sklearn.metrics
 
 # internal modules
 import clana.utils
 
-logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
-                    level=logging.DEBUG,
-                    stream=sys.stdout)
 
-
-@click.command(name='get-cm-simple', help=__doc__)
-@click.option('--labels', 'label_filepath',
-              required=True,
-              type=click.Path(exists=True),
-              help='CSV file with delimiter ;')
-@click.option('--gt', 'gt_filepath',
-              required=True,
-              type=click.Path(exists=True),
-              help='CSV file with delimiter ;')
-@click.option('--predictions', 'predictions_filepath',
-              required=True,
-              type=click.Path(exists=True),
-              help='CSV file with delimiter ;')
-@click.option('--clean',
-              default=False,
-              is_flag=True,
-              help='Remove classes that the classifier doesn\'t know')
 def main(label_filepath, gt_filepath, predictions_filepath, clean):
     """
     Get a simple confunsion matrix.

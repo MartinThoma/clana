@@ -2,16 +2,8 @@
 
 """Get the distribution of classes in a dataset."""
 
-# 3rd party module
-import click
 
-
-@click.command(name='distribution', help=__doc__)
-@click.option('--gt', 'gt_filepath',
-              required=True,
-              type=click.Path(exists=True),
-              help='List of labels for the dataset')
-def cli(gt_filepath):
+def main(gt_filepath):
     """
     Command line interface to get the distribution of classes in a file.
 

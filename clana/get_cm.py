@@ -10,22 +10,8 @@ import logging
 
 # 3rd party modules
 import numpy as np
-import click
 
 
-@click.command(name='get-cm', help=__doc__)
-@click.option('--predictions', 'cm_dump_filepath',
-              required=True,
-              type=click.Path(exists=True),
-              help='CSV file with delimiter ;')
-@click.option('--gt', 'gt_filepath',
-              required=True,
-              type=click.Path(exists=True),
-              help='CSV file with delimiter ;')
-@click.option('--n', 'n',
-              required=True,
-              type=int,
-              help='Number of classes')
 def main(cm_dump_filepath, gt_filepath, n):
     """
     Calculate a confusion matrix.

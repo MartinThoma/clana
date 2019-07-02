@@ -17,13 +17,15 @@ except IOError:
 
 config = {
     'name': 'clana',
-    'version': '0.2.4',
+    'version': '0.3.0',
     'author': 'Martin Thoma',
     'author_email': 'info@martin-thoma.de',
     'maintainer': 'Martin Thoma',
     'maintainer_email': 'info@martin-thoma.de',
     'packages': find_packages(),
-    'scripts': ['bin/clana'],
+    'entry_points': {
+        'console_scripts': ['clana=clana.cli:entry_point']
+    },
     'platforms': ['Linux'],
     'url': 'https://github.com/MartinThoma/clana',
     'license': 'MIT',
@@ -34,7 +36,7 @@ config = {
         'click>=6.7',
         'matplotlib>=2.1.1',
         'numpy>=1.14.0',
-        'PyYAML>=3.12',
+        'PyYAML>=5.1.1',
         'scikit-learn>=0.19.1',
         'scipy>=1.0.0',
     ],
