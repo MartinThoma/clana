@@ -12,6 +12,8 @@ import random
 
 # 3rd party modules
 import click
+import matplotlib
+matplotlib.use('Agg')  # noqa
 
 # internal modules
 import clana
@@ -22,6 +24,7 @@ import clana.distribution
 
 config = clana.utils.load_cfg()
 logging.config.dictConfig(config['LOGGING'])
+logging.getLogger('matplotlib').setLevel('WARN')
 random.seed(0)
 
 
@@ -31,7 +34,7 @@ def entry_point():
     pass
 
 
-@entry_point.command(name='get-cm-simple', help=__doc__)
+@entry_point.command(name='get-cm-simple')
 @click.option('--labels', 'label_filepath',
               required=True,
               type=click.Path(exists=True),
@@ -55,7 +58,7 @@ def get_cm_simple(label_filepath, gt_filepath, predictions_filepath, clean):
                              clean)
 
 
-@entry_point.command(name='get-cm', help=__doc__)
+@entry_point.command(name='get-cm')
 @click.option('--predictions', 'cm_dump_filepath',
               required=True,
               type=click.Path(exists=True),
@@ -69,19 +72,21 @@ def get_cm_simple(label_filepath, gt_filepath, predictions_filepath, clean):
               type=int,
               help='Number of classes')
 def get_cm(cm_dump_filepath, gt_filepath, n):
+    """Generate a confusion matrix from predictions and ground truth."""
     clana.get_cm.main(cm_dump_filepath, gt_filepath, n)
 
 
-@entry_point.command(name='distribution', help=__doc__)
+@entry_point.command(name='distribution')
 @click.option('--gt', 'gt_filepath',
               required=True,
               type=click.Path(exists=True),
               help='List of labels for the dataset')
 def distribution(gt_filepath):
+    """Get the distribution of classes in a dataset."""
     clana.distribution.main(gt_filepath)
 
 
-@entry_point.command(name='visualize', help=__doc__)
+@entry_point.command(name='visualize')
 @click.option('--cm', 'cm_file',
               type=click.Path(exists=True),
               required=True)
@@ -105,6 +110,7 @@ def visualize(cm_file,
               labels_file,
               zero_diagonal,
               limit_classes=None):
+    """Optimize and visualize a confusion matrix."""
     clana.visualize_cm.main(cm_file,
                             perm_file,
                             steps,

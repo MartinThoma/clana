@@ -1,4 +1,9 @@
 [![DOI](https://zenodo.org/badge/102892750.svg)](https://zenodo.org/badge/latestdoi/102892750)
+[![PyPI version](https://badge.fury.io/py/clana.svg)](https://badge.fury.io/py/clana)
+[![Python Support](https://img.shields.io/pypi/pyversions/clana.svg)](https://pypi.org/project/clana/)
+[![Documentation Status](https://readthedocs.org/projects/clana/badge/?version=latest)](http://clana.readthedocs.io/en/latest/?badge=latest)
+[![Build Status](https://travis-ci.org/MartinThoma/clana.svg?branch=master)](https://travis-ci.org/MartinThoma/clana)
+[![Coverage Status](https://coveralls.io/repos/github/MartinThoma/clana/badge.svg?branch=master)](https://coveralls.io/github/MartinThoma/clana?branch=master)
 
 # clana
 

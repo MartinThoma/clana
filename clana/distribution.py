@@ -5,11 +5,12 @@
 
 def main(gt_filepath):
     """
-    Command line interface to get the distribution of classes in a file.
+    Get the distribution of classes in a file.
 
     Parameters
     ----------
     gt_filepath : str
+        List of ground truth; one label per line
     """
     # Read text file
     with open(gt_filepath, 'r') as fp:
