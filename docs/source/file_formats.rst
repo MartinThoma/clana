@@ -120,23 +120,3 @@ Example
 
    identifier 1;1;0;1
    identifier 1;0.5;0;0.5
-
-Data Item Visualizer Script
-===========================
-
-The ``data_viz.py`` contains a function
-
-::
-
-   def visualize(identifier):
-       """
-       Visualize the data identified by `identifier`.
-
-       Parameters
-       ----------
-       identifier : str
-
-       Returns
-       -------
-       view : str
-       """
