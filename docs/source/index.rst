@@ -10,6 +10,8 @@ Welcome to clana's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   mnist_example
+   file_formats
    distribution
    io
    get_cm
