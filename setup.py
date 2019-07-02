@@ -49,7 +49,7 @@ config = {
                     'Intended Audience :: Information Technology',
                     'License :: OSI Approved :: MIT License',
                     'Natural Language :: English',
-                    'Programming Language :: Python :: 3.5',
+                    'Programming Language :: Python :: 3.6',
                     'Topic :: Scientific/Engineering :: Information Analysis',
                     'Topic :: Software Development',
                     'Topic :: Utilities'],
