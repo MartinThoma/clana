@@ -5,11 +5,13 @@
 
 # core modules
 import csv
-import json
 import logging
 
 # 3rd party modules
 import numpy as np
+
+# internal modules
+import clana.io
 
 
 def main(cm_dump_filepath, gt_filepath, n):
@@ -30,12 +32,8 @@ def main(cm_dump_filepath, gt_filepath, n):
         Number of classes
     """
     cm = calculate_cm(cm_dump_filepath, gt_filepath, n)
-    # Write JSON file
     path = 'cm.json'
-    with open(path, 'w') as outfile:
-        str_ = json.dumps(cm.tolist(), indent=2,
-                          separators=(',', ': '), ensure_ascii=False)
-        outfile.write(str_)
+    clana.io.write_cm(path, cm)
     logging.info('cm was written to \'{}\''.format(path))
 
 

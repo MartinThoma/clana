@@ -13,7 +13,6 @@ For more information, see
 # core modules
 import json
 import logging
-import os
 import random
 
 # 3rd party modules
@@ -24,6 +23,9 @@ import numpy as np
 
 # internal modules
 import clana.utils
+import clana.io
+
+cfg = clana.utils.load_cfg()
 
 
 def main(cm_file,
@@ -31,33 +33,14 @@ def main(cm_file,
          steps,
          labels_file,
          zero_diagonal,
-         limit_classes=None):
+         limit_classes=None,
+         output=None):
     """Run optimization and generate output."""
-    # Load confusion matrix
-    with open(cm_file) as f:
-        cm = json.load(f)
-        cm = np.array(cm)
-
-    n = len(cm)
-    make_max = float('inf')
-    for i in range(n):
-        for j in range(n):
-            if i == j:
-                continue
-            cm[i][j] = min(cm[i][j], make_max)
+    cm = clana.io.read_confusion_matrix(cm_file)
+    perm = clana.io.read_permutation(perm_file, len(cm))
+    labels = clana.io.read_labels(labels_file, len(cm))
 
     cm_orig = cm.copy()
-
-    # Load permutation
-    if os.path.isfile(perm_file):
-        with open(perm_file) as data_file:
-            perm = json.load(data_file)
-    else:
-        perm = list(range(len(cm)))
-
-    # Load labels
-    labels = clana.utils.load_labels(labels_file, len(cm))
-    labels.append('UNK')
 
     get_cm_problems(cm, labels)
 
@@ -78,8 +61,12 @@ def main(cm_file,
     start = 0
     if limit_classes is None:
         limit_classes = len(cm)
+    if output is None:
+        output = cfg['visualize']['save_path']
     plot_cm(result['cm'][start:limit_classes, start:limit_classes],
-            zero_diagonal=zero_diagonal, labels=labels[start:limit_classes])
+            zero_diagonal=zero_diagonal,
+            labels=labels[start:limit_classes],
+            output=output)
     create_html_cm(result['cm'][start:limit_classes, start:limit_classes],
                    zero_diagonal=zero_diagonal,
                    labels=labels[start:limit_classes])
@@ -92,7 +79,6 @@ def main(cm_file,
         y_pred.append(cluster_i)
     logging.info('silhouette_score={}'.format(silhouette_score(cm, y_pred)))
     # Store grouping as hierarchy
-    cfg = clana.utils.load_cfg()
     with open(cfg['visualize']['hierarchy_path'], 'w') as outfile:
         hierarchy = apply_grouping(class_indices, grouping)
         hierarchy = _remove_single_element_groups(hierarchy)
@@ -412,7 +398,10 @@ def simulated_annealing(current_cm,
     return {'cm': best_cm, 'perm': best_perm}
 
 
-def plot_cm(cm, zero_diagonal=False, labels=None):
+def plot_cm(cm,
+            zero_diagonal=False,
+            labels=None,
+            output=cfg['visualize']['save_path']):
     """
     Plot a confusion matrix.
 
@@ -450,10 +439,8 @@ def plot_cm(cm, zero_diagonal=False, labels=None):
     plt.colorbar(res, cax=cax)
     plt.tight_layout()
 
-    cfg = clana.utils.load_cfg()
-    logging.info('Save figure at \'{}\''.format(cfg['visualize']['save_path']))
-    plt.savefig(cfg['visualize']['save_path'],
-                format=cfg['visualize']['format'])
+    logging.info('Save figure at \'{}\''.format(output))
+    plt.savefig(output, format=cfg['visualize']['format'])
 
 
 def create_html_cm(cm, zero_diagonal=False, labels=None):
@@ -578,7 +565,6 @@ def create_html_cm(cm, zero_diagonal=False, labels=None):
 window.onload = highlight_row;</script>"""
     html += '</html>\n'
 
-    cfg = clana.utils.load_cfg()
     with open(cfg['visualize']['html_save_path'], 'w') as f:
         f.write(html)
 
@@ -672,8 +658,6 @@ def extract_clusters(cm,
     -------
     clustes : list of lists of labels
     """
-    cfg = clana.utils.load_cfg()
-
     def create_weight_matrix(grouping):
         n = len(grouping) + 1
         weight_matrix = np.zeros((n, n))
