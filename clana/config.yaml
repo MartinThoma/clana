@@ -22,7 +22,7 @@ LOGGING:
           class: logging.handlers.RotatingFileHandler
           level: INFO
           formatter: simple
-          filename: lidtk.info.log
+          filename: clana.info.log
           maxBytes: 10485760 # 10MB
           backupCount: 20
           encoding: utf8
@@ -31,7 +31,7 @@ LOGGING:
           class: logging.handlers.RotatingFileHandler
           level: ERROR
           formatter: simple
-          filename: lidtk.errors.log
+          filename: clana.errors.log
           maxBytes: 10485760 # 10MB
           backupCount: 20
           encoding: utf8
