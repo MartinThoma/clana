@@ -17,7 +17,7 @@ except IOError:
 
 config = {
     'name': 'clana',
-    'version': '0.3.0',
+    'version': '0.3.1',
     'author': 'Martin Thoma',
     'author_email': 'info@martin-thoma.de',
     'maintainer': 'Martin Thoma',
