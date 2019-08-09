@@ -7,8 +7,11 @@
 
 # clana
 
-`clana` is a toolkit for classifier analysis. It specifies some [file formats](file-formats.md)
-and comes with some tools for typical tasks of classifier analysis.
+`clana` is a toolkit for classifier analysis. One key contribution of clana is
+Confusion Matrix Ordering (CMO) as explained in chapter 5 of [Analysis and Optimization of Convolutional Neural Network Architectures](https://arxiv.org/abs/1707.09725). It is a technique
+that can be applied to any multi-class classifier and helps to understand which
+groups of classes are most similar.
+
 
 ## Installation
 
