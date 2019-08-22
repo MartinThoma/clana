@@ -32,9 +32,9 @@ def main(cm_dump_filepath, gt_filepath, n):
         Number of classes
     """
     cm = calculate_cm(cm_dump_filepath, gt_filepath, n)
-    path = 'cm.json'
+    path = "cm.json"
     clana.io.write_cm(path, cm)
-    logging.info('cm was written to \'{}\''.format(path))
+    logging.info("cm was written to '{}'".format(path))
 
 
 def calculate_cm(cm_dump_filepath, gt_filepath, n):
@@ -61,12 +61,12 @@ def calculate_cm(cm_dump_filepath, gt_filepath, n):
     cm = np.zeros((n, n), dtype=int)
 
     # Read CSV files
-    with open(cm_dump_filepath, 'r') as fp:
-        reader = csv.reader(fp, delimiter=';', quotechar='"')
+    with open(cm_dump_filepath, "r") as fp:
+        reader = csv.reader(fp, delimiter=";", quotechar='"')
         predictions = [row for row in reader]
 
-    with open(gt_filepath, 'r') as fp:
-        reader = csv.reader(fp, delimiter=';', quotechar='"')
+    with open(gt_filepath, "r") as fp:
+        reader = csv.reader(fp, delimiter=";", quotechar='"')
         truths = [row for row in reader]
 
     ident2truth_index = {}
@@ -74,8 +74,9 @@ def calculate_cm(cm_dump_filepath, gt_filepath, n):
         ident2truth_index[identifier] = int(truth_index)
 
     if len(predictions) != len(truths):
-        msg = ('len(predictions) = {} != {} = len(truths)"'
-               .format(len(predictions), len(truths)))
+        msg = 'len(predictions) = {} != {} = len(truths)"'.format(
+            len(predictions), len(truths)
+        )
         raise ValueError(msg)
 
     for ident, pred_index in predictions:

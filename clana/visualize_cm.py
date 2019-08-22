@@ -28,13 +28,15 @@ import clana.io
 cfg = clana.utils.load_cfg()
 
 
-def main(cm_file,
-         perm_file,
-         steps,
-         labels_file,
-         zero_diagonal,
-         limit_classes=None,
-         output=None):
+def main(
+    cm_file,
+    perm_file,
+    steps,
+    labels_file,
+    zero_diagonal,
+    limit_classes=None,
+    output=None,
+):
     """Run optimization and generate output."""
     cm = clana.io.read_confusion_matrix(cm_file)
     perm = clana.io.read_permutation(perm_file, len(cm))
@@ -45,46 +47,53 @@ def main(cm_file,
     get_cm_problems(cm, labels)
 
     weights = calculate_weight_matrix(len(cm))
-    print('Score: {}'.format(calculate_score(cm, weights)))
-    result = simulated_annealing(cm, perm,
-                                 score=calculate_score,
-                                 deterministic=True,
-                                 steps=steps)
-    print('Score: {}'.format(calculate_score(result['cm'], weights)))
-    print('Perm: {}'.format(list(result['perm'])))
-    labels = [labels[i] for i in result['perm']]
+    print("Score: {}".format(calculate_score(cm, weights)))
+    result = simulated_annealing(
+        cm, perm, score=calculate_score, deterministic=True, steps=steps
+    )
+    print("Score: {}".format(calculate_score(result["cm"], weights)))
+    print("Perm: {}".format(list(result["perm"])))
+    labels = [labels[i] for i in result["perm"]]
     class_indices = list(range(len(labels)))
-    class_indices = [class_indices[i] for i in result['perm']]
-    logging.info('Classes: {}'.format(labels))
+    class_indices = [class_indices[i] for i in result["perm"]]
+    logging.info("Classes: {}".format(labels))
     acc = get_accuracy(cm_orig)
-    print('Accuracy: {:0.2f}%'.format(acc * 100))
+    print("Accuracy: {:0.2f}%".format(acc * 100))
     start = 0
     if limit_classes is None:
         limit_classes = len(cm)
     if output is None:
-        output = cfg['visualize']['save_path']
-    plot_cm(result['cm'][start:limit_classes, start:limit_classes],
-            zero_diagonal=zero_diagonal,
-            labels=labels[start:limit_classes],
-            output=output)
-    create_html_cm(result['cm'][start:limit_classes, start:limit_classes],
-                   zero_diagonal=zero_diagonal,
-                   labels=labels[start:limit_classes])
-    grouping = extract_clusters(result['cm'], labels)
+        output = cfg["visualize"]["save_path"]
+    plot_cm(
+        result["cm"][start:limit_classes, start:limit_classes],
+        zero_diagonal=zero_diagonal,
+        labels=labels[start:limit_classes],
+        output=output,
+    )
+    create_html_cm(
+        result["cm"][start:limit_classes, start:limit_classes],
+        zero_diagonal=zero_diagonal,
+        labels=labels[start:limit_classes],
+    )
+    grouping = extract_clusters(result["cm"], labels)
     y_pred = [0]
     cluster_i = 0
     for el in grouping:
         if el == 1:
             cluster_i += 1
         y_pred.append(cluster_i)
-    logging.info('silhouette_score={}'.format(silhouette_score(cm, y_pred)))
+    logging.info("silhouette_score={}".format(silhouette_score(cm, y_pred)))
     # Store grouping as hierarchy
-    with open(cfg['visualize']['hierarchy_path'], 'w') as outfile:
+    with open(cfg["visualize"]["hierarchy_path"], "w") as outfile:
         hierarchy = apply_grouping(class_indices, grouping)
         hierarchy = _remove_single_element_groups(hierarchy)
-        str_ = json.dumps(hierarchy,
-                          indent=4, sort_keys=True,
-                          separators=(',', ':'), ensure_ascii=False)
+        str_ = json.dumps(
+            hierarchy,
+            indent=4,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        )
         outfile.write(str_)
 
     # Print nice
@@ -104,16 +113,16 @@ def get_cm_problems(cm, labels):
     n = len(cm)
     for i in range(n):
         if sum(cm[i]) == 0:
-            logging.warning("The class '{}' was not in the dataset."
-                            .format(labels[i]))
+            logging.warning("The class '{}' was not in the dataset.".format(labels[i]))
     cm = cm.transpose()
     never_predicted = []
     for i in range(n):
         if sum(cm[i]) == 0:
             never_predicted.append(labels[i])
     if len(never_predicted) > 0:
-        logging.warning("The following classes were never predicted: {}"
-                        .format(never_predicted))
+        logging.warning(
+            "The following classes were never predicted: {}".format(never_predicted)
+        )
 
 
 def get_accuracy(cm):
@@ -222,11 +231,13 @@ def move_1d(perm, from_start, from_end, insert_pos):
     """
     assert insert_pos < from_start or insert_pos > from_end
     if insert_pos > from_end:
-        p_new = (list(range(from_end + 1, insert_pos + 1)) +
-                 list(range(from_start, from_end + 1)))
+        p_new = list(range(from_end + 1, insert_pos + 1)) + list(
+            range(from_start, from_end + 1)
+        )
     else:
-        p_new = (list(range(from_start, from_end + 1)) +
-                 list(range(insert_pos, from_start)))
+        p_new = list(range(from_start, from_end + 1)) + list(
+            range(insert_pos, from_start)
+        )
     p_old = sorted(p_new)
     perm[p_old] = perm[p_new]
     return perm
@@ -254,11 +265,13 @@ def move(cm, from_start, from_end, insert_pos):
     """
     assert insert_pos < from_start or insert_pos > from_end
     if insert_pos > from_end:
-        p_new = (list(range(from_end + 1, insert_pos + 1)) +
-                 list(range(from_start, from_end + 1)))
+        p_new = list(range(from_end + 1, insert_pos + 1)) + list(
+            range(from_start, from_end + 1)
+        )
     else:
-        p_new = (list(range(from_start, from_end + 1)) +
-                 list(range(insert_pos, from_start)))
+        p_new = list(range(from_start, from_end + 1)) + list(
+            range(insert_pos, from_start)
+        )
     p_old = sorted(p_new)
     # swap columns
     cm[:, p_old] = cm[:, p_new]
@@ -297,13 +310,15 @@ def apply_permutation(cm, perm):
     return cm[perm].transpose()[perm].transpose()
 
 
-def simulated_annealing(current_cm,
-                        current_perm=None,
-                        score=calculate_score,
-                        steps=2 * 10**5,
-                        temp=100.0,
-                        cooling_factor=0.99,
-                        deterministic=False):
+def simulated_annealing(
+    current_cm,
+    current_perm=None,
+    score=calculate_score,
+    steps=2 * 10 ** 5,
+    temp=100.0,
+    cooling_factor=0.99,
+    deterministic=False,
+):
     """
     Optimize current_cm by randomly swapping elements.
 
@@ -338,7 +353,7 @@ def simulated_annealing(current_cm,
     best_score = current_score
     best_perm = current_perm
 
-    logging.info('## Starting Score: {:0.2f}'.format(current_score))
+    logging.info("## Starting Score: {:0.2f}".format(current_score))
     for step in range(steps):
         tmp_cm = np.array(current_cm, copy=True)
 
@@ -363,8 +378,7 @@ def simulated_annealing(current_cm,
             insert_pos = from_start
             while not (insert_pos < from_start or insert_pos > from_end):
                 insert_pos = random.randint(0, n - 1)
-            perm = move_1d(current_perm.copy(),
-                           from_start, from_end, insert_pos)
+            perm = move_1d(current_perm.copy(), from_start, from_end, insert_pos)
 
             # Define values after swap
             tmp_cm = move(tmp_cm, from_start, from_end, insert_pos)
@@ -388,20 +402,21 @@ def simulated_annealing(current_cm,
             current_cm = tmp_cm
             current_perm = perm
             if changed:
-                logging.info(("Current: %0.2f (best: %0.2f, "
-                              "hot_prob_thresh=%0.4f%%, step=%i, swap=%s)"),
-                             current_score,
-                             best_score,
-                             (hot_prob_thresh * 100),
-                             step,
-                             str(make_swap))
-    return {'cm': best_cm, 'perm': best_perm}
+                logging.info(
+                    (
+                        "Current: %0.2f (best: %0.2f, "
+                        "hot_prob_thresh=%0.4f%%, step=%i, swap=%s)"
+                    ),
+                    current_score,
+                    best_score,
+                    (hot_prob_thresh * 100),
+                    step,
+                    str(make_swap),
+                )
+    return {"cm": best_cm, "perm": best_perm}
 
 
-def plot_cm(cm,
-            zero_diagonal=False,
-            labels=None,
-            output=cfg['visualize']['save_path']):
+def plot_cm(cm, zero_diagonal=False, labels=None, output=cfg["visualize"]["save_path"]):
     """
     Plot a confusion matrix.
 
@@ -417,21 +432,20 @@ def plot_cm(cm,
         for i in range(n):
             cm[i][i] = 0
     if n > 20:
-        size = int(n / 4.)
+        size = int(n / 4.0)
     else:
         size = 5
-    fig = plt.figure(figsize=(size, size), dpi=80, )
+    fig = plt.figure(figsize=(size, size), dpi=80)
     plt.clf()
     ax = fig.add_subplot(111)
     ax.set_aspect(1)
     if labels is None:
         labels = [i for i in range(len(cm))]
     x = [i for i in range(len(cm))]
-    plt.xticks(x, labels, rotation='vertical')
+    plt.xticks(x, labels, rotation="vertical")
     y = [i for i in range(len(cm))]
     plt.yticks(y, labels)  # , rotation='vertical'
-    res = ax.imshow(np.array(cm), cmap=plt.cm.viridis,
-                    interpolation='nearest')
+    res = ax.imshow(np.array(cm), cmap=plt.cm.viridis, interpolation="nearest")
     width, height = cm.shape
 
     divider = make_axes_locatable(ax)
@@ -439,8 +453,8 @@ def plot_cm(cm,
     plt.colorbar(res, cax=cax)
     plt.tight_layout()
 
-    logging.info('Save figure at \'{}\''.format(output))
-    plt.savefig(output, format=cfg['visualize']['format'])
+    logging.info("Save figure at '{}'".format(output))
+    plt.savefig(output, format=cfg["visualize"]["format"])
 
 
 def create_html_cm(cm, zero_diagonal=False, labels=None):
@@ -484,26 +498,25 @@ def create_html_cm(cm, zero_diagonal=False, labels=None):
                   z-index: -1;
                 }
                 </style>\n</head>\n"""
-    html += '<body>'
+    html += "<body>"
     html += '<table class="table" id="display-table">\n'
-    html += '<thead>\n'
-    html += '<tr><th>&nbsp;</th>'
+    html += "<thead>\n"
+    html += "<tr><th>&nbsp;</th>"
     cm_t = cm.transpose()
     for i, label in enumerate(labels):
         precision = cm[i][i] / float(sum(cm_t[i]))
-        style = ''
+        style = ""
         if precision < 0.2:
-            style += 'background-color: red;'
+            style += "background-color: red;"
         elif precision > 0.98:
-            style += 'background-color: green;'
-        html += ('<th title="precision={precision}" style="{style}">'
-                 '{label}</th>'
-                 .format(label=label,
-                         precision=precision,
-                         style=style))
-    html += '<th>support</th></tr>\n'
-    html += '</thead>\n'
-    html += '<tbody>\n'
+            style += "background-color: green;"
+        html += (
+            '<th title="precision={precision}" style="{style}">'
+            "{label}</th>".format(label=label, precision=precision, style=style)
+        )
+    html += "<th>support</th></tr>\n"
+    html += "</thead>\n"
+    html += "<tbody>\n"
     for i, label, row in zip(range(len(labels)), labels, cm):
         row_str = [str(el) for el in row]
         support = sum(row)
@@ -513,29 +526,29 @@ def create_html_cm(cm, zero_diagonal=False, labels=None):
             style += "background-color: red;"
         elif recall >= 0.98:
             style += "background-color: green;"
-        html += ('<tr><th title="recall={recall:.2f}" style="{style}">'
-                 '{label}</th>'
-                 .format(label=label, recall=recall, style=style))
+        html += (
+            '<tr><th title="recall={recall:.2f}" style="{style}">'
+            "{label}</th>".format(label=label, recall=recall, style=style)
+        )
         for j, pred_label, el in zip(range(len(labels)), labels, row_str):
-            style = ''
-            if el == '0':
-                el = ''
+            style = ""
+            if el == "0":
+                el = ""
             else:
-                style += ("background-color: {};"
-                          .format(get_color_code(float(el), el_max)))
+                style += "background-color: {};".format(
+                    get_color_code(float(el), el_max)
+                )
 
             if i == j:
                 style += "border: 1px solid black;"
-            html += ('<td title="{true}, {pred}" style="{style}">{count}</td>'
-                     .format(true=label,
-                             pred=pred_label,
-                             count=el,
-                             style=style))
-        html += '<td>{support}</td>\n'.format(support=support)
-        html += '</tr>\n'
-    html += '</tbody>\n'
-    html += '</table>\n'
-    html += '</body>\n'
+            html += '<td title="{true}, {pred}" style="{style}">{count}</td>'.format(
+                true=label, pred=pred_label, count=el, style=style
+            )
+        html += "<td>{support}</td>\n".format(support=support)
+        html += "</tr>\n"
+    html += "</tbody>\n"
+    html += "</table>\n"
+    html += "</body>\n"
     html += """<script>function highlight_row() {
     var table = document.getElementById('display-table');
     var cells = table.getElementsByTagName('td');
@@ -563,9 +576,9 @@ def create_html_cm(cm, zero_diagonal=False, labels=None):
 } //end of function
 
 window.onload = highlight_row;</script>"""
-    html += '</html>\n'
+    html += "</html>\n"
 
-    with open(cfg['visualize']['html_save_path'], 'w') as f:
+    with open(cfg["visualize"]["html_save_path"], "w") as f:
         f.write(html)
 
 
@@ -629,12 +642,14 @@ def get_color_code(val, max_val):
     return "#{:02x}{:02x}{:02x}".format(r, g, b)
 
 
-def extract_clusters(cm,
-                     labels,
-                     steps=10**4,
-                     lambda_=0.013,
-                     method='local-connectivity',
-                     interactive=False):
+def extract_clusters(
+    cm,
+    labels,
+    steps=10 ** 4,
+    lambda_=0.013,
+    method="local-connectivity",
+    interactive=False,
+):
     """
     Find clusters in cm.
 
@@ -658,6 +673,7 @@ def extract_clusters(cm,
     -------
     clustes : list of lists of labels
     """
+
     def create_weight_matrix(grouping):
         n = len(grouping) + 1
         weight_matrix = np.zeros((n, n))
@@ -705,8 +721,9 @@ def extract_clusters(cm,
             Probability that two neighboring classes belong togehter
         """
         n = len(cm)
-        con = sorted(zip(get_neighboring_connectivity(cm),
-                         zip(range(n - 1), range(1, n))))
+        con = sorted(
+            zip(get_neighboring_connectivity(cm), zip(range(n - 1), range(1, n)))
+        )
         # pos_low = 0
         pos_str = None
 
@@ -717,21 +734,22 @@ def extract_clusters(cm,
         neg_low = 0
         # neg_up = n - 1
         while pos_up - 1 > neg_low:
-            print('pos_up={}, neg_low={}, pos_str={}'
-                  .format(pos_up, neg_low, pos_str))
+            print("pos_up={}, neg_low={}, pos_str={}".format(pos_up, neg_low, pos_str))
             pos = int((pos_up + neg_low) / 2)
             con_str, (i1, i2) = con[pos]
-            should_be_conn = raw_input('Should {} and {} be in one cluster?'
-                                       ' (y/n): '
-                                       .format(labels[i1], labels[i2]))
-            if should_be_conn == 'n':
+            should_be_conn = raw_input(
+                "Should {} and {} be in one cluster?"
+                " (y/n): ".format(labels[i1], labels[i2])
+            )
+            if should_be_conn == "n":
                 neg_low = pos
-            elif should_be_conn == 'y':
+            elif should_be_conn == "y":
                 pos_up = pos
                 pos_str = con_str
             else:
-                print("Please type only 'y' or 'n'. You typed {}."
-                      .format(should_be_conn))
+                print(
+                    "Please type only 'y' or 'n'. You typed {}.".format(should_be_conn)
+                )
         return pos_str
 
     def get_neighboring_connectivity(cm):
@@ -752,14 +770,15 @@ def extract_clusters(cm,
         grouping = []
         for i, el in enumerate(con):
             if el == thres and interactive:
-                should_conn = '-'
-                while should_conn not in ['y', 'n']:
-                    should_conn = raw_input('Should {} and {} be in one '
-                                            'cluster? (y/n): '
-                                            .format(labels[i], labels[i + 1]))
-                    if should_conn == 'y':
+                should_conn = "-"
+                while should_conn not in ["y", "n"]:
+                    should_conn = raw_input(
+                        "Should {} and {} be in one "
+                        "cluster? (y/n): ".format(labels[i], labels[i + 1])
+                    )
+                    if should_conn == "y":
                         grouping.append(0)
-                    elif should_conn == 'n':
+                    elif should_conn == "n":
                         grouping.append(1)
                     else:
                         print("please type either 'y' or 'n'")
@@ -767,7 +786,7 @@ def extract_clusters(cm,
                 grouping.append(el < thres)
         return grouping
 
-    if method == 'energy':
+    if method == "energy":
         n = len(cm)
         grouping = np.zeros(n - 1)
         minimal_score = get_score(cm, grouping, lambda_)
@@ -780,18 +799,18 @@ def extract_clusters(cm,
             if current_score < minimal_score:
                 best_grouping = grouping
                 minimal_score = current_score
-                logging.info("Best grouping: {} (score: {})"
-                             .format(grouping, minimal_score))
-    elif method == 'local-connectivity':
+                logging.info(
+                    "Best grouping: {} (score: {})".format(grouping, minimal_score)
+                )
+    elif method == "local-connectivity":
         if interactive:
             thres = find_thres_interactive(cm, labels)
         else:
-            thres = find_thres(cm, cfg['visualize']['threshold'])
+            thres = find_thres(cm, cfg["visualize"]["threshold"])
         logging.info("Found threshold for local connection: {}".format(thres))
-        best_grouping = split_at_con_thres(cm, thres, labels,
-                                           interactive=interactive)
+        best_grouping = split_at_con_thres(cm, thres, labels, interactive=interactive)
     else:
-        raise NotImplementedError('method=\'{}\''.format(method))
+        raise NotImplementedError("method='{}'".format(method))
     logging.info("Found {} clusters".format(sum(best_grouping) + 1))
     return best_grouping
 

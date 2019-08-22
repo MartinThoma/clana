@@ -9,7 +9,7 @@ import numpy as np
 import clana.utils
 
 
-def read_confusion_matrix(cm_file, make_max=float('inf')):
+def read_confusion_matrix(cm_file, make_max=float("inf")):
     """
     Load confusion matrix.
 
@@ -66,14 +66,13 @@ def read_permutation(perm_file, n):
 def read_labels(labels_file, n):
     """Load labels."""
     labels = clana.utils.load_labels(labels_file, n)
-    labels.append('UNK')
+    labels.append("UNK")
     return labels
 
 
 def write_labels(labels_file, labels):
-    with open(labels_file, 'w') as outfile:
-        str_ = json.dumps(labels, indent=2,
-                          separators=(',', ': '), ensure_ascii=False)
+    with open(labels_file, "w") as outfile:
+        str_ = json.dumps(labels, indent=2, separators=(",", ": "), ensure_ascii=False)
         outfile.write(str_)
 
 
@@ -89,9 +88,9 @@ def write_predictions(identifier2prediction, filepath):
     filepath : str
         Write to this CSV file.
     """
-    with open(filepath, 'w') as f:
+    with open(filepath, "w") as f:
         for identifier, prediction in identifier2prediction.items():
-            f.write('{};{}\n'.format(identifier, prediction))
+            f.write("{};{}\n".format(identifier, prediction))
 
 
 def write_gt(identifier2label, filepath):
@@ -104,9 +103,9 @@ def write_gt(identifier2label, filepath):
     filepath : str
         Write to this CSV file.
     """
-    with open(filepath, 'w') as f:
+    with open(filepath, "w") as f:
         for identifier, label in identifier2label.items():
-            f.write('{};{}\n'.format(identifier, label))
+            f.write("{};{}\n".format(identifier, label))
 
 
 def write_cm(path, cm):
@@ -118,7 +117,6 @@ def write_cm(path, cm):
     path : str
     cm : ndarray
     """
-    with open(path, 'w') as outfile:
-        str_ = json.dumps(cm.tolist(),
-                          separators=(',', ': '), ensure_ascii=False)
+    with open(path, "w") as outfile:
+        str_ = json.dumps(cm.tolist(), separators=(",", ": "), ensure_ascii=False)
         outfile.write(str_)

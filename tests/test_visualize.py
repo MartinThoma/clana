@@ -11,15 +11,14 @@ import clana.cli
 
 
 class VisualizeTest(unittest.TestCase):
-
     def test_get_cm_problems1(self):
         cm = np.array([[0, 100], [0, 10]])
-        labels = ['0', '1']
+        labels = ["0", "1"]
         clana.visualize_cm.get_cm_problems(cm, labels)
 
     def test_get_cm_problems2(self):
         cm = np.array([[12, 100], [0, 0]])
-        labels = ['0', '1']
+        labels = ["0", "1"]
         clana.visualize_cm.get_cm_problems(cm, labels)
 
     def test_move_1d(self):
@@ -27,10 +26,7 @@ class VisualizeTest(unittest.TestCase):
         from_start = 1
         from_end = 2
         insert_pos = 0
-        new_perm = clana.visualize_cm.move_1d(perm,
-                                              from_start,
-                                              from_end,
-                                              insert_pos)
+        new_perm = clana.visualize_cm.move_1d(perm, from_start, from_end, insert_pos)
         new_perm = new_perm.tolist()
         self.assertEqual(new_perm, [7, 6, 8, 1, 2])
 
@@ -38,8 +34,7 @@ class VisualizeTest(unittest.TestCase):
         n = 10
         cm = np.random.randint(low=0, high=100, size=(n, n))
         clana.visualize_cm.simulated_annealing(cm, steps=10)
-        clana.visualize_cm.simulated_annealing(cm, steps=10,
-                                               deterministic=True)
+        clana.visualize_cm.simulated_annealing(cm, steps=10, deterministic=True)
 
     def test_create_html_cm(self):
         n = 10
@@ -49,18 +44,16 @@ class VisualizeTest(unittest.TestCase):
     def test_extract_clusters_local(self):
         n = 10
         cm = np.random.randint(low=0, high=100, size=(n, n))
-        clana.visualize_cm.extract_clusters(cm,
-                                            labels=list(range(n)),
-                                            steps=10,
-                                            method='local-connectivity')
+        clana.visualize_cm.extract_clusters(
+            cm, labels=list(range(n)), steps=10, method="local-connectivity"
+        )
 
     def test_extract_clusters_energy(self):
         n = 10
         cm = np.random.randint(low=0, high=100, size=(n, n))
-        clana.visualize_cm.extract_clusters(cm,
-                                            labels=list(range(n)),
-                                            steps=10,
-                                            method='energy')
+        clana.visualize_cm.extract_clusters(
+            cm, labels=list(range(n)), steps=10, method="energy"
+        )
 
     def test_plot_cm(self):
         n = 25
@@ -73,14 +66,13 @@ class VisualizeTest(unittest.TestCase):
         clana.visualize_cm.plot_cm(cm, zero_diagonal=True, labels=None)
 
     def test_main(self):
-        path = '../tests/examples/wili-cld2-cm.json'
-        cm_path = pkg_resources.resource_filename('clana', path)
+        path = "../tests/examples/wili-cld2-cm.json"
+        cm_path = pkg_resources.resource_filename("clana", path)
 
-        path = '../tests/examples/perm.json'
-        perm_path = pkg_resources.resource_filename('clana', path)
+        path = "../tests/examples/perm.json"
+        perm_path = pkg_resources.resource_filename("clana", path)
 
         runner = CliRunner()
-        result = runner.invoke(clana.cli.visualize,
-                               ['--cm', cm_path,
-                                '--steps', 100,
-                                '--perm', perm_path])
+        _ = runner.invoke(
+            clana.cli.visualize, ["--cm", cm_path, "--steps", 100, "--perm", perm_path]
+        )

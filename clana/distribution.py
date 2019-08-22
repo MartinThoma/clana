@@ -13,24 +13,26 @@ def main(gt_filepath):
         List of ground truth; one label per line
     """
     # Read text file
-    with open(gt_filepath, 'r') as fp:
+    with open(gt_filepath, "r") as fp:
         read_lines = fp.readlines()
-        labels = [line.rstrip('\n') for line in read_lines]
+        labels = [line.rstrip("\n") for line in read_lines]
 
     distribution = get_distribution(labels)
-    labels = sorted(distribution.items(),
-                    key=lambda n: (-n[1], n[0]))
+    labels = sorted(distribution.items(), key=lambda n: (-n[1], n[0]))
     label_len = max(len(label[0]) for label in labels)
     count_len = max(len(str(label[1])) for label in labels)
     total_count = sum(label[1] for label in labels)
     for label, count in labels:
-        print('{percentage:5.2f}% {label:<{label_len}} '
-              '({count:>{count_len}} elements)'
-              .format(label=label,
-                      count=count,
-                      percentage=count / float(total_count) * 100.0,
-                      label_len=label_len,
-                      count_len=count_len))
+        print(
+            "{percentage:5.2f}% {label:<{label_len}} "
+            "({count:>{count_len}} elements)".format(
+                label=label,
+                count=count,
+                percentage=count / float(total_count) * 100.0,
+                label_len=label_len,
+                count_len=count_len,
+            )
+        )
 
 
 def get_distribution(labels):
