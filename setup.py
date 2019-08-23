@@ -53,7 +53,7 @@ config = {
     "keywords": ["Machine Learning", "Data Science"],
     "download_url": "https://github.com/MartinThoma/language-identification",
     "classifiers": [
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Environment :: Console",
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
