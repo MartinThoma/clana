@@ -41,6 +41,17 @@ def main(
     cm = clana.io.read_confusion_matrix(cm_file)
     perm = clana.io.read_permutation(perm_file, len(cm))
     labels = clana.io.read_labels(labels_file, len(cm))
+    n, m = cm.shape
+    if n != m:
+        raise ValueError(
+            "Confusion matrix is expected to be square, but was {} x {}".format(n, m)
+        )
+    if len(labels) - 1 != n:
+        print(
+            "Confusion matrix is {n} x {n}, but len(labels)={nb_labels}".format(
+                n=n, nb_labels=len(labels)
+            )
+        )
 
     cm_orig = cm.copy()
 
@@ -108,12 +119,16 @@ def get_cm_problems(cm, labels):
     Parameters
     ----------
     cm : ndarray
-    labels : list of str
+    labels : List[str]
     """
     n = len(cm)
+
+    # Find classes which are not present in the dataset
     for i in range(n):
         if sum(cm[i]) == 0:
             logging.warning("The class '{}' was not in the dataset.".format(labels[i]))
+
+    # Find classes which are never predicted
     cm = cm.transpose()
     never_predicted = []
     for i in range(n):
@@ -172,6 +187,10 @@ def calculate_weight_matrix(n):
 
     The weight is the distance to the diagonal.
 
+    Parameters
+    ----------
+    n : int
+
     Examples
     --------
     >>> calculate_weight_matrix(3)
@@ -192,6 +211,12 @@ def calculate_weight_matrix(n):
 def swap(cm, i, j):
     """
     Swap row and column i and j in-place.
+
+    Parameters
+    ----------
+    cm : ndarray
+    i : int
+    j : int
 
     Examples
     --------
@@ -254,6 +279,10 @@ def move(cm, from_start, from_end, insert_pos):
     from_end : int
     insert_pos : int
 
+    Returns
+    -------
+    cm : ndarray
+
     Examples
     --------
     >>> cm = np.array([[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 0, 1], [2, 3, 4, 5]])
@@ -284,6 +313,12 @@ def swap_1d(perm, i, j):
     """
     Swap two elements of a 1-D numpy array in-place.
 
+    Parameters
+    ----------
+    parm : ndarray
+    i : int
+    j : int
+
     Examples
     --------
     >>> perm = np.array([2, 1, 2, 3, 4, 5, 6])
@@ -297,6 +332,11 @@ def swap_1d(perm, i, j):
 def apply_permutation(cm, perm):
     """
     Apply permutation to a matrix.
+
+    Parameters
+    ----------
+    cm : ndarray
+    perm : List[int]
 
     Examples
     --------
@@ -330,6 +370,12 @@ def simulated_annealing(
     temp : float > 0.0, optional (default: 100.0)
         Temperature
     cooling_factor: float in (0, 1), optional (default: 0.99)
+
+    Returns
+    -------
+    best_result : Dict[str, Any]
+        "best_cm"
+        "best_perm"
     """
     assert temp > 0.0
     assert cooling_factor > 0.0

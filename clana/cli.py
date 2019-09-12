@@ -108,7 +108,7 @@ def distribution(gt_filepath):
     "perm_file",
     help="json file which defines a permutation to start with.",
     type=click.Path(),
-    default="",
+    default=None,
 )
 @click.option(
     "--steps",
@@ -117,7 +117,15 @@ def distribution(gt_filepath):
     help="Number of steps to find a good permutation.",
 )
 @click.option("--labels", "labels_file", default="")
-@click.option("--zero_diagonal", is_flag=True)
+@click.option(
+    "--zero_diagonal",
+    is_flag=True,
+    help=(
+        "Good classifiers have the highest elements on the diagonal. "
+        "This option sets the diagonal to zero so that errors "
+        "can be seen more easily."
+    ),
+)
 @click.option(
     "--limit_classes", type=int, help="Limit the number of classes in the output"
 )
@@ -125,6 +133,46 @@ def visualize(
     cm_file, perm_file, steps, labels_file, zero_diagonal, limit_classes=None
 ):
     """Optimize and visualize a confusion matrix."""
+    print_file_format_issues(cm_file, labels_file, perm_file)
     clana.visualize_cm.main(
         cm_file, perm_file, steps, labels_file, zero_diagonal, limit_classes
     )
+
+
+def print_file_format_issues(cm_file, labels_file, perm_file):
+    """
+    Get all potential issues of the file formats.
+
+    Parameters
+    ----------
+    cm_file : str
+    labels_file : str
+    perm_file : str
+    """
+    if not (cm_file.lower().endswith("json") or cm_file.lower().endswith("csv")):
+        print(
+            "[WARNING] A json file is expected for the cm_file, but was {}".format(
+                cm_file
+            )
+        )
+    if not (perm_file is None or perm_file.lower().endswith("json")):
+        print(
+            "[WARNING] A json file is expected fo the perm_file, but was {}".format(
+                perm_file
+            )
+        )
+    cm = clana.io.read_confusion_matrix(cm_file)
+    labels = clana.io.read_labels(labels_file, len(cm))
+    special_labels = ["UNK"]
+    if len(labels) - len(special_labels) < len(cm):
+        print(
+            "[WARNING] The shape of the confusion matrix is {cm_shape}, but "
+            "only {nb_labels} labels were found: {labels}".format(
+                cm_shape=cm.shape, nb_labels=len(labels), labels=labels
+            )
+        )
+        print(
+            "Please keep in mind that the first row of the labels file is "
+            "the header of the CSV (delimiter: ;)"
+        )
+    clana.io.read_permutation(perm_file, len(cm))
