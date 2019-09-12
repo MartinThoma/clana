@@ -52,6 +52,8 @@ config = {
     "tests_require": requires_tests,
     "keywords": ["Machine Learning", "Data Science"],
     "download_url": "https://github.com/MartinThoma/language-identification",
+    "package_data": {"": ["clana/config.yaml"]},
+    "include_package_data": True,
     "classifiers": [
         "Development Status :: 4 - Beta",
         "Environment :: Console",
