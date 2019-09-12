@@ -1,4 +1,5 @@
 # core modules
+import csv
 import json
 import os
 
@@ -25,7 +26,14 @@ def read_confusion_matrix(cm_file, make_max=float("inf")):
     cm : np.array
     """
     with open(cm_file) as f:
-        cm = json.load(f)
+        if cm_file.lower().endswith("csv"):
+            cm = []
+            with open(cm_file, newline="") as csvfile:
+                spamreader = csv.reader(csvfile, delimiter=",", quotechar='"')
+                for row in spamreader:
+                    cm.append([int(el) for el in row])
+        else:
+            cm = json.load(f)
         cm = np.array(cm)
 
     # Crop values
@@ -45,7 +53,7 @@ def read_permutation(perm_file, n):
 
     Parameters
     ----------
-    perm_file : str
+    perm_file : str or None
         Path to a JSON file which contains a permutation of n numbers.
     n : int
         Length of the confusion matrix
@@ -55,16 +63,35 @@ def read_permutation(perm_file, n):
     perm : List[int]
         Permutation of the numbers 0, ..., n-1
     """
-    if os.path.isfile(perm_file):
+    if perm_file is not None and os.path.isfile(perm_file):
         with open(perm_file) as data_file:
-            perm = json.load(data_file)
+            if perm_file.lower().endswith("csv"):
+                with open(perm_file) as file:
+                    content = file.read()
+                perm = [int(el) for el in content.split(",")]
+            else:
+                perm = json.load(data_file)
     else:
         perm = list(range(n))
     return perm
 
 
 def read_labels(labels_file, n):
-    """Load labels."""
+    """
+    Load labels.
+
+    Please note that this contains one additional "UNK" label for
+    unknown classes.
+
+    Parameters
+    ----------
+    labels_file : str
+    n : int
+
+    Returns
+    -------
+    labels : List[str]
+    """
     labels = clana.utils.load_labels(labels_file, n)
     labels.append("UNK")
     return labels
