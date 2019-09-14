@@ -1,9 +1,17 @@
 visualize:
   threshold: 0.1
   save_path: 'clana_cm.pdf'  # make sure this is consistent with the format
-  html_save_path: '~/cm_analysis.html'
-  hierarchy_path: '~/hierarchy.tmp.json'
+  html_save_path: 'cm_analysis.html'
+  hierarchy_path: 'hierarchy.tmp.json'
   xlabels_rotation: -45
+  ylabels_rotation: 0
+  norm: LogNorm  # null or LogNorm
+  # See https://matplotlib.org/2.0.2/examples/color/colormaps_reference.html
+  # a sequential colormap is highly recommended
+  # best are: viridis, plasma, inferno, magma
+  colormap: viridis
+  # See https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.imshow.html
+  interpolation: "nearest"
 LOGGING:
   version: 1
   disable_existing_loggers: False

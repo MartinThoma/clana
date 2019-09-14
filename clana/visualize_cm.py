@@ -495,6 +495,8 @@ def plot_cm(cm, zero_diagonal=False, labels=None, output=cfg["visualize"]["save_
     labels : list of str, optional
         If this is not given, then numbers are assigned to the classes
     """
+    from matplotlib.colors import LogNorm
+
     n = len(cm)
     if zero_diagonal:
         for i in range(n):
@@ -512,8 +514,21 @@ def plot_cm(cm, zero_diagonal=False, labels=None, output=cfg["visualize"]["save_
     x = [i for i in range(len(cm))]
     plt.xticks(x, labels, rotation=cfg["visualize"]["xlabels_rotation"])
     y = [i for i in range(len(cm))]
-    plt.yticks(y, labels)  # , rotation='vertical'
-    res = ax.imshow(np.array(cm), cmap=plt.cm.viridis, interpolation="nearest")
+    plt.yticks(y, labels, rotation=cfg["visualize"]["ylabels_rotation"])
+    if cfg["visualize"]["norm"] == "LogNorm":
+        norm = LogNorm(vmin=max(1, np.min(cm)), vmax=np.max(cm))
+    elif cfg["visualize"]["norm"] is None:
+        norm = None
+    else:
+        raise NotImplementedError(
+            "visualize->norm={} is not implemented. " "Try None or LogNorm"
+        )
+    res = ax.imshow(
+        np.array(cm),
+        cmap=cfg["visualize"]["colormap"],
+        interpolation=cfg["visualize"]["interpolation"],
+        norm=norm,
+    )
     width, height = cm.shape
 
     divider = make_axes_locatable(ax)
