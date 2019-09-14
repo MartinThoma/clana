@@ -37,7 +37,7 @@ def load_labels(labels_file, n):
     return labels
 
 
-def load_cfg(yaml_filepath=None):
+def load_cfg(yaml_filepath=None, verbose=False):
     """
     Load a YAML configuration file.
 
@@ -52,6 +52,8 @@ def load_cfg(yaml_filepath=None):
     if yaml_filepath is None:
         yaml_filepath = pkg_resources.resource_filename("clana", "config.yaml")
     # Read YAML experiment definition file
+    if verbose:
+        print("Load config from {}...".format(yaml_filepath))
     with open(yaml_filepath, "r") as stream:
         cfg = yaml.safe_load(stream)
     cfg = make_paths_absolute(os.path.dirname(yaml_filepath), cfg)

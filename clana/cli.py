@@ -24,7 +24,7 @@ import clana.get_cm
 import clana.get_cm_simple
 import clana.distribution
 
-config = clana.utils.load_cfg()
+config = clana.utils.load_cfg(verbose=True)
 logging.config.dictConfig(config["LOGGING"])
 logging.getLogger("matplotlib").setLevel("WARN")
 random.seed(0)

@@ -3,6 +3,7 @@ visualize:
   save_path: 'clana_cm.pdf'  # make sure this is consistent with the format
   html_save_path: '~/cm_analysis.html'
   hierarchy_path: '~/hierarchy.tmp.json'
+  xlabels_rotation: -45
 LOGGING:
   version: 1
   disable_existing_loggers: False

@@ -510,7 +510,7 @@ def plot_cm(cm, zero_diagonal=False, labels=None, output=cfg["visualize"]["save_
     if labels is None:
         labels = [i for i in range(len(cm))]
     x = [i for i in range(len(cm))]
-    plt.xticks(x, labels, rotation=-45)
+    plt.xticks(x, labels, rotation=cfg["visualize"]["xlabels_rotation"])
     y = [i for i in range(len(cm))]
     plt.yticks(y, labels)  # , rotation='vertical'
     res = ax.imshow(np.array(cm), cmap=plt.cm.viridis, interpolation="nearest")
