@@ -31,7 +31,7 @@ $ pip install -e . --user
 ## Usage
 
 ```
-clana --help
+$ clana --help
 Usage: clana [OPTIONS] COMMAND [ARGS]...
 
 Options:

@@ -8,6 +8,7 @@ classifier analysis.
 """
 # core modules
 import logging.config
+import os
 import random
 
 # 3rd party modules
@@ -127,15 +128,35 @@ def distribution(gt_filepath):
     ),
 )
 @click.option(
+    "--output",
+    "output_image_path",
+    type=click.Path(exists=False),
+    help="Where to store the image (either .png or .pdf)",
+    default=os.path.abspath(config["visualize"]["save_path"]),
+    show_default=True,
+)
+@click.option(
     "--limit_classes", type=int, help="Limit the number of classes in the output"
 )
 def visualize(
-    cm_file, perm_file, steps, labels_file, zero_diagonal, limit_classes=None
+    cm_file,
+    perm_file,
+    steps,
+    labels_file,
+    zero_diagonal,
+    output_image_path,
+    limit_classes=None,
 ):
     """Optimize and visualize a confusion matrix."""
     print_file_format_issues(cm_file, labels_file, perm_file)
     clana.visualize_cm.main(
-        cm_file, perm_file, steps, labels_file, zero_diagonal, limit_classes
+        cm_file,
+        perm_file,
+        steps,
+        labels_file,
+        zero_diagonal,
+        limit_classes,
+        output_image_path,
     )
 
 

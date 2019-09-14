@@ -37,7 +37,19 @@ def main(
     limit_classes=None,
     output=None,
 ):
-    """Run optimization and generate output."""
+    """
+    Run optimization and generate output.
+
+    Parameters
+    ----------
+    cm_file : str
+    perm_file : str
+    steps : int
+    labels_file : str
+    zero_diagonal : bool
+    limit_classes : int, optional (default: no limit)
+    output : str
+    """
     cm = clana.io.read_confusion_matrix(cm_file)
     perm = clana.io.read_permutation(perm_file, len(cm))
     labels = clana.io.read_labels(labels_file, len(cm))
@@ -510,7 +522,7 @@ def plot_cm(cm, zero_diagonal=False, labels=None, output=cfg["visualize"]["save_
     plt.tight_layout()
 
     logging.info("Save figure at '{}'".format(output))
-    plt.savefig(output, format=cfg["visualize"]["format"])
+    plt.savefig(output)
 
 
 def create_html_cm(cm, zero_diagonal=False, labels=None):

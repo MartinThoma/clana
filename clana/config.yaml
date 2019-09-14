@@ -1,7 +1,6 @@
 visualize:
   threshold: 0.1
-  format: 'pdf'  # one of: pdf, png
-  save_path: '~/confusion_matrix.tmp.pdf'  # make sure this is consistent with the format
+  save_path: 'clana_cm.pdf'  # make sure this is consistent with the format
   html_save_path: '~/cm_analysis.html'
   hierarchy_path: '~/hierarchy.tmp.json'
 LOGGING:
