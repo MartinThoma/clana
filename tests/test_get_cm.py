@@ -20,12 +20,12 @@ class GetCMTest(unittest.TestCase):
         numpy.testing.assert_array_equal(res, np.array([[2, 0], [1, 2]]))
 
     def test_main(self):
-        path = "../tests/examples/wili-labels.csv"
-        labels_path = pkg_resources.resource_filename("clana", path)
-        path = "../tests/examples/wili-y_test.txt"
-        gt_filepath = pkg_resources.resource_filename("clana", path)
-        path = "../tests/examples/cld2_results.txt"
-        predictions_filepath = pkg_resources.resource_filename("clana", path)
+        path = "examples/wili-labels.csv"
+        labels_path = pkg_resources.resource_filename(__name__, path)
+        path = "examples/wili-y_test.txt"
+        gt_filepath = pkg_resources.resource_filename(__name__, path)
+        path = "examples/cld2_results.txt"
+        predictions_filepath = pkg_resources.resource_filename(__name__, path)
 
         runner = CliRunner()
         _ = runner.invoke(

@@ -66,11 +66,11 @@ class VisualizeTest(unittest.TestCase):
         clana.visualize_cm.plot_cm(cm, zero_diagonal=True, labels=None)
 
     def test_main(self):
-        path = "../tests/examples/wili-cld2-cm.json"
-        cm_path = pkg_resources.resource_filename("clana", path)
+        path = "examples/wili-cld2-cm.json"
+        cm_path = pkg_resources.resource_filename(__name__, path)
 
-        path = "../tests/examples/perm.json"
-        perm_path = pkg_resources.resource_filename("clana", path)
+        path = "examples/perm.json"
+        perm_path = pkg_resources.resource_filename(__name__, path)
 
         runner = CliRunner()
         _ = runner.invoke(
