@@ -5,7 +5,7 @@
 # core modules
 import csv
 import os
-import pkg_resources
+from pkg_resources import resource_filename
 
 # 3rd party modules
 import yaml
@@ -50,7 +50,7 @@ def load_cfg(yaml_filepath=None, verbose=False):
     cfg : dict
     """
     if yaml_filepath is None:
-        yaml_filepath = pkg_resources.resource_filename("clana", "config.yaml")
+        yaml_filepath = resource_filename("clana", "config.yaml")
     # Read YAML experiment definition file
     if verbose:
         print("Load config from {}...".format(yaml_filepath))

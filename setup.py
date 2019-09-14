@@ -25,6 +25,7 @@ requires_tests = [
 
 install_requires = [
     "click>=6.7",
+    "jinja2",
     "matplotlib>=2.1.1",
     "numpy>=1.14.0",
     "PyYAML>=5.1.1",

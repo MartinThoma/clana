@@ -1,0 +1,90 @@
+<html>
+
+<head>
+    <style>
+    table {
+        overflow: hidden;
+    }
+
+    tr:hover {
+        background-color: #ffa;
+    }
+
+    td,
+    th {
+        position: relative;
+    }
+
+    td:hover::after,
+    th:hover::after {
+        content: "";
+        position: absolute;
+        background-color: #ffa;
+        left: 0;
+        top: -5000px;
+        height: 10000px;
+        width: 100%;
+        z-index: -1;
+    }
+    </style>
+</head>
+
+<body>
+    <table class="table" id="display-table">
+        <thead>
+            <tr>
+                <th>&nbsp;</th>
+                {% for cell in header_cells %}
+                <th title="precision={{ cell['precision'] }}" style="background-color: {{ cell['background-color'] }}">{{ cell['label'] }}</th>
+                {% endfor %}
+                <th>support</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in body_rows %}
+            {% set outer_loop = loop %}
+            <tr>
+                {% for cell in row['row'] %}
+                {% if loop.index == 1 %}
+                <th title="recall={{ cell['recall'] }}" style="background-color: {{ cell['background-color'] }}">{{ cell['label'] }}</th>
+                {% else %}
+                <td title="was {{ cell['true']}}, predicted {{ cell['pred']}}" style="background-color: {{ cell['background-color']}};{% if outer_loop.index == loop.index - 1 %}border: 1px solid black;{% endif %}">{{ cell['label'] }}</td>
+                {% endif %}
+                {% endfor %}
+                <td>{{ row['support']}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+    function highlight_row() {
+        var table = document.getElementById('display-table');
+        var cells = table.getElementsByTagName('td');
+
+        for (var i = 0; i < cells.length; i++) {
+            // Take each cell
+            var cell = cells[i];
+            // do something on onclick event for cell
+            cell.onclick = function() {
+                // Get the row id where the cell exists
+                var rowId = this.parentNode.rowIndex;
+
+                var rowsNotSelected = table.getElementsByTagName('tr');
+                for (var row = 0; row < rowsNotSelected.length; row++) {
+                    rowsNotSelected[row].style.backgroundColor = "";
+                    rowsNotSelected[row].classList.remove('selected');
+                }
+                var rowSelected = table.getElementsByTagName('tr')[rowId];
+                rowSelected.style.backgroundColor = "yellow";
+                rowSelected.className += " selected";
+                this.className += " selected";
+            }
+        }
+
+    } //end of function
+
+    window.onload = highlight_row;
+    </script>
+</body>
+
+</html>

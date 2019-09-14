@@ -11,11 +11,13 @@ For more information, see
 """
 
 # core modules
+from pkg_resources import resource_filename
 import json
 import logging
 import random
 
 # 3rd party modules
+from jinja2 import Template
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from sklearn.metrics import silhouette_score
 import matplotlib.pyplot as plt
@@ -557,109 +559,65 @@ def create_html_cm(cm, zero_diagonal=False, labels=None):
 
     el_max = 200
 
-    html = """<html><head><style>
-                table {
-                  overflow: hidden;
-                }
+    template_path = resource_filename("clana", "templates/base.html")
+    with open(template_path, "r") as f:
+        base = f.read()
 
-                tr:hover {
-                  background-color: #ffa;
-                }
-
-                td, th {
-                  position: relative;
-                }
-                td:hover::after,
-                th:hover::after {
-                  content: "";
-                  position: absolute;
-                  background-color: #ffa;
-                  left: 0;
-                  top: -5000px;
-                  height: 10000px;
-                  width: 100%;
-                  z-index: -1;
-                }
-                </style>\n</head>\n"""
-    html += "<body>"
-    html += '<table class="table" id="display-table">\n'
-    html += "<thead>\n"
-    html += "<tr><th>&nbsp;</th>"
     cm_t = cm.transpose()
+    header_cells = []
     for i, label in enumerate(labels):
         precision = cm[i][i] / float(sum(cm_t[i]))
-        style = ""
+        background_color = "transparent"
         if precision < 0.2:
-            style += "background-color: red;"
+            background_color = "red"
         elif precision > 0.98:
-            style += "background-color: green;"
-        html += (
-            '<th title="precision={precision}" style="{style}">'
-            "{label}</th>".format(label=label, precision=precision, style=style)
+            background_color = "green"
+        header_cells.append(
+            {
+                "precision": "{:0.2f}".format(precision),
+                "background-color": background_color,
+                "label": label,
+            }
         )
-    html += "<th>support</th></tr>\n"
-    html += "</thead>\n"
-    html += "<tbody>\n"
+
+    body_rows = []
     for i, label, row in zip(range(len(labels)), labels, cm):
+        body_row = []
         row_str = [str(el) for el in row]
         support = sum(row)
         recall = cm[i][i] / float(support)
-        style = ""
+        background_color = "transparent"
         if recall < 0.2:
-            style += "background-color: red;"
+            background_color = "red"
         elif recall >= 0.98:
-            style += "background-color: green;"
-        html += (
-            '<tr><th title="recall={recall:.2f}" style="{style}">'
-            "{label}</th>".format(label=label, recall=recall, style=style)
+            background_color = "green"
+        body_row.append(
+            {
+                "label": label,
+                "recall": "{:.2f}".format(recall),
+                "background-color": background_color,
+            }
         )
         for j, pred_label, el in zip(range(len(labels)), labels, row_str):
-            style = ""
+            background_color = "transparent"
             if el == "0":
                 el = ""
             else:
-                style += "background-color: {};".format(
-                    get_color_code(float(el), el_max)
-                )
+                background_color = get_color_code(float(el), el_max)
 
-            if i == j:
-                style += "border: 1px solid black;"
-            html += '<td title="{true}, {pred}" style="{style}">{count}</td>'.format(
-                true=label, pred=pred_label, count=el, style=style
+            body_row.append(
+                {
+                    "label": el,
+                    "true": label,
+                    "pred": pred_label,
+                    "background-color": background_color,
+                }
             )
-        html += "<td>{support}</td>\n".format(support=support)
-        html += "</tr>\n"
-    html += "</tbody>\n"
-    html += "</table>\n"
-    html += "</body>\n"
-    html += """<script>function highlight_row() {
-    var table = document.getElementById('display-table');
-    var cells = table.getElementsByTagName('td');
 
-    for (var i = 0; i < cells.length; i++) {
-        // Take each cell
-        var cell = cells[i];
-        // do something on onclick event for cell
-        cell.onclick = function () {
-            // Get the row id where the cell exists
-            var rowId = this.parentNode.rowIndex;
+        body_rows.append({"row": body_row, "support": support})
 
-            var rowsNotSelected = table.getElementsByTagName('tr');
-            for (var row = 0; row < rowsNotSelected.length; row++) {
-                rowsNotSelected[row].style.backgroundColor = "";
-                rowsNotSelected[row].classList.remove('selected');
-            }
-            var rowSelected = table.getElementsByTagName('tr')[rowId];
-            rowSelected.style.backgroundColor = "yellow";
-            rowSelected.className += " selected";
-            this.className += " selected";
-        }
-    }
-
-} //end of function
-
-window.onload = highlight_row;</script>"""
-    html += "</html>\n"
+    html = Template(base)
+    html = html.render(header_cells=header_cells, body_rows=body_rows)
 
     with open(cfg["visualize"]["html_save_path"], "w") as f:
         f.write(html)
