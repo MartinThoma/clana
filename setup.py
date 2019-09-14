@@ -35,7 +35,7 @@ install_requires = [
 
 config = {
     "name": "clana",
-    "version": "0.3.3",
+    "version": "0.3.4",
     "author": "Martin Thoma",
     "author_email": "info@martin-thoma.de",
     "maintainer": "Martin Thoma",
