@@ -49,6 +49,53 @@ The visualize command gives you images like this:
 
 ![Confusion Matrix after Confusion Matrix Ordering of the WiLI-2018 dataset](cm-wili-2018.png)
 
+### MNIST example
+
+```
+$ cd docs/
+$ python mnist_example.py  # creates `train-pred.csv` and `test-pred.csv`
+$ clana get-cm --gt gt-train.csv  --predictions train-pred.csv --n 10
+2019-09-14 09:47:30,655 - root - INFO - cm was written to 'cm.json'
+$ clana visualize --cm cm.json --zero_diagonal
+Score: 13475
+2019-09-14 09:49:41,593 - root - INFO - n=10
+2019-09-14 09:49:41,593 - root - INFO - ## Starting Score: 13475.00
+2019-09-14 09:49:41,594 - root - INFO - Current: 13060.00 (best: 13060.00, hot_prob_thresh=100.0000%, step=0, swap=False)
+[...]
+2019-09-14 09:49:41,606 - root - INFO - Current: 9339.00 (best: 9339.00, hot_prob_thresh=100.0000%, step=238, swap=False)
+Score: 9339
+Perm: [0, 6, 5, 8, 3, 2, 1, 7, 9, 4]
+2019-09-14 09:49:41,639 - root - INFO - Classes: [0, 6, 5, 8, 3, 2, 1, 7, 9, 4]
+Accuracy: 93.99%
+2019-09-14 09:49:41,725 - root - INFO - Save figure at '/home/moose/confusion_matrix.tmp.pdf'
+2019-09-14 09:49:41,876 - root - INFO - Found threshold for local connection: 398
+2019-09-14 09:49:41,876 - root - INFO - Found 9 clusters
+2019-09-14 09:49:41,877 - root - INFO - silhouette_score=-0.012313948323292875
+    1: [0]
+    1: [6]
+    1: [5]
+    1: [8]
+    1: [3]
+    1: [2]
+    1: [1]
+    2: [7, 9]
+    1: [4]
+```
+
+This gives
+
+![](mnist_confusion_matrix.png)
+
+#### Label Manipulation
+
+Prepare a `labels.csv` which **has to have a header row**:
+
+```
+$ clana visualize --cm cm.json --zero_diagonal --labels mnist/labels.csv
+```
+
+![](mnist_confusion_matrix_labels.png)
+
 
 ### Data distribution
 
