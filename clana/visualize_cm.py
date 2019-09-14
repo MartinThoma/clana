@@ -86,6 +86,12 @@ def main(
         zero_diagonal=zero_diagonal,
         labels=labels[start:limit_classes],
     )
+    if len(cm) < 5:
+        print(
+            "You only have {} classes. Clustering for less than 5 classes "
+            "should be done manually.".format(len(cm))
+        )
+        return
     grouping = extract_clusters(result["cm"], labels)
     y_pred = [0]
     cluster_i = 0
@@ -405,6 +411,9 @@ def simulated_annealing(
 
         swap_prob = 0.5
         make_swap = random.random() < swap_prob
+        if n < 3:
+            # In this case block-swaps don't make any sense
+            make_swap = True
         if make_swap:
             # Choose what to swap
             i = random.randint(0, n - 1)
@@ -416,6 +425,7 @@ def simulated_annealing(
             # Define values after swap
             tmp_cm = swap(tmp_cm, i, j)
         else:
+            # block-swap
             block_len = n
             while block_len >= n - 1:
                 from_start = random.randint(0, n - 3)
@@ -488,7 +498,7 @@ def plot_cm(cm, zero_diagonal=False, labels=None, output=cfg["visualize"]["save_
     if labels is None:
         labels = [i for i in range(len(cm))]
     x = [i for i in range(len(cm))]
-    plt.xticks(x, labels, rotation="vertical")
+    plt.xticks(x, labels, rotation=-45)
     y = [i for i in range(len(cm))]
     plt.yticks(y, labels)  # , rotation='vertical'
     res = ax.imshow(np.array(cm), cmap=plt.cm.viridis, interpolation="nearest")
