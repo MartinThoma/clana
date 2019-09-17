@@ -25,6 +25,7 @@ import numpy as np
 
 # internal modules
 import clana.clustering
+import clana.cm_metrics
 import clana.io
 import clana.utils
 
@@ -54,7 +55,7 @@ def main(
     output : str
     """
     cm = clana.io.read_confusion_matrix(cm_file)
-    perm = clana.io.read_permutation(perm_file, len(cm))
+    perm = clana.io.read_permutation(cm_file, perm_file)
     labels = clana.io.read_labels(labels_file, len(cm))
     n, m = cm.shape
     if n != m:
@@ -79,11 +80,12 @@ def main(
     )
     print("Score: {}".format(calculate_score(result["cm"], weights)))
     print("Perm: {}".format(list(result["perm"])))
+    clana.io.ClanaCfg.store_permutation(cm_file, result["perm"], steps)
     labels = [labels[i] for i in result["perm"]]
     class_indices = list(range(len(labels)))
     class_indices = [class_indices[i] for i in result["perm"]]
     logging.info("Classes: {}".format(labels))
-    acc = get_accuracy(cm_orig)
+    acc = clana.cm_metrics.get_accuracy(cm_orig)
     print("Accuracy: {:0.2f}%".format(acc * 100))
     start = 0
     if limit_classes is None:
@@ -159,31 +161,6 @@ def get_cm_problems(cm, labels):
         logging.warning(
             "The following classes were never predicted: {}".format(never_predicted)
         )
-
-
-def get_accuracy(cm):
-    """
-    Get the accuaracy by the confusion matrix cm.
-
-    Parameters
-    ----------
-    cm : ndarray
-
-    Returns
-    -------
-    accuracy : float
-
-    Examples
-    --------
-    >>> import numpy as np
-    >>> cm = np.array([[10, 20], [30, 40]])
-    >>> get_accuracy(cm)
-    0.5
-    >>> cm = np.array([[20, 10], [30, 40]])
-    >>> get_accuracy(cm)
-    0.6
-    """
-    return float(sum([cm[i][i] for i in range(len(cm))])) / float(cm.sum())
 
 
 def calculate_score(cm, weights):

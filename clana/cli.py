@@ -196,4 +196,3 @@ def print_file_format_issues(cm_file, labels_file, perm_file):
             "Please keep in mind that the first row of the labels file is "
             "the header of the CSV (delimiter: ;)"
         )
-    clana.io.read_permutation(perm_file, len(cm))
