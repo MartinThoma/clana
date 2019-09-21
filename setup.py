@@ -9,7 +9,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 try:
     # obtain long description from README and CHANGES
     # Specify encoding to get a unicode type in Python 2 and a str in Python 3
-    readme_path = os.path.join(here, "docs/README.md")
+    readme_path = os.path.join(here, "README.md")
     with io.open(readme_path, "r", encoding="utf-8") as f:
         README = f.read()
 except IOError:
@@ -36,7 +36,7 @@ install_requires = [
 
 config = {
     "name": "clana",
-    "version": "0.3.5",
+    "version": "0.3.9",
     "author": "Martin Thoma",
     "author_email": "info@martin-thoma.de",
     "maintainer": "Martin Thoma",
@@ -52,8 +52,8 @@ config = {
     "install_requires": install_requires,
     "tests_require": requires_tests,
     "keywords": ["Machine Learning", "Data Science"],
-    "download_url": "https://github.com/MartinThoma/language-identification",
-    "package_data": {"": ["clana/config.yaml"]},
+    "download_url": "https://github.com/MartinThoma/clana",
+    "package_data": {"clana": ["clana/config.yaml"]},
     "include_package_data": True,
     "classifiers": [
         "Development Status :: 4 - Beta",
