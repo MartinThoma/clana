@@ -1,3 +1,4 @@
+# Third party
 import pkg_resources
 
 try:

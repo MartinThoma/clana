@@ -1,11 +1,11 @@
-# core modules
-import pkg_resources
+# Core Library
 import unittest
 
-# 3rd party modules
+# Third party
+import pkg_resources
 from click.testing import CliRunner
 
-# internal modules
+# First party
 import clana.cli
 
 

@@ -1,13 +1,13 @@
-# core modules
-import pkg_resources
+# Core Library
 import unittest
 
-# 3rd party modules
-from click.testing import CliRunner
+# Third party
 import numpy as np
 import numpy.testing
+import pkg_resources
+from click.testing import CliRunner
 
-# internal modules
+# First party
 import clana.cli
 
 

@@ -1,9 +1,11 @@
 """CLANA is a toolkit for classifier analysis."""
 
-from setuptools import find_packages
-from setuptools import setup
+# Core Library
 import io
 import os
+
+# Third party
+from setuptools import find_packages, setup
 
 here = os.path.abspath(os.path.dirname(__file__))
 try:

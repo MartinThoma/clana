@@ -1,11 +1,11 @@
-# Core modules
+# Core Library
 import logging
 import random
 
-# 3rd party modules
+# Third party
 import numpy as np
 
-# internal modules
+# First party
 import clana.utils
 
 cfg = clana.utils.load_cfg()

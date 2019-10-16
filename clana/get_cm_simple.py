@@ -3,18 +3,18 @@
 
 """Calculate the confusion matrix (one label per line)."""
 
-# core modules
+# Core Library
 import csv
 import json
 import logging
 import os
 import sys
 
-# 3rd party modules
+# Third party
 import numpy as np
 import sklearn.metrics
 
-# internal modules
+# First party
 import clana.utils
 
 

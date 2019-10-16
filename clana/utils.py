@@ -2,13 +2,13 @@
 
 """Utility functions for clana."""
 
-# core modules
+# Core Library
 import csv
 import os
-from pkg_resources import resource_filename
 
-# 3rd party modules
+# Third party
 import yaml
+from pkg_resources import resource_filename
 
 
 def load_labels(labels_file, n):

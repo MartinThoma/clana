@@ -10,20 +10,20 @@ For more information, see
 * http://datascience.stackexchange.com/q/17079/8820
 """
 
-# core modules
-from pkg_resources import resource_filename
+# Core Library
 import json
 import logging
 import random
 
-# 3rd party modules
-from jinja2 import Template
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-from sklearn.metrics import silhouette_score
+# Third party
 import matplotlib.pyplot as plt
 import numpy as np
+from jinja2 import Template
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+from pkg_resources import resource_filename
+from sklearn.metrics import silhouette_score
 
-# internal modules
+# First party
 import clana.clustering
 import clana.cm_metrics
 import clana.io

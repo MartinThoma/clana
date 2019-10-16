@@ -1,7 +1,7 @@
-# core modules
+# Core Library
 import unittest
 
-# internal modules
+# First party
 import clana.utils
 
 

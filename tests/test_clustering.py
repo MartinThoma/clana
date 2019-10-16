@@ -1,6 +1,7 @@
-# 3rd party modules
+# Third party
 import numpy as np
 
+# First party
 # internal modules
 import clana.clustering
 

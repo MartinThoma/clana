@@ -6,16 +6,18 @@ Gets to 97.54% test accuracy after 10 epochs.
 """
 
 from __future__ import print_function
-import keras
-from keras.datasets import mnist
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten
-from keras.layers import Conv2D, MaxPooling2D
-from keras import backend as K
-import numpy as np
 
+# Third party
+import keras
+import numpy as np
+from keras import backend as K
+from keras.datasets import mnist
+from keras.layers import Conv2D, Dense, Dropout, Flatten, MaxPooling2D
+from keras.models import Sequential
+
+# First party
 # internal
-from clana.io import write_predictions, write_gt
+from clana.io import write_gt, write_predictions
 
 
 def main():

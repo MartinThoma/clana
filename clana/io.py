@@ -1,14 +1,14 @@
-# core modules
+# Core Library
 import csv
 import hashlib
 import json
 import os
 
-# 3rd party modules
+# Third party
 import numpy as np
 import yaml
 
-# internal modules
+# First party
 import clana.utils
 
 

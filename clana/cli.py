@@ -6,23 +6,24 @@ clana is a toolkit for classifier analysis.
 It specifies some file formats and comes with some tools for typical tasks of
 classifier analysis.
 """
-# core modules
+# Core Library
 import logging.config
 import os
 import random
 
-# 3rd party modules
+# Third party
 import click
 import matplotlib
 
-matplotlib.use("Agg")  # noqa
-
-# internal modules
+# First party
 import clana
-import clana.visualize_cm
+import clana.distribution
 import clana.get_cm
 import clana.get_cm_simple
-import clana.distribution
+import clana.visualize_cm
+
+matplotlib.use("Agg")  # isort:skip
+
 
 config = clana.utils.load_cfg(verbose=True)
 logging.config.dictConfig(config["LOGGING"])

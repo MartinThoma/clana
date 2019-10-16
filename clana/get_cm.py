@@ -3,14 +3,14 @@
 
 """Calculate the confusion matrix (CSV inputs)."""
 
-# core modules
+# Core Library
 import csv
 import logging
 
-# 3rd party modules
+# Third party
 import numpy as np
 
-# internal modules
+# First party
 import clana.io
 
 
