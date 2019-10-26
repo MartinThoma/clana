@@ -99,120 +99,6 @@ def extract_clusters(
     clustes : list of lists of labels
     """
 
-    def create_weight_matrix(grouping):
-        n = len(grouping) + 1
-        weight_matrix = np.zeros((n, n))
-        for i in range(n):
-            seen_1 = False
-            for j in range(i + 1, n):
-                if seen_1:
-                    weight_matrix[i][j] = 1
-                elif grouping[j - 1] == 1:
-                    seen_1 = True
-                    weight_matrix[i][j] = 1
-        return weight_matrix + weight_matrix.transpose()
-
-    def get_score(cm, grouping, lambda_):
-        from clana.visualize_cm import calculate_score
-
-        inter_cluster_err = 0.0
-        weights = create_weight_matrix(grouping)
-        inter_cluster_err = calculate_score(cm, weights)
-        return lambda_ * inter_cluster_err - sum(grouping)
-
-    def find_thres(cm, percentage):
-        """
-        Find a threshold for grouping.
-
-        Parameters
-        ----------
-        cm : ndarray
-        percentage : float
-            Probability that two neighboring classes belong togehter
-        """
-        n = int(len(cm) * (1.0 - percentage)) - 1
-        con = sorted(get_neighboring_connectivity(cm))
-        return con[n]
-
-    def find_thres_interactive(cm, labels):
-        """
-        Find a threshold for grouping.
-
-        The threshold is the minimum connection strength for two classes to be
-        within the same cluster.
-
-        Parameters
-        ----------
-        cm : ndarray
-        percentage : float
-            Probability that two neighboring classes belong togehter
-        """
-        n = len(cm)
-        con = sorted(
-            zip(get_neighboring_connectivity(cm), zip(range(n - 1), range(1, n)))
-        )
-        # pos_low = 0
-        pos_str = None
-
-        # Lowest position from which we know that they are connected
-        pos_up = n - 1
-
-        # Highest position from which we know that they are not connected
-        neg_low = 0
-        # neg_up = n - 1
-        while pos_up - 1 > neg_low:
-            print("pos_up={}, neg_low={}, pos_str={}".format(pos_up, neg_low, pos_str))
-            pos = int((pos_up + neg_low) / 2)
-            con_str, (i1, i2) = con[pos]
-            should_be_conn = raw_input(
-                "Should {} and {} be in one cluster?"
-                " (y/n): ".format(labels[i1], labels[i2])
-            )
-            if should_be_conn == "n":
-                neg_low = pos
-            elif should_be_conn == "y":
-                pos_up = pos
-                pos_str = con_str
-            else:
-                print(
-                    "Please type only 'y' or 'n'. You typed {}.".format(should_be_conn)
-                )
-        return pos_str
-
-    def get_neighboring_connectivity(cm):
-        con = []
-        n = len(cm)
-        for i in range(n - 1):
-            con.append(cm[i][i + 1] + cm[i + 1][i])
-        return con
-
-    def split_at_con_thres(cm, thres, labels, interactive):
-        """
-        Two classes are not in the same group if they are not connected strong.
-
-        Minimum connection strength is thres. The bigger this value, the more
-        clusters / the smaller clusters you will get.
-        """
-        con = get_neighboring_connectivity(cm)
-        grouping = []
-        for i, el in enumerate(con):
-            if el == thres and interactive:
-                should_conn = "-"
-                while should_conn not in ["y", "n"]:
-                    should_conn = raw_input(
-                        "Should {} and {} be in one "
-                        "cluster? (y/n): ".format(labels[i], labels[i + 1])
-                    )
-                    if should_conn == "y":
-                        grouping.append(0)
-                    elif should_conn == "n":
-                        grouping.append(1)
-                    else:
-                        print("please type either 'y' or 'n'")
-            else:
-                grouping.append(el < thres)
-        return grouping
-
     if method == "energy":
         n = len(cm)
         grouping = np.zeros(n - 1)
@@ -240,3 +126,119 @@ def extract_clusters(
         raise NotImplementedError("method='{}'".format(method))
     logger.info("Found {} clusters".format(sum(best_grouping) + 1))
     return best_grouping
+
+
+def create_weight_matrix(grouping):
+    n = len(grouping) + 1
+    weight_matrix = np.zeros((n, n))
+    for i in range(n):
+        seen_1 = False
+        for j in range(i + 1, n):
+            if seen_1:
+                weight_matrix[i][j] = 1
+            elif grouping[j - 1] == 1:
+                seen_1 = True
+                weight_matrix[i][j] = 1
+    return weight_matrix + weight_matrix.transpose()
+
+
+def get_score(cm, grouping, lambda_):
+    from clana.visualize_cm import calculate_score
+
+    inter_cluster_err = 0.0
+    weights = create_weight_matrix(grouping)
+    inter_cluster_err = calculate_score(cm, weights)
+    return lambda_ * inter_cluster_err - sum(grouping)
+
+
+def find_thres(cm, percentage):
+    """
+    Find a threshold for grouping.
+
+    Parameters
+    ----------
+    cm : ndarray
+    percentage : float
+        Probability that two neighboring classes belong togehter
+    """
+    n = int(len(cm) * (1.0 - percentage)) - 1
+    con = sorted(get_neighboring_connectivity(cm))
+    return con[n]
+
+
+def find_thres_interactive(cm, labels):
+    """
+    Find a threshold for grouping.
+
+    The threshold is the minimum connection strength for two classes to be
+    within the same cluster.
+
+    Parameters
+    ----------
+    cm : ndarray
+    percentage : float
+        Probability that two neighboring classes belong togehter
+    """
+    n = len(cm)
+    con = sorted(zip(get_neighboring_connectivity(cm), zip(range(n - 1), range(1, n))))
+    # pos_low = 0
+    pos_str = None
+
+    # Lowest position from which we know that they are connected
+    pos_up = n - 1
+
+    # Highest position from which we know that they are not connected
+    neg_low = 0
+    # neg_up = n - 1
+    while pos_up - 1 > neg_low:
+        print("pos_up={}, neg_low={}, pos_str={}".format(pos_up, neg_low, pos_str))
+        pos = int((pos_up + neg_low) / 2)
+        con_str, (i1, i2) = con[pos]
+        should_be_conn = input(
+            "Should {} and {} be in one cluster?"
+            " (y/n): ".format(labels[i1], labels[i2])
+        )
+        if should_be_conn == "n":
+            neg_low = pos
+        elif should_be_conn == "y":
+            pos_up = pos
+            pos_str = con_str
+        else:
+            print("Please type only 'y' or 'n'. You typed {}.".format(should_be_conn))
+    return pos_str
+
+
+def get_neighboring_connectivity(cm):
+    con = []
+    n = len(cm)
+    for i in range(n - 1):
+        con.append(cm[i][i + 1] + cm[i + 1][i])
+    return con
+
+
+def split_at_con_thres(cm, thres, labels, interactive):
+    """
+    Two classes are not in the same group if they are not connected strong.
+
+    Minimum connection strength is thres. The bigger this value, the more
+    clusters / the smaller clusters you will get.
+    """
+    con = get_neighboring_connectivity(cm)
+    grouping = []
+    for i, el in enumerate(con):
+        if el == thres and interactive:
+            should_conn = "-"
+            while should_conn not in ["y", "n"]:
+                should_conn = input(
+                    "Should {} and {} be in one "
+                    "cluster? (y/n): ".format(labels[i], labels[i + 1])
+                )
+                if should_conn == "y":
+                    grouping.append(0)
+                elif should_conn == "n":
+                    grouping.append(1)
+                else:
+                    print("please type either 'y' or 'n'")
+        else:
+            grouping.append(el < thres)
+    return grouping

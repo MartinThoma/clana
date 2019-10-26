@@ -19,10 +19,10 @@ except IOError:
 
 requires_tests = [
     "pytest",
-    "pytest-cov",
-    "pytest-mccabe",
-    "pytest-flake8",
     "pytest-black",
+    "pytest-cov",
+    "pytest-flake8",
+    "pytest-mccabe",
 ]
 
 install_requires = [

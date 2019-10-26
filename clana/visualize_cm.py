@@ -14,6 +14,7 @@ For more information, see
 import json
 import logging
 import random
+from typing import List
 
 # Third party
 import matplotlib.pyplot as plt
@@ -136,7 +137,7 @@ def main(
         print(u"\t{}: {}".format(len(group), [el for el in group]))
 
 
-def get_cm_problems(cm, labels):
+def get_cm_problems(cm, labels: List[str]):
     """
     Find problems of a classifier by analzing its confusion matrix.
 
@@ -328,7 +329,7 @@ def swap_1d(perm, i, j):
     return perm
 
 
-def apply_permutation(cm, perm):
+def apply_permutation(cm, perm: List[int]):
     """
     Apply permutation to a matrix.
 
@@ -401,36 +402,7 @@ def simulated_annealing(
     logger.info("## Starting Score: {:0.2f}".format(current_score))
     for step in range(steps):
         tmp_cm = np.array(current_cm, copy=True)
-
-        swap_prob = 0.5
-        make_swap = random.random() < swap_prob
-        if n < 3:
-            # In this case block-swaps don't make any sense
-            make_swap = True
-        if make_swap:
-            # Choose what to swap
-            i = random.randint(0, n - 1)
-            j = i
-            while j == i:
-                j = random.randint(0, n - 1)
-            # Define permutation
-            perm = swap_1d(current_perm.copy(), i, j)
-            # Define values after swap
-            tmp_cm = swap(tmp_cm, i, j)
-        else:
-            # block-swap
-            block_len = n
-            while block_len >= n - 1:
-                from_start = random.randint(0, n - 3)
-                from_end = random.randint(from_start + 1, n - 2)
-                block_len = from_start - from_end
-            insert_pos = from_start
-            while not (insert_pos < from_start or insert_pos > from_end):
-                insert_pos = random.randint(0, n - 1)
-            perm = move_1d(current_perm.copy(), from_start, from_end, insert_pos)
-
-            # Define values after swap
-            tmp_cm = move(tmp_cm, from_start, from_end, insert_pos)
+        perm, make_swap = generate_permutation(n, current_perm, tmp_cm)
         tmp_score = score(tmp_cm, weights)
 
         # Should be swapped?
@@ -463,6 +435,52 @@ def simulated_annealing(
                     str(make_swap),
                 )
     return {"cm": best_cm, "perm": best_perm}
+
+
+def generate_permutation(n: int, current_perm: List[int], tmp_cm: np.ndarray):
+    """
+    Generate a new permutation.
+
+    Parameters
+    ----------
+    n : int
+    current_perm : List[int]
+    tmp_cm : np.ndarray
+
+    Return
+    ------
+    perm, make_swap : List[int], bool
+    """
+    swap_prob = 0.5
+    make_swap = random.random() < swap_prob
+    if n < 3:
+        # In this case block-swaps don't make any sense
+        make_swap = True
+    if make_swap:
+        # Choose what to swap
+        i = random.randint(0, n - 1)
+        j = i
+        while j == i:
+            j = random.randint(0, n - 1)
+        # Define permutation
+        perm = swap_1d(current_perm.copy(), i, j)
+        # Define values after swap
+        tmp_cm = swap(tmp_cm, i, j)
+    else:
+        # block-swap
+        block_len = n
+        while block_len >= n - 1:
+            from_start = random.randint(0, n - 3)
+            from_end = random.randint(from_start + 1, n - 2)
+            block_len = from_start - from_end
+        insert_pos = from_start
+        while not (insert_pos < from_start or insert_pos > from_end):
+            insert_pos = random.randint(0, n - 1)
+        perm = move_1d(current_perm.copy(), from_start, from_end, insert_pos)
+
+        # Define values after swap
+        tmp_cm = move(tmp_cm, from_start, from_end, insert_pos)
+    return perm, make_swap
 
 
 def plot_cm(cm, zero_diagonal=False, labels=None, output=cfg["visualize"]["save_path"]):

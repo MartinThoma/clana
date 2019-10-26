@@ -158,8 +158,6 @@ def read_permutation(cm_file, perm_file):
         Permutation of the numbers 0, ..., n-1
     """
     assert os.path.isfile(cm_file)
-    cm = read_confusion_matrix(cm_file)
-    n = len(cm)
     if perm_file is not None and os.path.isfile(perm_file):
         with open(perm_file) as data_file:
             if perm_file.lower().endswith("csv"):

@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import sys
+from typing import Dict, List
 
 # Third party
 import numpy as np
@@ -90,40 +91,12 @@ def calculate_cm(labels, truths, predictions, replace_unk_preds=False, clean=Fal
         label2i[label] = i
 
     if clean:
-        logger.debug("@" * 80)
-        preds = []
-        truths_tmp = []
-        for tru, pred in zip(truths, predictions):
-            if tru in predictions:
-                truths_tmp.append(tru)
-                preds.append(pred)
-        predictions = preds
-        truths = truths_tmp
+        truths, predictions = clean_truths(truths, predictions)
 
     if replace_unk_preds:
-        preds = []
-        for pred in predictions:
-            if label in label2i:
-                preds.append(label)
-            else:
-                preds.append("UNK")
-        predictions = preds
+        predictions = clean_preds(predictions, label2i)
 
-    # Sanity check
-    for label in truths:
-        if label not in label2i:
-            logger.error("Could not find label '{}'".format(label))
-            sys.exit(-1)
-
-    n = len(labels)
-    for label in predictions:
-        if label not in label2i:
-            label2i[label] = len(labels)
-            n = len(labels) + 1
-            logger.error(
-                "Could not find label '{}' in labels file => "
-                "Add class UNK".format(label)
-            )
+    n = _sanity_check(truths, labels, label2i, predictions)
 
     # TODO: do no always filter
     filter_data_unk = True
@@ -150,3 +123,69 @@ def calculate_cm(labels, truths, predictions, replace_unk_preds=False, clean=Fal
         cm[label2i[truth_label]][label2i[pred_label]] += 1
 
     return cm
+
+
+def clean_truths(truths: List[int], predictions: List[int]):
+    """
+    Remove classes that the classifier doesn't know.
+
+    Parameters
+    ----------
+    truths : List[int]
+    predictions : List[int]
+
+    Returns
+    -------
+    truths, predictions : List[int], List[int]
+    """
+    preds = []
+    truths_tmp = []
+    for tru, pred in zip(truths, predictions):
+        if tru in predictions:
+            truths_tmp.append(tru)
+            preds.append(pred)
+    predictions = preds
+    truths = truths_tmp
+    return truths, predictions
+
+
+def clean_preds(predictions: List[str], label2i: Dict[str, int]) -> List[str]:
+    """
+    If a prediction is not in the labels in label_filepath, replace it with UNK.
+
+    Parameters
+    ----------
+    predictions : List[str]
+    label2i : Dict[str, int]
+        Maps a label to an index
+
+    Returns
+    -------
+    predictions : List[str]
+    """
+    preds = []
+    for pred in predictions:
+        if pred in label2i:
+            preds.append(pred)
+        else:
+            preds.append("UNK")
+    predictions = preds
+    return predictions
+
+
+def _sanity_check(truths, labels, label2i, predictions):
+    for label in truths:
+        if label not in label2i:
+            logger.error("Could not find label '{}'".format(label))
+            sys.exit(-1)
+
+    n = len(labels)
+    for label in predictions:
+        if label not in label2i:
+            label2i[label] = len(labels)
+            n = len(labels) + 1
+            logger.error(
+                "Could not find label '{}' in labels file => "
+                "Add class UNK".format(label)
+            )
+    return n
