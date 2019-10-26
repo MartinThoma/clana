@@ -30,6 +30,7 @@ import clana.io
 import clana.utils
 
 cfg = clana.utils.load_cfg()
+logger = logging.getLogger(__name__)
 
 
 def main(
@@ -84,7 +85,7 @@ def main(
     labels = [labels[i] for i in result["perm"]]
     class_indices = list(range(len(labels)))
     class_indices = [class_indices[i] for i in result["perm"]]
-    logging.info("Classes: {}".format(labels))
+    logger.info("Classes: {}".format(labels))
     acc = clana.cm_metrics.get_accuracy(cm_orig)
     print("Accuracy: {:0.2f}%".format(acc * 100))
     start = 0
@@ -116,7 +117,7 @@ def main(
         if el == 1:
             cluster_i += 1
         y_pred.append(cluster_i)
-    logging.info("silhouette_score={}".format(silhouette_score(cm, y_pred)))
+    logger.info("silhouette_score={}".format(silhouette_score(cm, y_pred)))
     # Store grouping as hierarchy
     with open(cfg["visualize"]["hierarchy_path"], "w") as outfile:
         hierarchy = clana.clustering.apply_grouping(class_indices, grouping)
@@ -149,7 +150,7 @@ def get_cm_problems(cm, labels):
     # Find classes which are not present in the dataset
     for i in range(n):
         if sum(cm[i]) == 0:
-            logging.warning("The class '{}' was not in the dataset.".format(labels[i]))
+            logger.warning("The class '{}' was not in the dataset.".format(labels[i]))
 
     # Find classes which are never predicted
     cm = cm.transpose()
@@ -158,7 +159,7 @@ def get_cm_problems(cm, labels):
         if sum(cm[i]) == 0:
             never_predicted.append(labels[i])
     if len(never_predicted) > 0:
-        logging.warning(
+        logger.warning(
             "The following classes were never predicted: {}".format(never_predicted)
         )
 
@@ -379,7 +380,7 @@ def simulated_annealing(
     assert cooling_factor > 0.0
     assert cooling_factor < 1.0
     n = len(current_cm)
-    logging.info("n={}".format(n))
+    logger.info("n={}".format(n))
 
     # Load the initial permutation
     if current_perm is None:
@@ -397,7 +398,7 @@ def simulated_annealing(
     best_score = current_score
     best_perm = current_perm
 
-    logging.info("## Starting Score: {:0.2f}".format(current_score))
+    logger.info("## Starting Score: {:0.2f}".format(current_score))
     for step in range(steps):
         tmp_cm = np.array(current_cm, copy=True)
 
@@ -450,7 +451,7 @@ def simulated_annealing(
             current_cm = tmp_cm
             current_perm = perm
             if changed:
-                logging.info(
+                logger.info(
                     (
                         "Current: %0.2f (best: %0.2f, "
                         "hot_prob_thresh=%0.4f%%, step=%i, swap=%s)"
@@ -516,7 +517,7 @@ def plot_cm(cm, zero_diagonal=False, labels=None, output=cfg["visualize"]["save_
     plt.colorbar(res, cax=cax)
     plt.tight_layout()
 
-    logging.info("Save figure at '{}'".format(output))
+    logger.info("Save figure at '{}'".format(output))
     plt.savefig(output)
 
 

@@ -13,6 +13,8 @@ import numpy as np
 # First party
 import clana.io
 
+logger = logging.getLogger(__name__)
+
 
 def main(cm_dump_filepath, gt_filepath, n):
     """
@@ -34,7 +36,7 @@ def main(cm_dump_filepath, gt_filepath, n):
     cm = calculate_cm(cm_dump_filepath, gt_filepath, n)
     path = "cm.json"
     clana.io.write_cm(path, cm)
-    logging.info("cm was written to '{}'".format(path))
+    logger.info("cm was written to '{}'".format(path))
 
 
 def calculate_cm(cm_dump_filepath, gt_filepath, n):

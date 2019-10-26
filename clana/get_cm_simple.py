@@ -17,6 +17,8 @@ import sklearn.metrics
 # First party
 import clana.utils
 
+logger = logging.getLogger(__name__)
+
 
 def main(label_filepath, gt_filepath, predictions_filepath, clean):
     """
@@ -48,7 +50,7 @@ def main(label_filepath, gt_filepath, predictions_filepath, clean):
     cm = calculate_cm(labels, truths, predictions, clean=False)
     # Write JSON file
     cm_filepath = os.path.abspath("cm.json")
-    logging.info("Write results to '{}'.".format(cm_filepath))
+    logger.info("Write results to '{}'.".format(cm_filepath))
     with open(cm_filepath, "w") as outfile:
         str_ = json.dumps(
             cm.tolist(), indent=2, separators=(",", ": "), ensure_ascii=False
@@ -88,7 +90,7 @@ def calculate_cm(labels, truths, predictions, replace_unk_preds=False, clean=Fal
         label2i[label] = i
 
     if clean:
-        logging.debug("@" * 80)
+        logger.debug("@" * 80)
         preds = []
         truths_tmp = []
         for tru, pred in zip(truths, predictions):
@@ -110,7 +112,7 @@ def calculate_cm(labels, truths, predictions, replace_unk_preds=False, clean=Fal
     # Sanity check
     for label in truths:
         if label not in label2i:
-            logging.error("Could not find label '{}'".format(label))
+            logger.error("Could not find label '{}'".format(label))
             sys.exit(-1)
 
     n = len(labels)
@@ -118,7 +120,7 @@ def calculate_cm(labels, truths, predictions, replace_unk_preds=False, clean=Fal
         if label not in label2i:
             label2i[label] = len(labels)
             n = len(labels) + 1
-            logging.error(
+            logger.error(
                 "Could not find label '{}' in labels file => "
                 "Add class UNK".format(label)
             )

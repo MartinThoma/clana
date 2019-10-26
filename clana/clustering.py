@@ -9,6 +9,7 @@ import numpy as np
 import clana.utils
 
 cfg = clana.utils.load_cfg()
+logger = logging.getLogger(__name__)
 
 
 def apply_grouping(labels, grouping):
@@ -225,7 +226,7 @@ def extract_clusters(
             if current_score < minimal_score:
                 best_grouping = grouping
                 minimal_score = current_score
-                logging.info(
+                logger.info(
                     "Best grouping: {} (score: {})".format(grouping, minimal_score)
                 )
     elif method == "local-connectivity":
@@ -233,9 +234,9 @@ def extract_clusters(
             thres = find_thres_interactive(cm, labels)
         else:
             thres = find_thres(cm, cfg["visualize"]["threshold"])
-        logging.info("Found threshold for local connection: {}".format(thres))
+        logger.info("Found threshold for local connection: {}".format(thres))
         best_grouping = split_at_con_thres(cm, thres, labels, interactive=interactive)
     else:
         raise NotImplementedError("method='{}'".format(method))
-    logging.info("Found {} clusters".format(sum(best_grouping) + 1))
+    logger.info("Found {} clusters".format(sum(best_grouping) + 1))
     return best_grouping

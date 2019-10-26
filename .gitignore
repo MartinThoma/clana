@@ -101,3 +101,7 @@ ENV/
 .mypy_cache/
 tests/reports/
 .clana
+.mutmut-cache
+
+mutmut-results.html
+mutmut-results.xml
