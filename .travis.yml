@@ -1,6 +1,6 @@
 language: python
-# before_install:
-#   - sudo apt-get install -y poppler-utils
+before_install:
+  - sudo apt-get install -y libblas3 liblapack3 liblapack-dev libblas-dev
 python:
   - 3.6
   - 3.7
