@@ -1,0 +1,13 @@
+language: python
+# before_install:
+#   - sudo apt-get install -y poppler-utils
+python:
+  - 3.6
+  - 3.7
+  - 3.8
+install:
+  - pip install coveralls tox-travis
+script:
+  - tox
+after_success:
+  - coveralls
