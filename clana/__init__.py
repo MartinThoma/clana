@@ -1,3 +1,5 @@
+"""Get the version."""
+
 # Third party
 import pkg_resources
 

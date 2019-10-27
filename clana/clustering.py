@@ -1,6 +1,9 @@
+"""Everything about clustering classes of a confusion matrix."""
+
 # Core Library
 import logging
 import random
+from typing import List
 
 # Third party
 import numpy as np
@@ -98,7 +101,6 @@ def extract_clusters(
     -------
     clustes : list of lists of labels
     """
-
     if method == "energy":
         n = len(cm)
         grouping = np.zeros(n - 1)
@@ -128,7 +130,19 @@ def extract_clusters(
     return best_grouping
 
 
-def create_weight_matrix(grouping):
+def create_weight_matrix(grouping: List[int]) -> np.ndarray:
+    """
+    Create a matrix which contains the distance to the diagonal.
+
+    Parameters
+    ----------
+    grouping : List[int]
+
+    Returns
+    -------
+    weight_matrix : np.ndarray
+        A symmetric matrix
+    """
     n = len(grouping) + 1
     weight_matrix = np.zeros((n, n))
     for i in range(n):
@@ -142,7 +156,20 @@ def create_weight_matrix(grouping):
     return weight_matrix + weight_matrix.transpose()
 
 
-def get_score(cm, grouping, lambda_):
+def get_score(cm: np.ndarray, grouping: List, lambda_: float) -> float:
+    """
+    Get the score of a confusion matrix.
+
+    Parameters
+    ----------
+    cm : np.ndarray
+    grouping : List
+    lambda_ : float
+
+    Returns
+    -------
+    score : float
+    """
     from clana.visualize_cm import calculate_score
 
     inter_cluster_err = 0.0
@@ -208,7 +235,18 @@ def find_thres_interactive(cm, labels):
     return pos_str
 
 
-def get_neighboring_connectivity(cm):
+def get_neighboring_connectivity(cm: np.ndarray) -> List[float]:
+    """
+    Get how strong neighboring classes are connected.
+
+    Parameters
+    ----------
+    cm : np.ndarray
+
+    Returns
+    -------
+    con : List[float]
+    """
     con = []
     n = len(cm)
     for i in range(n - 1):

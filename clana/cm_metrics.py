@@ -1,3 +1,6 @@
+"""Metrics for confusion matrices."""
+
+
 def get_accuracy(cm):
     """
     Get the accuaracy by the confusion matrix cm.

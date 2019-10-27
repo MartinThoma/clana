@@ -1,8 +1,15 @@
+"""
+Everything related to IO.
+
+Reading / writing configuration, matrices and permutations.
+"""
+
 # Core Library
 import csv
 import hashlib
 import json
 import os
+from typing import List
 
 # Third party
 import numpy as np
@@ -13,6 +20,8 @@ import clana.utils
 
 
 class ClanaCfg(object):
+    """Methods related to clanas configuration and permutations."""
+
     @classmethod
     def read_clana_cfg(cls, cfg_file):
         """
@@ -34,7 +43,18 @@ class ClanaCfg(object):
         return cfg
 
     @classmethod
-    def get_cfg_path_from_cm_path(cls, cm_file):
+    def get_cfg_path_from_cm_path(cls, cm_file: str) -> str:
+        """
+        Get the configuration path from the path of the confusion matrix.
+
+        Parameters
+        ----------
+        cm_file : str
+
+        Returns
+        -------
+        cfg_path : str
+        """
         return os.path.join(os.path.dirname(os.path.abspath(cm_file)), ".clana")
 
     @classmethod
@@ -193,7 +213,15 @@ def read_labels(labels_file, n):
     return labels
 
 
-def write_labels(labels_file, labels):
+def write_labels(labels_file: str, labels: List[str]):
+    """
+    Write labels to labels_file.
+
+    Parameters
+    ----------
+    labels_file : str
+    labels: List[str]
+    """
     with open(labels_file, "w") as outfile:
         str_ = json.dumps(labels, indent=2, separators=(",", ": "), ensure_ascii=False)
         outfile.write(str_)
@@ -245,7 +273,8 @@ def write_cm(path, cm):
         outfile.write(str_)
 
 
-def md5(fname):
+def md5(fname: str) -> str:
+    """Compute MD5 hash of a file."""
     hash_md5 = hashlib.md5()
     with open(fname, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):

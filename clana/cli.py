@@ -34,7 +34,11 @@ random.seed(0)
 @click.group()
 @click.version_option(version=clana.__version__)
 def entry_point():
-    pass
+    """
+    Clana is a toolkit for classifier analysis.
+
+    See https://arxiv.org/abs/1707.09725, Chapter 4.
+    """
 
 
 @entry_point.command(name="get-cm-simple")
@@ -66,6 +70,7 @@ def entry_point():
     help="Remove classes that the classifier doesn't know",
 )
 def get_cm_simple(label_filepath, gt_filepath, predictions_filepath, clean):
+    """Generate a confusion matrix."""
     clana.get_cm_simple.main(label_filepath, gt_filepath, predictions_filepath, clean)
 
 
