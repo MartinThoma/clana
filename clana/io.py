@@ -157,7 +157,8 @@ def read_permutation(cm_file, perm_file):
     perm : List[int]
         Permutation of the numbers 0, ..., n-1
     """
-    assert os.path.isfile(cm_file)
+    if not os.path.isfile(cm_file):
+        raise ValueError("cm_file={} is not a file".format(cm_file))
     if perm_file is not None and os.path.isfile(perm_file):
         with open(perm_file) as data_file:
             if perm_file.lower().endswith("csv"):

@@ -8,3 +8,8 @@ clean:
 mutmut-results:
 	mutmut junitxml --suspicious-policy=ignore --untested-policy=ignore > mutmut-results.xml
 	junit2html mutmut-results.xml mutmut-results.html
+
+bandit:
+	# Not a security application: B311 and B303 should be save
+	# Python3 only: B322 is save
+	bandit -r clana -s B311,B303,B322

@@ -1,3 +1,5 @@
+"""Configure pytest."""
+
 # Core Library
 import logging
 

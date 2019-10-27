@@ -254,7 +254,11 @@ def move_1d(perm, from_start, from_end, insert_pos):
     perm : ndarray
         The new permutation
     """
-    assert insert_pos < from_start or insert_pos > from_end
+    if not (insert_pos < from_start or insert_pos > from_end):
+        raise ValueError(
+            "insert_pos={} needs to be smaller than from_start={}"
+            " or greater than from_end={}".format(insert_pos, from_start, from_end)
+        )
     if insert_pos > from_end:
         p_new = list(range(from_end + 1, insert_pos + 1)) + list(
             range(from_start, from_end + 1)
@@ -292,7 +296,11 @@ def move(cm, from_start, from_end, insert_pos):
            [1, 2, 0, 3],
            [3, 4, 2, 5]])
     """
-    assert insert_pos < from_start or insert_pos > from_end
+    if not (insert_pos < from_start or insert_pos > from_end):
+        raise ValueError(
+            "insert_pos={} needs to be smaller than from_start={}"
+            " or greater than from_end={}".format(insert_pos, from_start, from_end)
+        )
     if insert_pos > from_end:
         p_new = list(range(from_end + 1, insert_pos + 1)) + list(
             range(from_start, from_end + 1)
@@ -377,9 +385,13 @@ def simulated_annealing(
         "best_cm"
         "best_perm"
     """
-    assert temp > 0.0
-    assert cooling_factor > 0.0
-    assert cooling_factor < 1.0
+    if temp <= 0.0:
+        raise ValueError("temp={} needs to be positive".format(temp))
+    if cooling_factor <= 0.0 or cooling_factor >= 1.0:
+        raise ValueError(
+            "cooling_factor={} needs to be in the interval "
+            "(0, 1)".format(cooling_factor)
+        )
     n = len(current_cm)
     logger.info("n={}".format(n))
 
@@ -641,7 +653,8 @@ def get_color(white_to_black):
     >>> get_color(1)
     (0, 0, 0)
     """
-    assert 0 <= white_to_black <= 1
+    if not (0 <= white_to_black <= 1):
+        raise ValueError("white_to_black={} is not in the interval [0, 1]")
     # in HSV, red is 0 deg and green is 120 deg (out of 360);
     # divide red_to_green with 3 to map [0, 1] to [0, 1./3.]
     # hue = red_to_green / 3.0

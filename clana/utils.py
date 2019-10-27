@@ -24,7 +24,8 @@ def load_labels(labels_file, n):
     -------
     labels : list
     """
-    assert n >= 0
+    if n < 0:
+        raise ValueError("n={} needs to be non-negative".format(n))
     if os.path.isfile(labels_file):
         # Read CSV file
         with open(labels_file, "r") as fp:
