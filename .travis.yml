@@ -4,7 +4,6 @@ before_install:
 python:
   - 3.6
   - 3.7
-  - 3.8
 install:
   - pip install coveralls tox-travis
 script:
