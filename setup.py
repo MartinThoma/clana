@@ -6,6 +6,7 @@ from setuptools import setup
 requires_tests = [
     "pytest",
     "pytest-black",
+    "coverage<5.0.0",  # see https://github.com/nedbat/coveragepy/issues/716
     "pytest-cov",
     "pytest-flake8",
     "pytest-mccabe",
