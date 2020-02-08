@@ -2,6 +2,9 @@
 
 """Get the distribution of classes in a dataset."""
 
+# Core Library
+from typing import Dict, List
+
 
 def main(gt_filepath):
     """
@@ -15,9 +18,9 @@ def main(gt_filepath):
     # Read text file
     with open(gt_filepath, "r") as fp:
         read_lines = fp.readlines()
-        labels = [line.rstrip("\n") for line in read_lines]
+        labels_str = [line.rstrip("\n") for line in read_lines]
 
-    distribution = get_distribution(labels)
+    distribution = get_distribution(labels_str)
     labels = sorted(distribution.items(), key=lambda n: (-n[1], n[0]))
     label_len = max(len(label[0]) for label in labels)
     count_len = max(len(str(label[1])) for label in labels)
@@ -35,18 +38,18 @@ def main(gt_filepath):
         )
 
 
-def get_distribution(labels):
+def get_distribution(labels: List[str]) -> Dict[str, int]:
     """
     Get the distribution of the labels.
 
     Prameters
     ---------
-    labels : list of str
+    labels : List[str]
         This list is non-unique.
 
     Returns
     -------
-    distribution : dict
+    distribution : Dict[str, int]
         Maps (label => count)
 
     Examples
@@ -55,7 +58,7 @@ def get_distribution(labels):
     >>> sorted(dist.items())
     [('de', 2), ('en', 1)]
     """
-    distribution = {}
+    distribution: Dict[str, int] = {}
     for label in labels:
         if label not in distribution:
             distribution[label] = 1

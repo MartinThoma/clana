@@ -5,13 +5,14 @@
 # Core Library
 import csv
 import os
+from typing import List
 
 # Third party
 import yaml
 from pkg_resources import resource_filename
 
 
-def load_labels(labels_file, n):
+def load_labels(labels_file: str, n: int) -> List[str]:
     """
     Load labels from a CSV file.
 
@@ -22,7 +23,7 @@ def load_labels(labels_file, n):
 
     Returns
     -------
-    labels : list
+    labels : List[str]
     """
     if n < 0:
         raise ValueError("n={} needs to be non-negative".format(n))
@@ -31,10 +32,10 @@ def load_labels(labels_file, n):
         with open(labels_file, "r") as fp:
             reader = csv.reader(fp, delimiter=";", quotechar='"')
             next(reader, None)  # skip the headers
-            labels = [row for row in reader]
-            labels = [el[0] for el in labels]  # short by default
+            parsed_csv = [row for row in reader]
+            labels = [el[0] for el in parsed_csv]  # short by default
     else:
-        labels = list(range(n))
+        labels = [str(el) for el in range(n)]
     return labels
 
 

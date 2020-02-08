@@ -14,7 +14,7 @@ For more information, see
 import json
 import logging
 import random
-from typing import List
+from typing import List, Tuple
 
 # Third party
 import numpy as np
@@ -136,7 +136,7 @@ def main(
         print(u"\t{}: {}".format(len(group), [el for el in group]))
 
 
-def get_cm_problems(cm, labels: List[str]):
+def get_cm_problems(cm: np.ndarray, labels: List[str]) -> None:
     """
     Find problems of a classifier by analzing its confusion matrix.
 
@@ -336,7 +336,7 @@ def swap_1d(perm, i, j):
     return perm
 
 
-def apply_permutation(cm, perm: List[int]):
+def apply_permutation(cm: np.ndarray, perm: List[int]) -> np.ndarray:
     """
     Apply permutation to a matrix.
 
@@ -448,7 +448,9 @@ def simulated_annealing(
     return {"cm": best_cm, "perm": best_perm}
 
 
-def generate_permutation(n: int, current_perm: List[int], tmp_cm: np.ndarray):
+def generate_permutation(
+    n: int, current_perm: List[int], tmp_cm: np.ndarray
+) -> Tuple[List[int], bool]:
     """
     Generate a new permutation.
 
@@ -625,8 +627,8 @@ def create_html_cm(cm, zero_diagonal=False, labels=None):
 
         body_rows.append({"row": body_row, "support": support})
 
-    html = Template(base)
-    html = html.render(header_cells=header_cells, body_rows=body_rows)
+    html_template = Template(base)
+    html = html_template.render(header_cells=header_cells, body_rows=body_rows)
 
     with open(cfg["visualize"]["html_save_path"], "w") as f:
         f.write(html)

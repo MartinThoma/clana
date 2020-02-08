@@ -33,7 +33,7 @@ random.seed(0)
 
 @click.group()
 @click.version_option(version=clana.__version__)
-def entry_point():
+def entry_point() -> None:
     """
     Clana is a toolkit for classifier analysis.
 

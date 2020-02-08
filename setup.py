@@ -4,6 +4,9 @@
 from setuptools import setup
 
 requires_tests = [
+    # coverage is a transitive requirement, introduced by pytest-cov
+    # Due to https://github.com/nedbat/coveragepy/issues/716 it is fixed here
+    "coverage<5.0.0",
     "pytest",
     "pytest-black",
     "coverage<5.0.0",  # see https://github.com/nedbat/coveragepy/issues/716

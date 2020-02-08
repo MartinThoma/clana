@@ -63,5 +63,5 @@ def test_main():
 
     runner = CliRunner()
     _ = runner.invoke(
-        clana.cli.visualize, ["--cm", cm_path, "--steps", 100, "--perm", perm_path]
+        clana.cli.visualize, ["--cm", cm_path, "--steps", "100", "--perm", perm_path]
     )

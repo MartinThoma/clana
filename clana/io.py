@@ -213,7 +213,7 @@ def read_labels(labels_file, n):
     return labels
 
 
-def write_labels(labels_file: str, labels: List[str]):
+def write_labels(labels_file: str, labels: List[str]) -> None:
     """
     Write labels to labels_file.
 

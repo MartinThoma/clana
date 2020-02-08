@@ -9,7 +9,7 @@ import json
 import logging
 import os
 import sys
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 # Third party
 import numpy as np
@@ -125,7 +125,9 @@ def calculate_cm(labels, truths, predictions, replace_unk_preds=False, clean=Fal
     return cm
 
 
-def clean_truths(truths: List[int], predictions: List[int]):
+def clean_truths(
+    truths: List[int], predictions: List[int]
+) -> Tuple[List[int], List[int]]:
     """
     Remove classes that the classifier doesn't know.
 
