@@ -17,7 +17,6 @@ import random
 from typing import List
 
 # Third party
-import matplotlib.pyplot as plt
 import numpy as np
 from jinja2 import Template
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -506,6 +505,7 @@ def plot_cm(cm, zero_diagonal=False, labels=None, output=cfg["visualize"]["save_
     labels : list of str, optional
         If this is not given, then numbers are assigned to the classes
     """
+    import matplotlib.pyplot as plt
     from matplotlib.colors import LogNorm
 
     n = len(cm)

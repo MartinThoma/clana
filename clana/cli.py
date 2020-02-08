@@ -22,7 +22,7 @@ import clana.get_cm
 import clana.get_cm_simple
 import clana.visualize_cm
 
-matplotlib.use("Agg")  # isort:skip
+matplotlib.use("Agg")
 
 
 config = clana.utils.load_cfg(verbose=True)
