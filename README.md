@@ -134,7 +134,7 @@ gives the following metrics by
 
 ### Visualizations
 
-See [visualizations](visualizations.md)
+See [visualizations](docs/visualizations.md)
 
 
 ## Development
