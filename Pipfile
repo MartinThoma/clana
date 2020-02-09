@@ -12,6 +12,7 @@ pytest-black = "*"
 coverage = "<5.0.0"
 pytest-mypy = "*"
 lxml = "*"
+twine = "*"
 
 [packages]
 click = ">=6.7"
