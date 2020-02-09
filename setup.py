@@ -3,7 +3,7 @@
 # Third party
 from setuptools import setup
 
-requires_tests = [
+tests_requires = [
     # coverage is a transitive requirement, introduced by pytest-cov
     # Due to https://github.com/nedbat/coveragepy/issues/716 it is fixed here
     "coverage<5.0.0",
@@ -25,11 +25,10 @@ install_requires = [
     "scipy>=1.0.0",
 ]
 
+all_requires = install_requires + tests_requires
+
 
 setup(
-    entry_points={"console_scripts": ["clana=clana.cli:entry_point"]},
-    description=__doc__,
     install_requires=install_requires,
-    tests_require=requires_tests,
-    package_data={"clana": ["clana/config.yaml"]},
+    extras_require={"tests": tests_requires, "all": all_requires},
 )
