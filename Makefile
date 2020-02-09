@@ -1,6 +1,10 @@
 upload:
 	make clean
-	python3 setup.py sdist bdist_wheel && twine upload dist/*
+	python3 setup.py sdist bdist_wheel && twine upload -s dist/*
+
+test_upload:
+	make clean
+	python3 setup.py sdist bdist_wheel && twine upload --repository pypitest -s dist/*
 
 clean:
 	python setup.py clean --all

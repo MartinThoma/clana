@@ -47,7 +47,7 @@ Commands:
 
 The visualize command gives you images like this:
 
-![Confusion Matrix after Confusion Matrix Ordering of the WiLI-2018 dataset](cm-wili-2018.png)
+![Confusion Matrix after Confusion Matrix Ordering of the WiLI-2018 dataset](https://raw.githubusercontent.com/MartinThoma/clana/master/docs/cm-wili-2018.png)
 
 ### MNIST example
 
@@ -84,7 +84,7 @@ Accuracy: 93.99%
 
 This gives
 
-![](mnist_confusion_matrix.png)
+![](https://raw.githubusercontent.com/MartinThoma/clana/master/docs/mnist_confusion_matrix.png)
 
 #### Label Manipulation
 
@@ -94,7 +94,7 @@ Prepare a `labels.csv` which **has to have a header row**:
 $ clana visualize --cm cm.json --zero_diagonal --labels mnist/labels.csv
 ```
 
-![](mnist_confusion_matrix_labels.png)
+![](https://raw.githubusercontent.com/MartinThoma/clana/master/docs/mnist_confusion_matrix_labels.png)
 
 
 ### Data distribution
