@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """
 Optimize confusion matrix.
@@ -61,7 +60,7 @@ def main(
     n, m = cm.shape
     if n != m:
         raise ValueError(
-            "Confusion matrix is expected to be square, but was {} x {}".format(n, m)
+            f"Confusion matrix is expected to be square, but was {n} x {m}"
         )
     if len(labels) - 1 != n:
         print(
@@ -85,7 +84,7 @@ def main(
     labels = [labels[i] for i in result["perm"]]
     class_indices = list(range(len(labels)))
     class_indices = [class_indices[i] for i in result["perm"]]
-    logger.info("Classes: {}".format(labels))
+    logger.info(f"Classes: {labels}")
     acc = clana.cm_metrics.get_accuracy(cm_orig)
     print("Accuracy: {:0.2f}%".format(acc * 100))
     start = 0
@@ -133,7 +132,7 @@ def main(
 
     # Print nice
     for group in clana.clustering.apply_grouping(labels, grouping):
-        print(u"\t{}: {}".format(len(group), [el for el in group]))
+        print("\t{}: {}".format(len(group), [el for el in group]))
 
 
 def get_cm_problems(cm: np.ndarray, labels: List[str]) -> None:
@@ -159,9 +158,7 @@ def get_cm_problems(cm: np.ndarray, labels: List[str]) -> None:
         if sum(cm[i]) == 0:
             never_predicted.append(labels[i])
     if len(never_predicted) > 0:
-        logger.warning(
-            "The following classes were never predicted: {}".format(never_predicted)
-        )
+        logger.warning(f"The following classes were never predicted: {never_predicted}")
 
 
 def calculate_score(cm, weights):
@@ -385,14 +382,14 @@ def simulated_annealing(
         "best_perm"
     """
     if temp <= 0.0:
-        raise ValueError("temp={} needs to be positive".format(temp))
+        raise ValueError(f"temp={temp} needs to be positive")
     if cooling_factor <= 0.0 or cooling_factor >= 1.0:
         raise ValueError(
             "cooling_factor={} needs to be in the interval "
             "(0, 1)".format(cooling_factor)
         )
     n = len(current_cm)
-    logger.info("n={}".format(n))
+    logger.info(f"n={n}")
 
     # Load the initial permutation
     if current_perm is None:
@@ -410,7 +407,7 @@ def simulated_annealing(
     best_score = current_score
     best_perm = current_perm
 
-    logger.info("## Starting Score: {:0.2f}".format(current_score))
+    logger.info(f"## Starting Score: {current_score:0.2f}")
     for step in range(steps):
         tmp_cm = np.array(current_cm, copy=True)
         perm, make_swap = generate_permutation(n, current_perm, tmp_cm)
@@ -549,7 +546,7 @@ def plot_cm(cm, zero_diagonal=False, labels=None, output=cfg["visualize"]["save_
     plt.colorbar(res, cax=cax)
     plt.tight_layout()
 
-    logger.info("Save figure at '{}'".format(output))
+    logger.info(f"Save figure at '{output}'")
     plt.savefig(output)
 
 
@@ -571,7 +568,7 @@ def create_html_cm(cm, zero_diagonal=False, labels=None):
     el_max = 200
 
     template_path = resource_filename("clana", "templates/base.html")
-    with open(template_path, "r") as f:
+    with open(template_path) as f:
         base = f.read()
 
     cm_t = cm.transpose()
@@ -585,7 +582,7 @@ def create_html_cm(cm, zero_diagonal=False, labels=None):
             background_color = "green"
         header_cells.append(
             {
-                "precision": "{:0.2f}".format(precision),
+                "precision": f"{precision:0.2f}",
                 "background-color": background_color,
                 "label": label,
             }
@@ -605,7 +602,7 @@ def create_html_cm(cm, zero_diagonal=False, labels=None):
         body_row.append(
             {
                 "label": label,
-                "recall": "{:.2f}".format(recall),
+                "recall": f"{recall:.2f}",
                 "background-color": background_color,
             }
         )
@@ -692,4 +689,4 @@ def get_color_code(val, max_val):
     """
     value = min(1.0, float(val) / max_val)
     r, g, b = get_color(value)
-    return "#{:02x}{:02x}{:02x}".format(r, g, b)
+    return f"#{r:02x}{g:02x}{b:02x}"

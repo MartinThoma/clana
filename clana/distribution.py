@@ -16,7 +16,7 @@ def main(gt_filepath):
         List of ground truth; one label per line
     """
     # Read text file
-    with open(gt_filepath, "r") as fp:
+    with open(gt_filepath) as fp:
         read_lines = fp.readlines()
         labels_str = [line.rstrip("\n") for line in read_lines]
 

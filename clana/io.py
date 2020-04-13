@@ -19,7 +19,7 @@ import yaml
 import clana.utils
 
 
-class ClanaCfg(object):
+class ClanaCfg:
     """Methods related to clanas configuration and permutations."""
 
     @classmethod
@@ -36,7 +36,7 @@ class ClanaCfg(object):
         cfg : Dict[str, Any]
         """
         if os.path.isfile(cfg_file):
-            with open(cfg_file, "r") as stream:
+            with open(cfg_file) as stream:
                 cfg = yaml.safe_load(stream)
         else:
             cfg = {"version": clana.__version__, "data": {}}
@@ -178,7 +178,7 @@ def read_permutation(cm_file, perm_file):
         Permutation of the numbers 0, ..., n-1
     """
     if not os.path.isfile(cm_file):
-        raise ValueError("cm_file={} is not a file".format(cm_file))
+        raise ValueError(f"cm_file={cm_file} is not a file")
     if perm_file is not None and os.path.isfile(perm_file):
         with open(perm_file) as data_file:
             if perm_file.lower().endswith("csv"):
@@ -241,7 +241,7 @@ def write_predictions(identifier2prediction, filepath):
     """
     with open(filepath, "w") as f:
         for identifier, prediction in identifier2prediction.items():
-            f.write("{};{}\n".format(identifier, prediction))
+            f.write(f"{identifier};{prediction}\n")
 
 
 def write_gt(identifier2label, filepath):
@@ -256,7 +256,7 @@ def write_gt(identifier2label, filepath):
     """
     with open(filepath, "w") as f:
         for identifier, label in identifier2label.items():
-            f.write("{};{}\n".format(identifier, label))
+            f.write(f"{identifier};{label}\n")
 
 
 def write_cm(path, cm):

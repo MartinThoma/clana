@@ -26,10 +26,10 @@ def load_labels(labels_file: str, n: int) -> List[str]:
     labels : List[str]
     """
     if n < 0:
-        raise ValueError("n={} needs to be non-negative".format(n))
+        raise ValueError(f"n={n} needs to be non-negative")
     if os.path.isfile(labels_file):
         # Read CSV file
-        with open(labels_file, "r") as fp:
+        with open(labels_file) as fp:
             reader = csv.reader(fp, delimiter=";", quotechar='"')
             next(reader, None)  # skip the headers
             parsed_csv = [row for row in reader]
@@ -55,8 +55,8 @@ def load_cfg(yaml_filepath=None, verbose=False):
         yaml_filepath = resource_filename("clana", "config.yaml")
     # Read YAML experiment definition file
     if verbose:
-        print("Load config from {}...".format(yaml_filepath))
-    with open(yaml_filepath, "r") as stream:
+        print(f"Load config from {yaml_filepath}...")
+    with open(yaml_filepath) as stream:
         cfg = yaml.safe_load(stream)
     cfg = make_paths_absolute(os.path.dirname(yaml_filepath), cfg)
     return cfg

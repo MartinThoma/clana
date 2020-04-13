@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Calculate the confusion matrix (one label per line)."""
 
@@ -40,18 +39,18 @@ def main(label_filepath, gt_filepath, predictions_filepath, clean):
     labels = clana.utils.load_labels(label_filepath, 0)
 
     # Read CSV files
-    with open(gt_filepath, "r") as fp:
+    with open(gt_filepath) as fp:
         reader = csv.reader(fp, delimiter=";", quotechar='"')
         truths = [row[0] for row in reader]
 
-    with open(predictions_filepath, "r") as fp:
+    with open(predictions_filepath) as fp:
         reader = csv.reader(fp, delimiter=";", quotechar='"')
         predictions = [row[0] for row in reader]
 
     cm = calculate_cm(labels, truths, predictions, clean=False)
     # Write JSON file
     cm_filepath = os.path.abspath("cm.json")
-    logger.info("Write results to '{}'.".format(cm_filepath))
+    logger.info(f"Write results to '{cm_filepath}'.")
     with open(cm_filepath, "w") as outfile:
         str_ = json.dumps(
             cm.tolist(), indent=2, separators=(",", ": "), ensure_ascii=False
@@ -178,7 +177,7 @@ def clean_preds(predictions: List[str], label2i: Dict[str, int]) -> List[str]:
 def _sanity_check(truths, labels, label2i, predictions):
     for label in truths:
         if label not in label2i:
-            logger.error("Could not find label '{}'".format(label))
+            logger.error(f"Could not find label '{label}'")
             sys.exit(-1)
 
     n = len(labels)

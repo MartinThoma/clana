@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Calculate the confusion matrix (CSV inputs)."""
 
@@ -36,7 +35,7 @@ def main(cm_dump_filepath, gt_filepath, n):
     cm = calculate_cm(cm_dump_filepath, gt_filepath, n)
     path = "cm.json"
     clana.io.write_cm(path, cm)
-    logger.info("cm was written to '{}'".format(path))
+    logger.info(f"cm was written to '{path}'")
 
 
 def calculate_cm(cm_dump_filepath, gt_filepath, n):
@@ -63,11 +62,11 @@ def calculate_cm(cm_dump_filepath, gt_filepath, n):
     cm = np.zeros((n, n), dtype=int)
 
     # Read CSV files
-    with open(cm_dump_filepath, "r") as fp:
+    with open(cm_dump_filepath) as fp:
         reader = csv.reader(fp, delimiter=";", quotechar='"')
         predictions = [row for row in reader]
 
-    with open(gt_filepath, "r") as fp:
+    with open(gt_filepath) as fp:
         reader = csv.reader(fp, delimiter=";", quotechar='"')
         truths = [row for row in reader]
 

@@ -114,18 +114,16 @@ def extract_clusters(
             if current_score < minimal_score:
                 best_grouping = grouping
                 minimal_score = current_score
-                logger.info(
-                    "Best grouping: {} (score: {})".format(grouping, minimal_score)
-                )
+                logger.info(f"Best grouping: {grouping} (score: {minimal_score})")
     elif method == "local-connectivity":
         if interactive:
             thres = find_thres_interactive(cm, labels)
         else:
             thres = find_thres(cm, cfg["visualize"]["threshold"])
-        logger.info("Found threshold for local connection: {}".format(thres))
+        logger.info(f"Found threshold for local connection: {thres}")
         best_grouping = split_at_con_thres(cm, thres, labels, interactive=interactive)
     else:
-        raise NotImplementedError("method='{}'".format(method))
+        raise NotImplementedError(f"method='{method}'")
     logger.info("Found {} clusters".format(sum(best_grouping) + 1))
     return best_grouping
 
@@ -218,7 +216,7 @@ def find_thres_interactive(cm, labels):
     neg_low = 0
     # neg_up = n - 1
     while pos_up - 1 > neg_low:
-        print("pos_up={}, neg_low={}, pos_str={}".format(pos_up, neg_low, pos_str))
+        print(f"pos_up={pos_up}, neg_low={neg_low}, pos_str={pos_str}")
         pos = int((pos_up + neg_low) / 2)
         con_str, (i1, i2) = con[pos]
         should_be_conn = input(
@@ -231,7 +229,7 @@ def find_thres_interactive(cm, labels):
             pos_up = pos
             pos_str = con_str
         else:
-            print("Please type only 'y' or 'n'. You typed {}.".format(should_be_conn))
+            print(f"Please type only 'y' or 'n'. You typed {should_be_conn}.")
     return pos_str
 
 

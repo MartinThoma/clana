@@ -5,7 +5,6 @@ Gets to 97.54% test accuracy after 10 epochs.
 22 seconds per epoch on a NVIDIA Geforce 940MX.
 """
 
-from __future__ import print_function
 
 # Third party
 import keras
