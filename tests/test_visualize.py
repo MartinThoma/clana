@@ -7,54 +7,44 @@ from click.testing import CliRunner
 import clana.cli
 
 
-def test_get_cm_problems1():
+def test_get_cm_problems1() -> None:
     cm = np.array([[0, 100], [0, 10]])
     labels = ["0", "1"]
     clana.visualize_cm.get_cm_problems(cm, labels)
 
 
-def test_get_cm_problems2():
+def test_get_cm_problems2() -> None:
     cm = np.array([[12, 100], [0, 0]])
     labels = ["0", "1"]
     clana.visualize_cm.get_cm_problems(cm, labels)
 
 
-def test_move_1d():
-    perm = np.array([8, 7, 6, 1, 2])
-    from_start = 1
-    from_end = 2
-    insert_pos = 0
-    new_perm = clana.visualize_cm.move_1d(perm, from_start, from_end, insert_pos)
-    new_perm = new_perm.tolist()
-    assert new_perm == [7, 6, 8, 1, 2]
-
-
-def test_simulated_annealing():
+def test_simulated_annealing() -> None:
     n = 10
     cm = np.random.randint(low=0, high=100, size=(n, n))
     clana.visualize_cm.simulated_annealing(cm, steps=10)
     clana.visualize_cm.simulated_annealing(cm, steps=10, deterministic=True)
 
 
-def test_create_html_cm():
+def test_create_html_cm() -> None:
     n = 10
     cm = np.random.randint(low=0, high=100, size=(n, n))
     clana.visualize_cm.create_html_cm(cm, zero_diagonal=True)
 
 
-def test_plot_cm():
+def test_plot_cm() -> None:
     n = 25
     cm = np.random.randint(low=0, high=100, size=(n, n))
     clana.visualize_cm.plot_cm(cm, zero_diagonal=True, labels=None)
 
 
-def test_plot_cm_big():
+def test_plot_cm_big() -> None:
     n = 5
     cm = np.random.randint(low=0, high=100, size=(n, n))
     clana.visualize_cm.plot_cm(cm, zero_diagonal=True, labels=None)
 
 
-def test_main():
+def test_main() -> None:
     path = "examples/wili-cld2-cm.json"
     cm_path = pkg_resources.resource_filename(__name__, path)
 

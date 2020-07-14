@@ -3,16 +3,14 @@
 """Test the CLI functions."""
 
 # Third party
-# 3rd party modules
 from click.testing import CliRunner
 from pkg_resources import resource_filename
 
 # First party
-# internal modules
 import clana.cli
 
 
-def test_visualize():
+def test_visualize() -> None:
     runner = CliRunner()
     cm_path = resource_filename(__name__, "examples/cm-2-classes.json")
     commands = ["visualize", "--cm", cm_path]
