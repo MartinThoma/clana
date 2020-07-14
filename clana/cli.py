@@ -10,6 +10,7 @@ classifier analysis.
 import logging.config
 import os
 import random
+from typing import Optional
 
 # Third party
 import click
@@ -69,7 +70,9 @@ def entry_point() -> None:
     is_flag=True,
     help="Remove classes that the classifier doesn't know",
 )
-def get_cm_simple(label_filepath, gt_filepath, predictions_filepath, clean):
+def get_cm_simple(
+    label_filepath: str, gt_filepath: str, predictions_filepath: str, clean: bool
+) -> None:
     """Generate a confusion matrix."""
     clana.get_cm_simple.main(label_filepath, gt_filepath, predictions_filepath, clean)
 
@@ -90,7 +93,7 @@ def get_cm_simple(label_filepath, gt_filepath, predictions_filepath, clean):
     help="CSV file with delimiter ;",
 )
 @click.option("--n", "n", required=True, type=int, help="Number of classes")
-def get_cm(cm_dump_filepath, gt_filepath, n):
+def get_cm(cm_dump_filepath: str, gt_filepath: str, n: int) -> None:
     """Generate a confusion matrix from predictions and ground truth."""
     clana.get_cm.main(cm_dump_filepath, gt_filepath, n)
 
@@ -103,7 +106,7 @@ def get_cm(cm_dump_filepath, gt_filepath, n):
     type=click.Path(exists=True),
     help="List of labels for the dataset",
 )
-def distribution(gt_filepath):
+def distribution(gt_filepath: str) -> None:
     """Get the distribution of classes in a dataset."""
     clana.distribution.main(gt_filepath)
 
@@ -145,14 +148,14 @@ def distribution(gt_filepath):
     "--limit_classes", type=int, help="Limit the number of classes in the output"
 )
 def visualize(
-    cm_file,
-    perm_file,
-    steps,
-    labels_file,
-    zero_diagonal,
-    output_image_path,
-    limit_classes=None,
-):
+    cm_file: str,
+    perm_file: str,
+    steps: int,
+    labels_file: str,
+    zero_diagonal: bool,
+    output_image_path: str,
+    limit_classes: Optional[int] = None,
+) -> None:
     """Optimize and visualize a confusion matrix."""
     print_file_format_issues(cm_file, labels_file, perm_file)
     clana.visualize_cm.main(
@@ -166,7 +169,7 @@ def visualize(
     )
 
 
-def print_file_format_issues(cm_file, labels_file, perm_file):
+def print_file_format_issues(cm_file: str, labels_file: str, perm_file: str) -> None:
     """
     Get all potential issues of the file formats.
 

@@ -1,7 +1,10 @@
 """Metrics for confusion matrices."""
 
+# Third party
+import numpy as np
 
-def get_accuracy(cm):
+
+def get_accuracy(cm: np.ndarray) -> float:
     """
     Get the accuaracy by the confusion matrix cm.
 
@@ -23,4 +26,4 @@ def get_accuracy(cm):
     >>> get_accuracy(cm)
     0.6
     """
-    return float(sum([cm[i][i] for i in range(len(cm))])) / float(cm.sum())
+    return float(sum(cm[i][i] for i in range(len(cm)))) / float(cm.sum())

@@ -13,7 +13,7 @@ For more information, see
 import json
 import logging
 import random
-from typing import List, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 # Third party
 import numpy as np
@@ -33,14 +33,14 @@ logger = logging.getLogger(__name__)
 
 
 def main(
-    cm_file,
-    perm_file,
-    steps,
-    labels_file,
-    zero_diagonal,
-    limit_classes=None,
-    output=None,
-):
+    cm_file: str,
+    perm_file: str,
+    steps: int,
+    labels_file: str,
+    zero_diagonal: bool,
+    limit_classes: Optional[int] = None,
+    output: Optional[str] = None,
+) -> None:
     """
     Run optimization and generate output.
 
@@ -113,16 +113,16 @@ def main(
     y_pred = [0]
     cluster_i = 0
     for el in grouping:
-        if el == 1:
+        if el:
             cluster_i += 1
         y_pred.append(cluster_i)
     logger.info("silhouette_score={}".format(silhouette_score(cm, y_pred)))
     # Store grouping as hierarchy
     with open(cfg["visualize"]["hierarchy_path"], "w") as outfile:
         hierarchy = clana.clustering.apply_grouping(class_indices, grouping)
-        hierarchy = clana.clustering._remove_single_element_groups(hierarchy)
+        hierarchy_mixed = clana.clustering._remove_single_element_groups(hierarchy)
         str_ = json.dumps(
-            hierarchy,
+            hierarchy_mixed,
             indent=4,
             sort_keys=True,
             separators=(",", ":"),
@@ -132,7 +132,7 @@ def main(
 
     # Print nice
     for group in clana.clustering.apply_grouping(labels, grouping):
-        print("\t{}: {}".format(len(group), [el for el in group]))
+        print("\t{}: {}".format(len(group), list(group)))
 
 
 def get_cm_problems(cm: np.ndarray, labels: List[str]) -> None:
@@ -161,7 +161,7 @@ def get_cm_problems(cm: np.ndarray, labels: List[str]) -> None:
         logger.warning(f"The following classes were never predicted: {never_predicted}")
 
 
-def calculate_score(cm, weights):
+def calculate_score(cm: np.ndarray, weights: Union[float, np.ndarray]) -> int:
     """
     Calculate a score how close big elements of cm are to the diagonal.
 
@@ -177,7 +177,7 @@ def calculate_score(cm, weights):
     return int(np.tensordot(cm, weights, axes=((0, 1), (0, 1))))
 
 
-def calculate_weight_matrix(n):
+def calculate_weight_matrix(n: int) -> np.ndarray:
     """
     Calculate the weights for each position.
 
@@ -204,15 +204,19 @@ def calculate_weight_matrix(n):
     return weights
 
 
-def swap(cm, i, j):
+def swap(cm: np.ndarray, i: int, j: int) -> np.ndarray:
     """
     Swap row and column i and j in-place.
 
     Parameters
     ----------
-    cm : ndarray
+    cm : np.ndarray
     i : int
     j : int
+
+    Returns
+    -------
+    cm : np.ndarray
 
     Examples
     --------
@@ -233,13 +237,15 @@ def swap(cm, i, j):
     return cm
 
 
-def move_1d(perm, from_start, from_end, insert_pos):
+def move_1d(
+    perm: np.ndarray, from_start: int, from_end: int, insert_pos: int
+) -> np.ndarray:
     """
     Move a block in a list.
 
     Parameters
     ----------
-    perm : ndarray
+    perm : np.ndarray
         Permutation
     from_start : int
     from_end : int
@@ -247,7 +253,7 @@ def move_1d(perm, from_start, from_end, insert_pos):
 
     Returns
     -------
-    perm : ndarray
+    perm : np.ndarray
         The new permutation
     """
     if not (insert_pos < from_start or insert_pos > from_end):
@@ -268,20 +274,20 @@ def move_1d(perm, from_start, from_end, insert_pos):
     return perm
 
 
-def move(cm, from_start, from_end, insert_pos):
+def move(cm: np.ndarray, from_start: int, from_end: int, insert_pos: int) -> np.ndarray:
     """
     Move rows from_start - from_end to insert_pos in-place.
 
     Parameters
     ----------
-    cm : ndarray
+    cm : np.ndarray
     from_start : int
     from_end : int
     insert_pos : int
 
     Returns
     -------
-    cm : ndarray
+    cm : np.ndarray
 
     Examples
     --------
@@ -313,13 +319,13 @@ def move(cm, from_start, from_end, insert_pos):
     return cm
 
 
-def swap_1d(perm, i, j):
+def swap_1d(perm: np.ndarray, i: int, j: int) -> np.ndarray:
     """
     Swap two elements of a 1-D numpy array in-place.
 
     Parameters
     ----------
-    parm : ndarray
+    parm : np.ndarray
     i : int
     j : int
 
@@ -355,21 +361,23 @@ def apply_permutation(cm: np.ndarray, perm: List[int]) -> np.ndarray:
 
 
 def simulated_annealing(
-    current_cm,
-    current_perm=None,
-    score=calculate_score,
-    steps=2 * 10 ** 5,
-    temp=100.0,
-    cooling_factor=0.99,
-    deterministic=False,
-):
+    current_cm: np.ndarray,
+    current_perm: Optional[np.ndarray] = None,
+    score: Callable[[np.ndarray, np.ndarray], float] = calculate_score,
+    steps: int = 2 * 10 ** 5,
+    temp: float = 100.0,
+    cooling_factor: float = 0.99,
+    deterministic: bool = False,
+) -> Dict[str, Any]:
     """
     Optimize current_cm by randomly swapping elements.
 
     Parameters
     ----------
-    current_cm : ndarray
+    current_cm : np.ndarray
     current_perm : None or iterable, optional (default: None)
+    score: Callable[[np.ndarray, np.ndarray], float], optional
+        (default: )
     steps : int, optional (default: 2 * 10**4)
     temp : float > 0.0, optional (default: 100.0)
         Temperature
@@ -493,18 +501,24 @@ def generate_permutation(
     return perm, make_swap
 
 
-def plot_cm(cm, zero_diagonal=False, labels=None, output=cfg["visualize"]["save_path"]):
+def plot_cm(
+    cm: np.ndarray,
+    zero_diagonal: bool = False,
+    labels: Optional[List[str]] = None,
+    output: str = cfg["visualize"]["save_path"],
+) -> None:
     """
     Plot a confusion matrix.
 
     Parameters
     ----------
-    cm : ndarray
+    cm : np.ndarray
     zero_diagonal : bool, optional (default: False)
-    labels : list of str, optional
+    labels : Optional[List[str]]
         If this is not given, then numbers are assigned to the classes
     """
-    import matplotlib.pyplot as plt
+    # Third party
+    from matplotlib import pyplot as plt
     from matplotlib.colors import LogNorm
 
     n = len(cm)
@@ -520,10 +534,10 @@ def plot_cm(cm, zero_diagonal=False, labels=None, output=cfg["visualize"]["save_
     ax = fig.add_subplot(111)
     ax.set_aspect(1)
     if labels is None:
-        labels = [i for i in range(len(cm))]
-    x = [i for i in range(len(cm))]
+        labels = [str(i) for i in range(len(cm))]
+    x = list(range(len(cm)))
     plt.xticks(x, labels, rotation=cfg["visualize"]["xlabels_rotation"])
-    y = [i for i in range(len(cm))]
+    y = list(range(len(cm)))
     plt.yticks(y, labels, rotation=cfg["visualize"]["ylabels_rotation"])
     if cfg["visualize"]["norm"] == "LogNorm":
         norm = LogNorm(vmin=max(1, np.min(cm)), vmax=np.max(cm))
@@ -550,20 +564,22 @@ def plot_cm(cm, zero_diagonal=False, labels=None, output=cfg["visualize"]["save_
     plt.savefig(output)
 
 
-def create_html_cm(cm, zero_diagonal=False, labels=None):
+def create_html_cm(
+    cm: np.ndarray, zero_diagonal: bool = False, labels: Optional[List[str]] = None
+) -> None:
     """
     Plot a confusion matrix.
 
     Parameters
     ----------
-    cm : ndarray
+    cm : np.ndarray
     zero_diagonal : bool, optional (default: False)
         If this is set to True, then the diagonal is overwritten with zeroes.
-    labels : list of str, optional
+    labels : Optional[List[str]]
         If this is not given, then numbers are assigned to the classes
     """
     if labels is None:
-        labels = [i for i in range(len(cm))]
+        labels = [str(i) for i in range(len(cm))]
 
     el_max = 200
 
@@ -606,7 +622,7 @@ def create_html_cm(cm, zero_diagonal=False, labels=None):
                 "background-color": background_color,
             }
         )
-        for j, pred_label, el in zip(range(len(labels)), labels, row_str):
+        for _j, pred_label, el in zip(range(len(labels)), labels, row_str):
             background_color = "transparent"
             if el == "0":
                 el = ""
@@ -631,7 +647,7 @@ def create_html_cm(cm, zero_diagonal=False, labels=None):
         f.write(html)
 
 
-def get_color(white_to_black):
+def get_color(white_to_black: float) -> Tuple[int, int, int]:
     """
     Get grayscale color.
 
@@ -641,7 +657,7 @@ def get_color(white_to_black):
 
     Returns
     -------
-    color : tuple
+    color : Tuple
 
     Examples
     --------
@@ -665,7 +681,7 @@ def get_color(white_to_black):
     return int(r), int(g), int(b)
 
 
-def get_color_code(val, max_val):
+def get_color_code(val: float, max_val: float) -> str:
     """
     Get a HTML color code which is between 0 and max_val.
 

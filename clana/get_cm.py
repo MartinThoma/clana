@@ -15,7 +15,7 @@ import clana.io
 logger = logging.getLogger(__name__)
 
 
-def main(cm_dump_filepath, gt_filepath, n):
+def main(cm_dump_filepath: str, gt_filepath: str, n: int) -> None:
     """
     Calculate a confusion matrix.
 
@@ -38,7 +38,7 @@ def main(cm_dump_filepath, gt_filepath, n):
     logger.info(f"cm was written to '{path}'")
 
 
-def calculate_cm(cm_dump_filepath, gt_filepath, n):
+def calculate_cm(cm_dump_filepath: str, gt_filepath: str, n: int) -> np.ndarray:
     """
     Calculate a confusion matrix.
 
@@ -64,11 +64,11 @@ def calculate_cm(cm_dump_filepath, gt_filepath, n):
     # Read CSV files
     with open(cm_dump_filepath) as fp:
         reader = csv.reader(fp, delimiter=";", quotechar='"')
-        predictions = [row for row in reader]
+        predictions = list(reader)
 
     with open(gt_filepath) as fp:
         reader = csv.reader(fp, delimiter=";", quotechar='"')
-        truths = [row for row in reader]
+        truths = list(reader)
 
     ident2truth_index = {}
     for identifier, truth_index in truths:

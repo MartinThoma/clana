@@ -31,8 +31,8 @@ def main():
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
     # Write gt for CLANA
-    write_gt(dict(enumerate(y_train)), "gt-train.csv")
-    write_gt(dict(enumerate(y_test)), "gt-test.csv")
+    write_gt(dict(enumerate(y_train)), "gt-train.csv")  # type: ignore
+    write_gt(dict(enumerate(y_test)), "gt-test.csv")  # type: ignore
 
     x_train, y_train = preprocess(x_train, y_train, img_rows, img_cols, num_classes)
     x_test, y_test = preprocess(x_test, y_test, img_rows, img_cols, num_classes)
@@ -54,8 +54,8 @@ def main():
     # Write gt for CLANA
     y_train_pred_a = np.argmax(y_train_pred, axis=1)
     y_test_pred_a = np.argmax(y_test_pred, axis=1)
-    write_predictions(dict(enumerate(y_train_pred_a)), "train-pred.csv")
-    write_predictions(dict(enumerate(y_test_pred_a)), "test-pred.csv")
+    write_predictions(dict(enumerate(y_train_pred_a)), "train-pred.csv")  # type: ignore
+    write_predictions(dict(enumerate(y_test_pred_a)), "test-pred.csv")  # type: ignore
 
     score = model.evaluate(x_test, y_test, verbose=0)
     print("Test loss:", score[0])

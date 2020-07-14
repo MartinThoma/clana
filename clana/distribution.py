@@ -6,7 +6,7 @@
 from typing import Dict, List
 
 
-def main(gt_filepath):
+def main(gt_filepath: str) -> None:
     """
     Get the distribution of classes in a file.
 

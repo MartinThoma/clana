@@ -20,7 +20,9 @@ import clana.utils
 logger = logging.getLogger(__name__)
 
 
-def main(label_filepath, gt_filepath, predictions_filepath, clean):
+def main(
+    label_filepath: str, gt_filepath: str, predictions_filepath: str, clean: bool
+) -> None:
     """
     Get a simple confunsion matrix.
 
@@ -59,15 +61,21 @@ def main(label_filepath, gt_filepath, predictions_filepath, clean):
     print(cm)
 
 
-def calculate_cm(labels, truths, predictions, replace_unk_preds=False, clean=False):
+def calculate_cm(
+    labels: List[str],
+    truths: List[str],
+    predictions: List[str],
+    replace_unk_preds: bool = False,
+    clean: bool = False,
+) -> np.ndarray:
     """
     Calculate a confusion matrix.
 
     Parameters
     ----------
-    labels : list
-    truths : list
-    predictions : list
+    labels : List[int]
+    truths : List[int]
+    predictions : List[int]
     replace_unk_preds : bool, optional (default: True)
         If a prediction is not in the labels in label_filepath, replace it
         with UNK
@@ -125,8 +133,8 @@ def calculate_cm(labels, truths, predictions, replace_unk_preds=False, clean=Fal
 
 
 def clean_truths(
-    truths: List[int], predictions: List[int]
-) -> Tuple[List[int], List[int]]:
+    truths: List[str], predictions: List[str]
+) -> Tuple[List[str], List[str]]:
     """
     Remove classes that the classifier doesn't know.
 
@@ -174,7 +182,12 @@ def clean_preds(predictions: List[str], label2i: Dict[str, int]) -> List[str]:
     return predictions
 
 
-def _sanity_check(truths, labels, label2i, predictions):
+def _sanity_check(
+    truths: List[str],
+    labels: List[str],
+    label2i: Dict[str, int],
+    predictions: List[str],
+) -> int:
     for label in truths:
         if label not in label2i:
             logger.error(f"Could not find label '{label}'")

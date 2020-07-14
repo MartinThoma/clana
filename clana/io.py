@@ -9,7 +9,7 @@ import csv
 import hashlib
 import json
 import os
-from typing import List
+from typing import Any, Dict, List, Optional, cast
 
 # Third party
 import numpy as np
@@ -18,12 +18,14 @@ import yaml
 # First party
 import clana.utils
 
+INFINITY = float("inf")
+
 
 class ClanaCfg:
     """Methods related to clanas configuration and permutations."""
 
     @classmethod
-    def read_clana_cfg(cls, cfg_file):
+    def read_clana_cfg(cls, cfg_file: str) -> Dict[str, Any]:
         """
         Read a .clana config file which contains permutations.
 
@@ -58,7 +60,7 @@ class ClanaCfg:
         return os.path.join(os.path.dirname(os.path.abspath(cm_file)), ".clana")
 
     @classmethod
-    def get_perm(cls, cm_file):
+    def get_perm(cls, cm_file: str) -> List[int]:
         """
         Get the best permutation found so far for a given cm_file.
 
@@ -90,14 +92,16 @@ class ClanaCfg:
         return perm
 
     @classmethod
-    def store_permutation(cls, cm_file, permutation, iterations):
+    def store_permutation(
+        cls, cm_file: str, permutation: np.ndarray, iterations: int
+    ) -> None:
         """
         Store a permutation.
 
         Parameters
         ----------
         cm_file : str
-        permutation : List[int]
+        permutation : np.ndarray
         iterations : int
         """
         cm_file = os.path.abspath(cm_file)
@@ -125,7 +129,7 @@ class ClanaCfg:
             yaml.dump(cfg, outfile, default_flow_style=False, allow_unicode=True)
 
 
-def read_confusion_matrix(cm_file, make_max=float("inf")):
+def read_confusion_matrix(cm_file: str, make_max: float = INFINITY) -> np.ndarray:
     """
     Load confusion matrix.
 
@@ -138,7 +142,7 @@ def read_confusion_matrix(cm_file, make_max=float("inf")):
 
     Returns
     -------
-    cm : np.array
+    cm : np.ndarray
     """
     with open(cm_file) as f:
         if cm_file.lower().endswith("csv"):
@@ -157,19 +161,19 @@ def read_confusion_matrix(cm_file, make_max=float("inf")):
         for j in range(n):
             if i == j:
                 continue
-            cm[i][j] = min(cm[i][j], make_max)
+            cm[i][j] = cast(int, min(cm[i][j], make_max))
 
     return cm
 
 
-def read_permutation(cm_file, perm_file):
+def read_permutation(cm_file: str, perm_file: Optional[str]) -> List[int]:
     """
     Load permutation.
 
     Parameters
     ----------
     cm_file : str
-    perm_file : str or None
+    perm_file : Optional[str]
         Path to a JSON file which contains a permutation of n numbers.
 
     Returns
@@ -192,7 +196,7 @@ def read_permutation(cm_file, perm_file):
     return perm
 
 
-def read_labels(labels_file, n):
+def read_labels(labels_file: str, n: int) -> List[str]:
     """
     Load labels.
 
@@ -227,7 +231,7 @@ def write_labels(labels_file: str, labels: List[str]) -> None:
         outfile.write(str_)
 
 
-def write_predictions(identifier2prediction, filepath):
+def write_predictions(identifier2prediction: Dict[str, str], filepath: str) -> None:
     """
     Create a predictions file.
 
@@ -244,7 +248,7 @@ def write_predictions(identifier2prediction, filepath):
             f.write(f"{identifier};{prediction}\n")
 
 
-def write_gt(identifier2label, filepath):
+def write_gt(identifier2label: Dict[str, str], filepath: str) -> None:
     """
     Write ground truth to a file.
 
@@ -259,14 +263,14 @@ def write_gt(identifier2label, filepath):
             f.write(f"{identifier};{label}\n")
 
 
-def write_cm(path, cm):
+def write_cm(path: str, cm: np.ndarray) -> None:
     """
     Write confusion matrix to path.
 
     Parameters
     ----------
     path : str
-    cm : ndarray
+    cm : np.ndarray
     """
     with open(path, "w") as outfile:
         str_ = json.dumps(cm.tolist(), separators=(",", ": "), ensure_ascii=False)

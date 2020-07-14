@@ -5,7 +5,7 @@
 # Core Library
 import csv
 import os
-from typing import List
+from typing import Any, Dict, List, Optional
 
 # Third party
 import yaml
@@ -32,14 +32,16 @@ def load_labels(labels_file: str, n: int) -> List[str]:
         with open(labels_file) as fp:
             reader = csv.reader(fp, delimiter=";", quotechar='"')
             next(reader, None)  # skip the headers
-            parsed_csv = [row for row in reader]
+            parsed_csv = list(reader)
             labels = [el[0] for el in parsed_csv]  # short by default
     else:
         labels = [str(el) for el in range(n)]
     return labels
 
 
-def load_cfg(yaml_filepath=None, verbose=False):
+def load_cfg(
+    yaml_filepath: Optional[str] = None, verbose: bool = False
+) -> Dict[str, Any]:
     """
     Load a YAML configuration file.
 
@@ -49,7 +51,7 @@ def load_cfg(yaml_filepath=None, verbose=False):
 
     Returns
     -------
-    cfg : dict
+    cfg : Dict[str, Any]
     """
     if yaml_filepath is None:
         yaml_filepath = resource_filename("clana", "config.yaml")
@@ -62,18 +64,18 @@ def load_cfg(yaml_filepath=None, verbose=False):
     return cfg
 
 
-def make_paths_absolute(dir_, cfg):
+def make_paths_absolute(dir_: str, cfg: Dict[str, Any]) -> Dict[str, Any]:
     """
     Make all values for keys ending with `_path` absolute to dir_.
 
     Parameters
     ----------
     dir_ : str
-    cfg : dict
+    cfg : Dict[str, Any]
 
     Returns
     -------
-    cfg : dict
+    cfg : Dict[str, Any]
     """
     for key in cfg.keys():
         if hasattr(key, "endswith") and key.endswith("_path"):

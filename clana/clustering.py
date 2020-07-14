@@ -3,7 +3,7 @@
 # Core Library
 import logging
 import random
-from typing import List
+from typing import List, TypeVar, Union
 
 # Third party
 import numpy as np
@@ -15,14 +15,21 @@ cfg = clana.utils.load_cfg()
 logger = logging.getLogger(__name__)
 
 
-def apply_grouping(labels, grouping):
+T = TypeVar("T")
+
+
+def apply_grouping(labels: List[T], grouping: List[bool]) -> List[List[T]]:
     """
     Return list of grouped labels.
 
     Parameters
     ----------
-    labels : list
-    grouping : list of bool
+    labels : List[T]
+    grouping : List[bool]
+
+    Returns
+    -------
+    grouped_labels : List[List[T]]
 
     Examples
     --------
@@ -43,13 +50,13 @@ def apply_grouping(labels, grouping):
     return groups
 
 
-def _remove_single_element_groups(hierarchy):
+def _remove_single_element_groups(hierarchy: List[List[T]]) -> List[Union[T, List[T]]]:
     """
     Flatten sub-lists of length 1.
 
     Parameters
     ----------
-    hierarchy : list of lists
+    hierarchy : List[List]
 
     Returns
     -------
@@ -61,7 +68,7 @@ def _remove_single_element_groups(hierarchy):
     >>> _remove_single_element_groups(hierarchy)
     [0, [1, 2]]
     """
-    h_new = []
+    h_new: List[Union[T, List[T]]] = []
     for el in hierarchy:
         if len(el) > 1:
             h_new.append(el)
@@ -71,13 +78,13 @@ def _remove_single_element_groups(hierarchy):
 
 
 def extract_clusters(
-    cm,
-    labels,
-    steps=10 ** 4,
-    lambda_=0.013,
-    method="local-connectivity",
-    interactive=False,
-):
+    cm: np.ndarray,
+    labels: List[str],
+    steps: int = 10 ** 4,
+    lambda_: float = 0.013,
+    method: str = "local-connectivity",
+    interactive: bool = False,
+) -> List[bool]:
     """
     Find clusters in cm.
 
@@ -88,8 +95,8 @@ def extract_clusters(
 
     Parameters
     ----------
-    cm : ndarray
-    labels : list
+    cm : np.ndarray
+    labels : List[str]
     steps : int
     lambda_ : float
         The closer to 0, the more groups
@@ -99,14 +106,14 @@ def extract_clusters(
 
     Returns
     -------
-    clustes : list of lists of labels
+    clustes : List[bool]
     """
     if method == "energy":
         n = len(cm)
         grouping = np.zeros(n - 1)
         minimal_score = get_score(cm, grouping, lambda_)
         best_grouping = grouping.copy()
-        for i in range(steps):
+        for _ in range(steps):
             pos = random.randint(0, n - 2)
             grouping = best_grouping.copy()
             grouping[pos] = (grouping[pos] + 1) % 2
@@ -117,7 +124,7 @@ def extract_clusters(
                 logger.info(f"Best grouping: {grouping} (score: {minimal_score})")
     elif method == "local-connectivity":
         if interactive:
-            thres = find_thres_interactive(cm, labels)
+            thres: Union[float, int] = find_thres_interactive(cm, labels)
         else:
             thres = find_thres(cm, cfg["visualize"]["threshold"])
         logger.info(f"Found threshold for local connection: {thres}")
@@ -154,20 +161,21 @@ def create_weight_matrix(grouping: List[int]) -> np.ndarray:
     return weight_matrix + weight_matrix.transpose()
 
 
-def get_score(cm: np.ndarray, grouping: List, lambda_: float) -> float:
+def get_score(cm: np.ndarray, grouping: List[int], lambda_: float) -> float:
     """
     Get the score of a confusion matrix.
 
     Parameters
     ----------
     cm : np.ndarray
-    grouping : List
+    grouping : List[int]
     lambda_ : float
 
     Returns
     -------
     score : float
     """
+    # First party
     from clana.visualize_cm import calculate_score
 
     inter_cluster_err = 0.0
@@ -176,22 +184,26 @@ def get_score(cm: np.ndarray, grouping: List, lambda_: float) -> float:
     return lambda_ * inter_cluster_err - sum(grouping)
 
 
-def find_thres(cm, percentage):
+def find_thres(cm: np.ndarray, percentage: float) -> float:
     """
     Find a threshold for grouping.
 
     Parameters
     ----------
-    cm : ndarray
+    cm : np.ndarray
     percentage : float
         Probability that two neighboring classes belong togehter
+
+    Returns
+    -------
+    connectivity : float
     """
     n = int(len(cm) * (1.0 - percentage)) - 1
     con = sorted(get_neighboring_connectivity(cm))
     return con[n]
 
 
-def find_thres_interactive(cm, labels):
+def find_thres_interactive(cm: np.ndarray, labels: List[str]) -> float:
     """
     Find a threshold for grouping.
 
@@ -200,9 +212,12 @@ def find_thres_interactive(cm, labels):
 
     Parameters
     ----------
-    cm : ndarray
-    percentage : float
-        Probability that two neighboring classes belong togehter
+    cm : np.ndarray
+    labels : List[str]
+
+    Returns
+    -------
+    pos_str : float
     """
     n = len(cm)
     con = sorted(zip(get_neighboring_connectivity(cm), zip(range(n - 1), range(1, n))))
@@ -230,6 +245,7 @@ def find_thres_interactive(cm, labels):
             pos_str = con_str
         else:
             print(f"Please type only 'y' or 'n'. You typed {should_be_conn}.")
+    assert pos_str is not None
     return pos_str
 
 
@@ -252,7 +268,9 @@ def get_neighboring_connectivity(cm: np.ndarray) -> List[float]:
     return con
 
 
-def split_at_con_thres(cm, thres, labels, interactive):
+def split_at_con_thres(
+    cm: np.ndarray, thres: float, labels: List[str], interactive: bool
+) -> List[bool]:
     """
     Two classes are not in the same group if they are not connected strong.
 
@@ -270,9 +288,9 @@ def split_at_con_thres(cm, thres, labels, interactive):
                     "cluster? (y/n): ".format(labels[i], labels[i + 1])
                 )
                 if should_conn == "y":
-                    grouping.append(0)
+                    grouping.append(False)
                 elif should_conn == "n":
-                    grouping.append(1)
+                    grouping.append(True)
                 else:
                     print("please type either 'y' or 'n'")
         else:
