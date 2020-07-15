@@ -1,0 +1,11 @@
+coverage<5.0.0
+pytest
+pytest-black
+pytest-cov
+pytest-flake8
+pytest-mccabe
+pytest-mypy
+lxml
+twine
+wheel
+pydocstyle
