@@ -3,8 +3,7 @@
 # Core Library
 import logging
 import random
-from typing import Callable, List, Optional, Tuple
-from typing import NamedTuple
+from typing import Callable, List, NamedTuple, Optional, Tuple
 
 # Third party
 import numpy as np

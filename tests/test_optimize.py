@@ -1,4 +1,7 @@
+# Third party
 import numpy as np
+
+# First party
 import clana.optimize
 
 

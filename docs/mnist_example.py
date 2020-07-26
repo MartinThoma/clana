@@ -5,6 +5,8 @@ Gets to 97.54% test accuracy after 10 epochs.
 22 seconds per epoch on a NVIDIA Geforce 940MX.
 """
 
+# Core Library
+from typing import Any, Tuple
 
 # Third party
 import keras
@@ -15,11 +17,10 @@ from keras.layers import Conv2D, Dense, Dropout, Flatten, MaxPooling2D
 from keras.models import Sequential
 
 # First party
-# internal
 from clana.io import write_gt, write_predictions
 
 
-def main():
+def main() -> None:
     batch_size = 128
     num_classes = 10
     epochs = 1
@@ -62,7 +63,7 @@ def main():
     print("Test accuracy:", score[1])
 
 
-def get_shape(img_rows, img_cols):
+def get_shape(img_rows: int, img_cols: int) -> Tuple[int, int, int]:
     if K.image_data_format() == "channels_first":
         input_shape = (1, img_rows, img_cols)
     else:
@@ -70,7 +71,13 @@ def get_shape(img_rows, img_cols):
     return input_shape
 
 
-def preprocess(features, targets, img_rows, img_cols, num_classes):
+def preprocess(
+    features: np.ndarray,
+    targets: np.ndarray,
+    img_rows: int,
+    img_cols: int,
+    num_classes: int,
+) -> Tuple[Any, Any]:
     if K.image_data_format() == "channels_first":
         features = features.reshape(features.shape[0], 1, img_rows, img_cols)
     else:
@@ -85,7 +92,7 @@ def preprocess(features, targets, img_rows, img_cols, num_classes):
     return features, targets
 
 
-def create_model(input_shape, num_classes):
+def create_model(input_shape: Tuple[int, int, int], num_classes: int) -> Any:
     model = Sequential()
     model.add(
         Conv2D(32, kernel_size=(3, 3), activation="relu", input_shape=input_shape)

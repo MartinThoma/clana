@@ -4,6 +4,7 @@
 [![Documentation Status](https://readthedocs.org/projects/clana/badge/?version=latest)](http://clana.readthedocs.io/en/latest/?badge=latest)
 [![Build Status](https://travis-ci.org/MartinThoma/clana.svg?branch=master)](https://travis-ci.org/MartinThoma/clana)
 [![Coverage Status](https://coveralls.io/repos/github/MartinThoma/clana/badge.svg?branch=master)](https://coveralls.io/github/MartinThoma/clana?branch=master)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 # clana
 
