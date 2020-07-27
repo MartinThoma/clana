@@ -42,7 +42,28 @@ def entry_point() -> None:
     """
 
 
-@entry_point.command(name="get-cm-simple")
+gt_option = click.option(
+    "--gt",
+    "gt_filepath",
+    required=True,
+    type=click.Path(exists=True),
+    help="CSV file with delimiter ;",
+)
+predictions_option = click.option(
+    "--predictions",
+    "predictions_filepath",
+    required=True,
+    type=click.Path(exists=True),
+    help="CSV file with delimiter ;",
+)
+
+
+@entry_point.group()
+def get_cm() -> None:
+    """Generate a confusion matrix file."""
+
+
+@get_cm.command(name="simple")
 @click.option(
     "--labels",
     "label_filepath",
@@ -50,20 +71,8 @@ def entry_point() -> None:
     type=click.Path(exists=True),
     help="CSV file with delimiter ;",
 )
-@click.option(
-    "--gt",
-    "gt_filepath",
-    required=True,
-    type=click.Path(exists=True),
-    help="CSV file with delimiter ;",
-)
-@click.option(
-    "--predictions",
-    "predictions_filepath",
-    required=True,
-    type=click.Path(exists=True),
-    help="CSV file with delimiter ;",
-)
+@predictions_option
+@gt_option
 @click.option(
     "--clean",
     default=False,
@@ -71,41 +80,34 @@ def entry_point() -> None:
     help="Remove classes that the classifier doesn't know",
 )
 def get_cm_simple(
-    label_filepath: str, gt_filepath: str, predictions_filepath: str, clean: bool
+    label_filepath: str, predictions_filepath: str, gt_filepath: str, clean: bool
 ) -> None:
-    """Generate a confusion matrix."""
+    """
+    Generate a confusion matrix.
+
+    The input can be a flat list of predictions and a flat list of ground truth
+    elements. Each prediction is on its own line. Additional information can be
+    after a semicolon.
+    """
     clana.get_cm_simple.main(label_filepath, gt_filepath, predictions_filepath, clean)
 
 
-@entry_point.command(name="get-cm")
-@click.option(
-    "--predictions",
-    "cm_dump_filepath",
-    required=True,
-    type=click.Path(exists=True),
-    help="CSV file with delimiter ;",
-)
-@click.option(
-    "--gt",
-    "gt_filepath",
-    required=True,
-    type=click.Path(exists=True),
-    help="CSV file with delimiter ;",
-)
+@get_cm.command(name="standard")
+@predictions_option
+@gt_option
 @click.option("--n", "n", required=True, type=int, help="Number of classes")
-def get_cm(cm_dump_filepath: str, gt_filepath: str, n: int) -> None:
-    """Generate a confusion matrix from predictions and ground truth."""
-    clana.get_cm.main(cm_dump_filepath, gt_filepath, n)
+def get_cm_standard(predictions_filepath: str, gt_filepath: str, n: int) -> None:
+    """
+    Generate a confusion matrix from predictions and ground truth.
+
+    The predictions need to be a list of `identifier;prediction` and the
+    ground truth needs to be a list of `identifier;truth` of same length.
+    """
+    clana.get_cm.main(predictions_filepath, gt_filepath, n)
 
 
 @entry_point.command(name="distribution")
-@click.option(
-    "--gt",
-    "gt_filepath",
-    required=True,
-    type=click.Path(exists=True),
-    help="List of labels for the dataset",
-)
+@gt_option
 def distribution(gt_filepath: str) -> None:
     """Get the distribution of classes in a dataset."""
     clana.distribution.main(gt_filepath)
