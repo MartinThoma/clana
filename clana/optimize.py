@@ -74,8 +74,7 @@ def simulated_annealing(
         raise ValueError(f"temp={temp} needs to be positive")
     if cooling_factor <= 0.0 or cooling_factor >= 1.0:
         raise ValueError(
-            "cooling_factor={} needs to be in the interval "
-            "(0, 1)".format(cooling_factor)
+            f"cooling_factor={cooling_factor} needs to be in the interval (0, 1)"
         )
     n = len(current_cm)
     logger.info(f"n={n}")
@@ -251,8 +250,8 @@ def move_1d(
     """
     if not (insert_pos < from_start or insert_pos > from_end):
         raise ValueError(
-            "insert_pos={} needs to be smaller than from_start={}"
-            " or greater than from_end={}".format(insert_pos, from_start, from_end)
+            f"insert_pos={insert_pos} needs to be smaller than "
+            f"from_start={from_start} or greater than from_end={from_end}"
         )
     if insert_pos > from_end:
         p_new = list(range(from_end + 1, insert_pos + 1)) + list(
@@ -293,8 +292,8 @@ def move(cm: np.ndarray, from_start: int, from_end: int, insert_pos: int) -> np.
     """
     if not (insert_pos < from_start or insert_pos > from_end):
         raise ValueError(
-            "insert_pos={} needs to be smaller than from_start={}"
-            " or greater than from_end={}".format(insert_pos, from_start, from_end)
+            f"insert_pos={insert_pos} needs to be smaller than "
+            f"from_start={from_start} or greater than from_end={from_end}"
         )
     if insert_pos > from_end:
         p_new = list(range(from_end + 1, insert_pos + 1)) + list(

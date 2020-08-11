@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """Calculate the confusion matrix (one label per line)."""
 
 # Core Library
@@ -88,9 +86,7 @@ def calculate_cm(
     """
     # Check data
     if len(predictions) != len(truths):
-        msg = 'len(predictions) = {} != {} = len(truths)"'.format(
-            len(predictions), len(truths)
-        )
+        msg = f"len(predictions) = {len(predictions)} != {len(truths)} = len(truths)"
         raise ValueError(msg)
 
     label2i = {}  # map a label to 0, ..., n
@@ -118,11 +114,7 @@ def calculate_cm(
 
     report = sklearn.metrics.classification_report(truths, predictions, labels=labels)
     print(report)
-    print(
-        "Accuracy: {:.2f}%".format(
-            sklearn.metrics.accuracy_score(truths, predictions) * 100
-        )
-    )
+    print(f"Accuracy: {sklearn.metrics.accuracy_score(truths, predictions) * 100:.2f}%")
 
     cm = np.zeros((n, n), dtype=int)
 
@@ -199,7 +191,6 @@ def _sanity_check(
             label2i[label] = len(labels)
             n = len(labels) + 1
             logger.error(
-                "Could not find label '{}' in labels file => "
-                "Add class UNK".format(label)
+                f"Could not find label '{label}' in labels file => Add class UNK"
             )
     return n

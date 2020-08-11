@@ -5,6 +5,9 @@
 [![Build Status](https://travis-ci.org/MartinThoma/clana.svg?branch=master)](https://travis-ci.org/MartinThoma/clana)
 [![Coverage Status](https://coveralls.io/repos/github/MartinThoma/clana/badge.svg?branch=master)](https://coveralls.io/github/MartinThoma/clana?branch=master)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+![GitHub last commit](https://img.shields.io/github/last-commit/MartinThoma/clana)
+![GitHub commits since latest release (by SemVer)](https://img.shields.io/github/commits-since/MartinThoma/clana/0.4.0)
+[![CodeFactor](https://www.codefactor.io/repository/github/martinthoma/clana/badge/master)](https://www.codefactor.io/repository/github/martinthoma/clana/overview/master)
 
 # clana
 

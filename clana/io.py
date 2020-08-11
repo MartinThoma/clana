@@ -84,8 +84,8 @@ class ClanaCfg:
             cm_file_md5 = md5(cm_file)
             if cm_file_md5 in cfg["data"][cm_file_base]:
                 print(
-                    "Loaded permutation found in {} iterations".format(
-                        cfg["data"][cm_file_base][cm_file_md5]["iterations"]
+                    "Loaded permutation found in {it} iterations".format(
+                        it=cfg["data"][cm_file_base][cm_file_md5]["iterations"]
                     )
                 )
                 perm = cfg["data"][cm_file_base][cm_file_md5]["permutation"]

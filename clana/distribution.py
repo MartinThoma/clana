@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """Get the distribution of classes in a dataset."""
 
 # Core Library

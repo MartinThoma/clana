@@ -3,7 +3,7 @@
 # Core Library
 import logging
 import random
-from typing import List, TypeVar, Union
+from typing import List, TypeVar, Union, cast
 
 # Third party
 import numpy as np
@@ -131,7 +131,7 @@ def extract_clusters(
         best_grouping = split_at_con_thres(cm, thres, labels, interactive=interactive)
     else:
         raise NotImplementedError(f"method='{method}'")
-    logger.info("Found {} clusters".format(sum(best_grouping) + 1))
+    logger.info(f"Found {sum(best_grouping) + 1} clusters")
     return best_grouping
 
 
@@ -221,7 +221,6 @@ def find_thres_interactive(cm: np.ndarray, labels: List[str]) -> float:
     """
     n = len(cm)
     con = sorted(zip(get_neighboring_connectivity(cm), zip(range(n - 1), range(1, n))))
-    # pos_low = 0
     pos_str = None
 
     # Lowest position from which we know that they are connected
@@ -229,14 +228,12 @@ def find_thres_interactive(cm: np.ndarray, labels: List[str]) -> float:
 
     # Highest position from which we know that they are not connected
     neg_low = 0
-    # neg_up = n - 1
     while pos_up - 1 > neg_low:
         print(f"pos_up={pos_up}, neg_low={neg_low}, pos_str={pos_str}")
         pos = int((pos_up + neg_low) / 2)
         con_str, (i1, i2) = con[pos]
         should_be_conn = input(
-            "Should {} and {} be in one cluster?"
-            " (y/n): ".format(labels[i1], labels[i2])
+            f"Should {labels[i1]} and {labels[i2]} be in one cluster? (y/n): "
         )
         if should_be_conn == "n":
             neg_low = pos
@@ -245,7 +242,7 @@ def find_thres_interactive(cm: np.ndarray, labels: List[str]) -> float:
             pos_str = con_str
         else:
             print(f"Please type only 'y' or 'n'. You typed {should_be_conn}.")
-    assert pos_str is not None
+    pos_str = cast(float, pos_str)
     return pos_str
 
 
@@ -284,8 +281,8 @@ def split_at_con_thres(
             should_conn = "-"
             while should_conn not in ["y", "n"]:
                 should_conn = input(
-                    "Should {} and {} be in one "
-                    "cluster? (y/n): ".format(labels[i], labels[i + 1])
+                    f"Should {labels[i]} and {labels[i + 1]} be in one "
+                    "cluster? (y/n): "
                 )
                 if should_conn == "y":
                     grouping.append(False)

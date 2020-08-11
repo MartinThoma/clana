@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """Calculate the confusion matrix (CSV inputs)."""
 
 # Core Library
@@ -72,9 +70,7 @@ def calculate_cm(
         ident2truth_index[identifier] = int(truth_index)
 
     if len(predictions) != len(truths):
-        msg = 'len(predictions) = {} != {} = len(truths)"'.format(
-            len(predictions), len(truths)
-        )
+        msg = f'len(predictions) = {len(predictions)} != {len(truths)} = len(truths)"'
         raise ValueError(msg)
 
     for ident, pred_index in predictions:

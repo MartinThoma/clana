@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 clana is a toolkit for classifier analysis.
 
@@ -182,16 +180,10 @@ def print_file_format_issues(cm_file: str, labels_file: str, perm_file: str) -> 
     perm_file : str
     """
     if not (cm_file.lower().endswith("json") or cm_file.lower().endswith("csv")):
-        print(
-            "[WARNING] A json file is expected for the cm_file, but was {}".format(
-                cm_file
-            )
-        )
+        print(f"[WARNING] A json file is expected for the cm_file, but was {cm_file}")
     if not (perm_file is None or perm_file.lower().endswith("json")):
         print(
-            "[WARNING] A json file is expected fo the perm_file, but was {}".format(
-                perm_file
-            )
+            f"[WARNING] A json file is expected fo the perm_file, but was {perm_file}"
         )
     cm = clana.io.read_confusion_matrix(cm_file)
     labels = clana.io.read_labels(labels_file, len(cm))

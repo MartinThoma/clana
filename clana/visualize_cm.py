@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 Optimize confusion matrix.
 
@@ -78,19 +76,19 @@ def main(
     get_cm_problems(cm, labels)
 
     weights = calculate_weight_matrix(len(cm))
-    print("Score: {}".format(calculate_score(cm, weights)))
+    print(f"Score: {calculate_score(cm, weights)}")
     result = simulated_annealing(
         cm, perm, score=calculate_score, deterministic=True, steps=steps
     )
-    print("Score: {}".format(calculate_score(result.cm, weights)))
-    print("Perm: {}".format(list(result.perm)))
+    print(f"Score: {calculate_score(result.cm, weights)}")
+    print(f"Perm: {list(result.perm)}")
     clana.io.ClanaCfg.store_permutation(cm_file, result.perm, steps)
     labels = [labels[i] for i in result.perm]
     class_indices = list(range(len(labels)))
     class_indices = [class_indices[i] for i in result.perm]
     logger.info(f"Classes: {labels}")
     acc = clana.cm_metrics.get_accuracy(cm_orig)
-    print("Accuracy: {:0.2f}%".format(acc * 100))
+    print(f"Accuracy: {acc * 100:0.2f}%")
     start = 0
     if limit_classes is None:
         limit_classes = len(cm)
@@ -109,8 +107,8 @@ def main(
     )
     if len(cm) < 5:
         print(
-            "You only have {} classes. Clustering for less than 5 classes "
-            "should be done manually.".format(len(cm))
+            f"You only have {len(cm)} classes. Clustering for less than "
+            "5 classes should be done manually."
         )
         return
     grouping = clana.clustering.extract_clusters(result.cm, labels)
@@ -120,7 +118,7 @@ def main(
         if el:
             cluster_i += 1
         y_pred.append(cluster_i)
-    logger.info("silhouette_score={}".format(silhouette_score(cm, y_pred)))
+    logger.info(f"silhouette_score={silhouette_score(cm, y_pred)}")
     # Store grouping as hierarchy
     with open(cfg["visualize"]["hierarchy_path"], "w") as outfile:
         hierarchy = clana.clustering.apply_grouping(class_indices, grouping)
@@ -136,7 +134,7 @@ def main(
 
     # Print nice
     for group in clana.clustering.apply_grouping(labels, grouping):
-        print("\t{}: {}".format(len(group), list(group)))
+        print(f"\t{len(group)}: {list(group)}")
 
 
 def get_cm_problems(cm: np.ndarray, labels: List[str]) -> None:
@@ -153,7 +151,7 @@ def get_cm_problems(cm: np.ndarray, labels: List[str]) -> None:
     # Find classes which are not present in the dataset
     for i in range(n):
         if sum(cm[i]) == 0:
-            logger.warning("The class '{}' was not in the dataset.".format(labels[i]))
+            logger.warning(f"The class '{labels[i]}' was not in the dataset.")
 
     # Find classes which are never predicted
     cm = cm.transpose()
@@ -209,7 +207,8 @@ def plot_cm(
         norm = None
     else:
         raise NotImplementedError(
-            "visualize->norm={} is not implemented. " "Try None or LogNorm"
+            f"visualize->norm={cfg['visualize']['norm']} is not implemented. "
+            "Try None or LogNorm"
         )
     res = ax.imshow(
         np.array(cm),
@@ -333,12 +332,9 @@ def get_color(white_to_black: float) -> Tuple[int, int, int]:
     (0, 0, 0)
     """
     if not (0 <= white_to_black <= 1):
-        raise ValueError("white_to_black={} is not in the interval [0, 1]")
-    # in HSV, red is 0 deg and green is 120 deg (out of 360);
-    # divide red_to_green with 3 to map [0, 1] to [0, 1./3.]
-    # hue = red_to_green / 3.0
-    # r, g, b = colorsys.hsv_to_rgb(hue, 0, 1)
-    # return map(lambda x: int(255 * x), (r, g, b))
+        raise ValueError(
+            f"white_to_black={white_to_black} is not in the interval [0, 1]"
+        )
 
     index = 255 - int(255 * white_to_black)
     r, g, b = index, index, index

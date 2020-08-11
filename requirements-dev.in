@@ -1,7 +1,8 @@
 coverage<5.0.0
+lxml
 pytest
 pytest-cov
 pytest-mccabe
-lxml
+pytest-timeout
 twine
 wheel
