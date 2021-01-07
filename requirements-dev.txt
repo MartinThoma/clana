@@ -17,7 +17,7 @@ idna==2.10                # via requests
 iniconfig==1.1.1          # via pytest
 jeepney==0.4.3            # via keyring, secretstorage
 keyring==21.4.0           # via twine
-lxml==4.6.1               # via -r requirements-dev.in
+lxml==4.6.2               # via -r requirements-dev.in
 mccabe==0.6.1             # via pytest-mccabe
 packaging==20.4           # via bleach, pytest
 pkginfo==1.6.1            # via twine
