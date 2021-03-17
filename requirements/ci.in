@@ -1,4 +1,6 @@
+-r prod.txt
 black
+coverage
 flake8
 flake8_implicit_str_concat
 flake8-bugbear
@@ -11,5 +13,10 @@ flake8-pytest-style
 flake8-raise
 flake8-simplify
 flake8-string-format
+lxml
 mypy
 pydocstyle
+pytest
+pytest-cov
+pytest-mccabe
+pytest-timeout

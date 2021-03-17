@@ -18,14 +18,14 @@ logger = logging.getLogger(__name__)
 T = TypeVar("T")
 
 
-def apply_grouping(labels: List[T], grouping: List[bool]) -> List[List[T]]:
+def apply_grouping(labels: List[T], grouping: List[int]) -> List[List[T]]:
     """
     Return list of grouped labels.
 
     Parameters
     ----------
     labels : List[T]
-    grouping : List[bool]
+    grouping : List[int]
 
     Returns
     -------
@@ -84,7 +84,7 @@ def extract_clusters(
     lambda_: float = 0.013,
     method: str = "local-connectivity",
     interactive: bool = False,
-) -> List[bool]:
+) -> List[int]:
     """
     Find clusters in cm.
 
@@ -106,17 +106,17 @@ def extract_clusters(
 
     Returns
     -------
-    clustes : List[bool]
+    clustes : List[int]
     """
     if method == "energy":
         n = len(cm)
-        grouping = np.zeros(n - 1)
+        grouping = [0 for _ in range(n - 1)]
         minimal_score = get_score(cm, grouping, lambda_)
-        best_grouping = grouping.copy()
+        best_grouping = grouping[:]
         for _ in range(steps):
             pos = random.randint(0, n - 2)
-            grouping = best_grouping.copy()
-            grouping[pos] = (grouping[pos] + 1) % 2
+            grouping = best_grouping[:]
+            grouping[pos] = bool((grouping[pos] + 1) % 2)
             current_score = get_score(cm, grouping, lambda_)
             if current_score < minimal_score:
                 best_grouping = grouping
@@ -267,7 +267,7 @@ def get_neighboring_connectivity(cm: np.ndarray) -> List[float]:
 
 def split_at_con_thres(
     cm: np.ndarray, thres: float, labels: List[str], interactive: bool
-) -> List[bool]:
+) -> List[int]:
     """
     Two classes are not in the same group if they are not connected strong.
 
@@ -285,9 +285,9 @@ def split_at_con_thres(
                     "cluster? (y/n): "
                 )
                 if should_conn == "y":
-                    grouping.append(False)
+                    grouping.append(0)
                 elif should_conn == "n":
-                    grouping.append(True)
+                    grouping.append(1)
                 else:
                     print("please type either 'y' or 'n'")
         else:

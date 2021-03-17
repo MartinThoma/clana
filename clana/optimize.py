@@ -3,7 +3,7 @@
 # Core Library
 import logging
 import random
-from typing import Callable, List, NamedTuple, Optional, Tuple
+from typing import Callable, List, NamedTuple, Tuple, Union
 
 # Third party
 import numpy as np
@@ -45,7 +45,7 @@ def calculate_score(cm: np.ndarray, weights: np.ndarray) -> int:
 
 def simulated_annealing(
     current_cm: np.ndarray,
-    current_perm: Optional[np.ndarray] = None,
+    current_perm: Union[None, List[int], np.ndarray] = None,
     score: Callable[[np.ndarray, np.ndarray], float] = calculate_score,
     steps: int = 2 * 10 ** 5,
     temp: float = 100.0,
@@ -81,7 +81,7 @@ def simulated_annealing(
 
     # Load the initial permutation
     if current_perm is None:
-        current_perm = list(range(n))
+        current_perm = np.array(list(range(n)))
     current_perm = np.array(current_perm)
 
     # Pre-calculate weights
@@ -151,7 +151,7 @@ def calculate_weight_matrix(n: int) -> np.ndarray:
            [2.02, 1.03, 0.  ]])
     """
     weights = np.abs(np.arange(n) - np.arange(n)[:, None])
-    weights = np.array(weights, dtype=np.float)
+    weights = np.array(weights, dtype=float)
     for i in range(n):
         for j in range(n):
             if i == j:
@@ -161,8 +161,8 @@ def calculate_weight_matrix(n: int) -> np.ndarray:
 
 
 def generate_permutation(
-    n: int, current_perm: List[int], tmp_cm: np.ndarray
-) -> Tuple[List[int], bool]:
+    n: int, current_perm: np.ndarray, tmp_cm: np.ndarray
+) -> Tuple[np.ndarray, bool]:
     """
     Generate a new permutation.
 
@@ -208,7 +208,7 @@ def generate_permutation(
     return perm, make_swap
 
 
-def apply_permutation(cm: np.ndarray, perm: List[int]) -> np.ndarray:
+def apply_permutation(cm: np.ndarray, perm: Union[List[int], np.ndarray]) -> np.ndarray:
     """
     Apply permutation to a matrix.
 

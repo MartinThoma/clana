@@ -146,14 +146,14 @@ def read_confusion_matrix(cm_file: str, make_max: float = INFINITY) -> np.ndarra
     """
     with open(cm_file) as f:
         if cm_file.lower().endswith("csv"):
-            cm = []
+            cm_list = []
             with open(cm_file, newline="") as csvfile:
                 spamreader = csv.reader(csvfile, delimiter=",", quotechar='"')
                 for row in spamreader:
-                    cm.append([int(el) for el in row])
+                    cm_list.append([int(el) for el in row])
         else:
-            cm = json.load(f)
-        cm = np.array(cm)
+            cm_list = json.load(f)
+        cm = np.array(cm_list)
 
     # Crop values
     n = len(cm)
