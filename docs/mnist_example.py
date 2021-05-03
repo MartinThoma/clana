@@ -85,7 +85,7 @@ def preprocess(
     features = features.astype("float32")
     features /= 255
     print("x shape:", features.shape)
-    print("{} samples".format(features.shape[0]))
+    print(f"{features.shape[0]} samples")
 
     # convert class vectors to binary class matrices
     targets = keras.utils.to_categorical(targets, num_classes)
