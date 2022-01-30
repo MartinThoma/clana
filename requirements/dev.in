@@ -2,6 +2,3 @@ pip-tools
 pre-commit
 twine
 wheel
-types-pkg-resources
-types-PyYAML
-types-setuptools
