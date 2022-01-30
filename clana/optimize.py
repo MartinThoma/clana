@@ -7,6 +7,7 @@ from typing import Callable, List, NamedTuple, Tuple, Union
 
 # Third party
 import numpy as np
+import numpy.typing as npt
 
 logger = logging.getLogger(__name__)
 
@@ -14,19 +15,19 @@ logger = logging.getLogger(__name__)
 class OptimizationResult(NamedTuple):
     """The result of a matrix column/row order optimiataion (CMO)."""
 
-    cm: np.ndarray
-    perm: np.ndarray
+    cm: npt.NDArray
+    perm: npt.NDArray
 
 
-def calculate_score(cm: np.ndarray, weights: np.ndarray) -> int:
+def calculate_score(cm: npt.NDArray, weights: npt.NDArray) -> int:
     """
     Calculate a score how close big elements of cm are to the diagonal.
 
     Parameters
     ----------
-    cm : np.ndarray
+    cm : npt.NDArray
         The confusion matrix
-    weights : np.ndarray
+    weights : npt.NDArray
         The weights matrix.
         It has to have the same shape as the confusion matrix
 
@@ -44,9 +45,9 @@ def calculate_score(cm: np.ndarray, weights: np.ndarray) -> int:
 
 
 def simulated_annealing(
-    current_cm: np.ndarray,
-    current_perm: Union[None, List[int], np.ndarray] = None,
-    score: Callable[[np.ndarray, np.ndarray], float] = calculate_score,
+    current_cm: npt.NDArray,
+    current_perm: Union[None, List[int], npt.NDArray] = None,
+    score: Callable[[npt.NDArray, npt.NDArray], float] = calculate_score,
     steps: int = 2 * 10**5,
     temp: float = 100.0,
     cooling_factor: float = 0.99,
@@ -57,9 +58,9 @@ def simulated_annealing(
 
     Parameters
     ----------
-    current_cm : np.ndarray
+    current_cm : npt.NDArray
     current_perm : None or iterable, optional (default: None)
-    score: Callable[[np.ndarray, np.ndarray], float], optional
+    score: Callable[[npt.NDArray, npt.NDArray], float], optional
         (default: )
     steps : int, optional (default: 2 * 10**4)
     temp : float > 0.0, optional (default: 100.0)
@@ -133,7 +134,7 @@ def simulated_annealing(
     return OptimizationResult(cm=best_cm, perm=best_perm)
 
 
-def calculate_weight_matrix(n: int) -> np.ndarray:
+def calculate_weight_matrix(n: int) -> npt.NDArray:
     """
     Calculate the weights for each position.
 
@@ -161,8 +162,8 @@ def calculate_weight_matrix(n: int) -> np.ndarray:
 
 
 def generate_permutation(
-    n: int, current_perm: np.ndarray, tmp_cm: np.ndarray
-) -> Tuple[np.ndarray, bool]:
+    n: int, current_perm: npt.NDArray, tmp_cm: npt.NDArray
+) -> Tuple[npt.NDArray, bool]:
     """
     Generate a new permutation.
 
@@ -170,7 +171,7 @@ def generate_permutation(
     ----------
     n : int
     current_perm : List[int]
-    tmp_cm : np.ndarray
+    tmp_cm : npt.NDArray
 
     Return
     ------
@@ -208,7 +209,9 @@ def generate_permutation(
     return perm, make_swap
 
 
-def apply_permutation(cm: np.ndarray, perm: Union[List[int], np.ndarray]) -> np.ndarray:
+def apply_permutation(
+    cm: npt.NDArray, perm: Union[List[int], npt.NDArray]
+) -> npt.NDArray:
     """
     Apply permutation to a matrix.
 
@@ -230,14 +233,14 @@ def apply_permutation(cm: np.ndarray, perm: Union[List[int], np.ndarray]) -> np.
 
 
 def move_1d(
-    perm: np.ndarray, from_start: int, from_end: int, insert_pos: int
-) -> np.ndarray:
+    perm: npt.NDArray, from_start: int, from_end: int, insert_pos: int
+) -> npt.NDArray:
     """
     Move a block in a list.
 
     Parameters
     ----------
-    perm : np.ndarray
+    perm : npt.NDArray
         Permutation
     from_start : int
     from_end : int
@@ -245,7 +248,7 @@ def move_1d(
 
     Returns
     -------
-    perm : np.ndarray
+    perm : npt.NDArray
         The new permutation
     """
     if not (insert_pos < from_start or insert_pos > from_end):
@@ -266,20 +269,22 @@ def move_1d(
     return perm
 
 
-def move(cm: np.ndarray, from_start: int, from_end: int, insert_pos: int) -> np.ndarray:
+def move(
+    cm: npt.NDArray, from_start: int, from_end: int, insert_pos: int
+) -> npt.NDArray:
     """
     Move rows from_start - from_end to insert_pos in-place.
 
     Parameters
     ----------
-    cm : np.ndarray
+    cm : npt.NDArray
     from_start : int
     from_end : int
     insert_pos : int
 
     Returns
     -------
-    cm : np.ndarray
+    cm : npt.NDArray
 
     Examples
     --------
@@ -311,13 +316,13 @@ def move(cm: np.ndarray, from_start: int, from_end: int, insert_pos: int) -> np.
     return cm
 
 
-def swap_1d(perm: np.ndarray, i: int, j: int) -> np.ndarray:
+def swap_1d(perm: npt.NDArray, i: int, j: int) -> npt.NDArray:
     """
     Swap two elements of a 1-D numpy array in-place.
 
     Parameters
     ----------
-    parm : np.ndarray
+    parm : npt.NDArray
     i : int
     j : int
 
@@ -331,19 +336,19 @@ def swap_1d(perm: np.ndarray, i: int, j: int) -> np.ndarray:
     return perm
 
 
-def swap(cm: np.ndarray, i: int, j: int) -> np.ndarray:
+def swap(cm: npt.NDArray, i: int, j: int) -> npt.NDArray:
     """
     Swap row and column i and j in-place.
 
     Parameters
     ----------
-    cm : np.ndarray
+    cm : npt.NDArray
     i : int
     j : int
 
     Returns
     -------
-    cm : np.ndarray
+    cm : npt.NDArray
 
     Examples
     --------

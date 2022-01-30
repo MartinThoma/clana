@@ -10,6 +10,7 @@ from typing import Dict, List, Tuple
 
 # Third party
 import numpy as np
+import numpy.typing as npt
 import sklearn.metrics
 
 # First party
@@ -65,7 +66,7 @@ def calculate_cm(
     predictions: List[str],
     replace_unk_preds: bool = False,
     clean: bool = False,
-) -> np.ndarray:
+) -> npt.NDArray:
     """
     Calculate a confusion matrix.
 

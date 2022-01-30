@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional, cast
 
 # Third party
 import numpy as np
+import numpy.typing as npt
 import yaml
 
 # First party
@@ -93,7 +94,7 @@ class ClanaCfg:
 
     @classmethod
     def store_permutation(
-        cls, cm_file: str, permutation: np.ndarray, iterations: int
+        cls, cm_file: str, permutation: npt.NDArray, iterations: int
     ) -> None:
         """
         Store a permutation.
@@ -101,7 +102,7 @@ class ClanaCfg:
         Parameters
         ----------
         cm_file : str
-        permutation : np.ndarray
+        permutation : npt.NDArray
         iterations : int
         """
         cm_file = os.path.abspath(cm_file)
@@ -129,7 +130,7 @@ class ClanaCfg:
             yaml.dump(cfg, outfile, default_flow_style=False, allow_unicode=True)
 
 
-def read_confusion_matrix(cm_file: str, make_max: float = INFINITY) -> np.ndarray:
+def read_confusion_matrix(cm_file: str, make_max: float = INFINITY) -> npt.NDArray:
     """
     Load confusion matrix.
 
@@ -142,7 +143,7 @@ def read_confusion_matrix(cm_file: str, make_max: float = INFINITY) -> np.ndarra
 
     Returns
     -------
-    cm : np.ndarray
+    cm : npt.NDArray
     """
     with open(cm_file) as f:
         if cm_file.lower().endswith("csv"):
@@ -263,14 +264,14 @@ def write_gt(identifier2label: Dict[str, str], filepath: str) -> None:
             f.write(f"{identifier};{label}\n")
 
 
-def write_cm(path: str, cm: np.ndarray) -> None:
+def write_cm(path: str, cm: npt.NDArray) -> None:
     """
     Write confusion matrix to path.
 
     Parameters
     ----------
     path : str
-    cm : np.ndarray
+    cm : npt.NDArray
     """
     with open(path, "w") as outfile:
         str_ = json.dumps(cm.tolist(), separators=(",", ": "), ensure_ascii=False)

@@ -7,6 +7,7 @@ from typing import List, Tuple
 
 # Third party
 import numpy as np
+import numpy.typing as npt
 
 # First party
 import clana.io
@@ -48,7 +49,7 @@ def main(predictions_filepath: str, gt_filepath: str, n: int) -> None:
 
 def calculate_cm(
     truths: List[Tuple[str, ...]], predictions: List[Tuple[str, ...]], n: int
-) -> np.ndarray:
+) -> npt.NDArray:
     """
     Calculate a confusion matrix.
 

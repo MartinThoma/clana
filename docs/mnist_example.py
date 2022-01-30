@@ -11,6 +11,7 @@ from typing import Any, Tuple
 # Third party
 import keras
 import numpy as np
+import numpy.typing as npt
 from keras import backend as K
 from keras.datasets import mnist
 from keras.layers import Conv2D, Dense, Dropout, Flatten, MaxPooling2D
@@ -72,8 +73,8 @@ def get_shape(img_rows: int, img_cols: int) -> Tuple[int, int, int]:
 
 
 def preprocess(
-    features: np.ndarray,
-    targets: np.ndarray,
+    features: npt.NDArray,
+    targets: npt.NDArray,
     img_rows: int,
     img_cols: int,
     num_classes: int,
