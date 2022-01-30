@@ -1,7 +1,6 @@
 """Metrics for confusion matrices."""
 
 # Third party
-import numpy as np
 import numpy.typing as npt
 
 
