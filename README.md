@@ -11,10 +11,11 @@
 
 # clana
 
-`clana` is a toolkit for classifier analysis. One key contribution of clana is
-Confusion Matrix Ordering (CMO) as explained in chapter 5 of [Analysis and Optimization of Convolutional Neural Network Architectures](https://arxiv.org/abs/1707.09725). It is a technique
-that can be applied to any multi-class classifier and helps to understand which
-groups of classes are most similar.
+`clana` is a library and command line application to visualize confusion matrices of
+classifiers with lots of classes. The two key contribution of clana are
+Confusion Matrix Ordering (CMO) as explained in chapter 5 of [Analysis and Optimization of Convolutional Neural Network Architectures](https://arxiv.org/abs/1707.09725) and an optimization
+algorithm to to achieve it. The CMO technique can be applied to any multi-class
+classifier and helps to understand which groups of classes are most similar.
 
 
 ## Installation
@@ -22,7 +23,7 @@ groups of classes are most similar.
 The recommended way to install clana is:
 
 ```
-$ pip install clana --user
+$ pip install clana --user --upgrade
 ```
 
 If you want the latest version:
@@ -126,20 +127,6 @@ the most common class, the second bar is the second most common class, ...
 
 It uses the short labels, except `--long` is added to the command.
 
-
-### Metrics
-
-```
-$ clana metrics --gt gt.csv --preds preds.csv
-```
-
-gives the following metrics by
-
-* Line 1: Accuracy
-* Line 2: Precision
-* Line 3: Recall
-* Line 4: F1-Score
-* Line 5: Mean accuracy
 
 ### Visualizations
 

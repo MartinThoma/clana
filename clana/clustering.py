@@ -7,6 +7,7 @@ from typing import List, TypeVar, Union, cast
 
 # Third party
 import numpy as np
+import numpy.typing as npt
 
 # First party
 import clana.utils
@@ -78,9 +79,9 @@ def _remove_single_element_groups(hierarchy: List[List[T]]) -> List[Union[T, Lis
 
 
 def extract_clusters(
-    cm: np.ndarray,
+    cm: npt.NDArray,
     labels: List[str],
-    steps: int = 10 ** 4,
+    steps: int = 10**4,
     lambda_: float = 0.013,
     method: str = "local-connectivity",
     interactive: bool = False,
@@ -95,7 +96,7 @@ def extract_clusters(
 
     Parameters
     ----------
-    cm : np.ndarray
+    cm : npt.NDArray
     labels : List[str]
     steps : int
     lambda_ : float
@@ -135,7 +136,7 @@ def extract_clusters(
     return best_grouping
 
 
-def create_weight_matrix(grouping: List[int]) -> np.ndarray:
+def create_weight_matrix(grouping: List[int]) -> npt.NDArray:
     """
     Create a matrix which contains the distance to the diagonal.
 
@@ -145,7 +146,7 @@ def create_weight_matrix(grouping: List[int]) -> np.ndarray:
 
     Returns
     -------
-    weight_matrix : np.ndarray
+    weight_matrix : npt.NDArray
         A symmetric matrix
     """
     n = len(grouping) + 1
@@ -161,13 +162,13 @@ def create_weight_matrix(grouping: List[int]) -> np.ndarray:
     return weight_matrix + weight_matrix.transpose()
 
 
-def get_score(cm: np.ndarray, grouping: List[int], lambda_: float) -> float:
+def get_score(cm: npt.NDArray, grouping: List[int], lambda_: float) -> float:
     """
     Get the score of a confusion matrix.
 
     Parameters
     ----------
-    cm : np.ndarray
+    cm : npt.NDArray
     grouping : List[int]
     lambda_ : float
 
@@ -184,13 +185,13 @@ def get_score(cm: np.ndarray, grouping: List[int], lambda_: float) -> float:
     return lambda_ * inter_cluster_err - sum(grouping)
 
 
-def find_thres(cm: np.ndarray, percentage: float) -> float:
+def find_thres(cm: npt.NDArray, percentage: float) -> float:
     """
     Find a threshold for grouping.
 
     Parameters
     ----------
-    cm : np.ndarray
+    cm : npt.NDArray
     percentage : float
         Probability that two neighboring classes belong togehter
 
@@ -203,7 +204,7 @@ def find_thres(cm: np.ndarray, percentage: float) -> float:
     return con[n]
 
 
-def find_thres_interactive(cm: np.ndarray, labels: List[str]) -> float:
+def find_thres_interactive(cm: npt.NDArray, labels: List[str]) -> float:
     """
     Find a threshold for grouping.
 
@@ -212,7 +213,7 @@ def find_thres_interactive(cm: np.ndarray, labels: List[str]) -> float:
 
     Parameters
     ----------
-    cm : np.ndarray
+    cm : npt.NDArray
     labels : List[str]
 
     Returns
@@ -246,13 +247,13 @@ def find_thres_interactive(cm: np.ndarray, labels: List[str]) -> float:
     return pos_str
 
 
-def get_neighboring_connectivity(cm: np.ndarray) -> List[float]:
+def get_neighboring_connectivity(cm: npt.NDArray) -> List[float]:
     """
     Get how strong neighboring classes are connected.
 
     Parameters
     ----------
-    cm : np.ndarray
+    cm : npt.NDArray
 
     Returns
     -------
@@ -266,7 +267,7 @@ def get_neighboring_connectivity(cm: np.ndarray) -> List[float]:
 
 
 def split_at_con_thres(
-    cm: np.ndarray, thres: float, labels: List[str], interactive: bool
+    cm: npt.NDArray, thres: float, labels: List[str], interactive: bool
 ) -> List[int]:
     """
     Two classes are not in the same group if they are not connected strong.

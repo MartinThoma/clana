@@ -1,10 +1,10 @@
 """Metrics for confusion matrices."""
 
 # Third party
-import numpy as np
+import numpy.typing as npt
 
 
-def get_accuracy(cm: np.ndarray) -> float:
+def get_accuracy(cm: npt.NDArray) -> float:
     """
     Get the accuaracy by the confusion matrix cm.
 

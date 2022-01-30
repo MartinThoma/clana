@@ -14,6 +14,7 @@ from typing import List, Optional, Tuple
 
 # Third party
 import numpy as np
+import numpy.typing as npt
 from jinja2 import Template
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from pkg_resources import resource_filename
@@ -137,7 +138,7 @@ def main(
         print(f"\t{len(group)}: {list(group)}")
 
 
-def get_cm_problems(cm: np.ndarray, labels: List[str]) -> None:
+def get_cm_problems(cm: npt.NDArray, labels: List[str]) -> None:
     """
     Find problems of a classifier by analzing its confusion matrix.
 
@@ -164,7 +165,7 @@ def get_cm_problems(cm: np.ndarray, labels: List[str]) -> None:
 
 
 def plot_cm(
-    cm: np.ndarray,
+    cm: npt.NDArray,
     zero_diagonal: bool = False,
     labels: Optional[List[str]] = None,
     output: str = cfg["visualize"]["save_path"],
@@ -174,7 +175,7 @@ def plot_cm(
 
     Parameters
     ----------
-    cm : np.ndarray
+    cm : npt.NDArray
     zero_diagonal : bool, optional (default: False)
     labels : Optional[List[str]]
         If this is not given, then numbers are assigned to the classes
@@ -202,7 +203,7 @@ def plot_cm(
     y = list(range(len(cm)))
     plt.yticks(y, labels, rotation=cfg["visualize"]["ylabels_rotation"])
     if cfg["visualize"]["norm"] == "LogNorm":
-        norm = LogNorm(vmin=max(1, np.min(cm)), vmax=np.max(cm))
+        norm = LogNorm(vmin=max(1, np.min(cm)), vmax=np.max(cm))  # type: ignore
     elif cfg["visualize"]["norm"] is None:
         norm = None
     else:
@@ -228,14 +229,14 @@ def plot_cm(
 
 
 def create_html_cm(
-    cm: np.ndarray, zero_diagonal: bool = False, labels: Optional[List[str]] = None
+    cm: npt.NDArray, zero_diagonal: bool = False, labels: Optional[List[str]] = None
 ) -> None:
     """
     Plot a confusion matrix.
 
     Parameters
     ----------
-    cm : np.ndarray
+    cm : npt.NDArray
     zero_diagonal : bool, optional (default: False)
         If this is set to True, then the diagonal is overwritten with zeroes.
     labels : Optional[List[str]]
