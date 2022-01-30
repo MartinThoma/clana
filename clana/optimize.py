@@ -47,7 +47,7 @@ def simulated_annealing(
     current_cm: np.ndarray,
     current_perm: Union[None, List[int], np.ndarray] = None,
     score: Callable[[np.ndarray, np.ndarray], float] = calculate_score,
-    steps: int = 2 * 10 ** 5,
+    steps: int = 2 * 10**5,
     temp: float = 100.0,
     cooling_factor: float = 0.99,
     deterministic: bool = False,

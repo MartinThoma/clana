@@ -80,7 +80,7 @@ def _remove_single_element_groups(hierarchy: List[List[T]]) -> List[Union[T, Lis
 def extract_clusters(
     cm: np.ndarray,
     labels: List[str],
-    steps: int = 10 ** 4,
+    steps: int = 10**4,
     lambda_: float = 0.013,
     method: str = "local-connectivity",
     interactive: bool = False,
