@@ -1,6 +1,6 @@
 # Third party
 import pkg_resources
-from click.testing import CliRunner
+from typer.testing import CliRunner
 
 # First party
 import clana.cli

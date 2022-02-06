@@ -3,8 +3,8 @@
 """Test the CLI functions."""
 
 # Third party
-from click.testing import CliRunner
 from pkg_resources import resource_filename
+from typer.testing import CliRunner
 
 # First party
 import clana.cli
