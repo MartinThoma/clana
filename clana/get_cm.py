@@ -3,6 +3,7 @@
 # Core Library
 import csv
 import logging
+from pathlib import Path
 from typing import List, Tuple
 
 # Third party
@@ -15,17 +16,17 @@ import clana.io
 logger = logging.getLogger(__name__)
 
 
-def main(predictions_filepath: str, gt_filepath: str, n: int) -> None:
+def main(predictions_filepath: Path, gt_filepath: Path, n: int) -> None:
     """
     Calculate a confusion matrix.
 
     Parameters
     ----------
-    predictions_filepath : str
+    predictions_filepath : Path
         CSV file with delimter ; and quoting char "
         The first field is an identifier, the second one is the index of the
         predicted label
-    gt_filepath : str
+    gt_filepath : Path
         CSV file with delimter ; and quoting char "
         The first field is an identifier, the second one is the index of the
         ground truth

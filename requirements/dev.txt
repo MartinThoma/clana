@@ -12,7 +12,7 @@ cffi==1.15.0
     # via cryptography
 cfgv==3.3.1
     # via pre-commit
-charset-normalizer==2.0.10
+charset-normalizer==2.0.11
     # via requests
 click==8.0.3
     # via pip-tools
@@ -26,7 +26,7 @@ docutils==0.18.1
     # via readme-renderer
 filelock==3.4.2
     # via virtualenv
-identify==2.4.6
+identify==2.4.8
     # via pre-commit
 idna==3.3
     # via requests
@@ -50,7 +50,7 @@ packaging==21.3
     # via bleach
 pep517==0.12.0
     # via pip-tools
-pip-tools==6.4.0
+pip-tools==6.5.0
     # via -r requirements/dev.in
 pkginfo==1.8.2
     # via twine
@@ -88,13 +88,15 @@ tomli==2.0.0
     # via pep517
 tqdm==4.62.3
     # via twine
-twine==3.7.1
+twine==3.8.0
     # via -r requirements/dev.in
 typing-extensions==4.0.1
     # via importlib-metadata
 urllib3==1.26.8
-    # via requests
-virtualenv==20.13.0
+    # via
+    #   requests
+    #   twine
+virtualenv==20.13.1
     # via pre-commit
 webencodings==0.5.1
     # via bleach

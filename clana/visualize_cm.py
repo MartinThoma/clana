@@ -10,6 +10,7 @@ For more information, see
 # Core Library
 import json
 import logging
+from pathlib import Path
 from typing import List, Optional, Tuple
 
 # Third party
@@ -36,26 +37,26 @@ logger = logging.getLogger(__name__)
 
 
 def main(
-    cm_file: str,
-    perm_file: str,
+    cm_file: Path,
+    perm_file: Path,
     steps: int,
-    labels_file: str,
+    labels_file: Path,
     zero_diagonal: bool,
     limit_classes: Optional[int] = None,
-    output: Optional[str] = None,
+    output: Optional[Path] = None,
 ) -> None:
     """
     Run optimization and generate output.
 
     Parameters
     ----------
-    cm_file : str
-    perm_file : str
+    cm_file : Path
+    perm_file : Path
     steps : int
-    labels_file : str
+    labels_file : Path
     zero_diagonal : bool
     limit_classes : int, optional (default: no limit)
-    output : str
+    output : Path
     """
     cm = clana.io.read_confusion_matrix(cm_file)
     perm = clana.io.read_permutation(cm_file, perm_file)
@@ -168,7 +169,7 @@ def plot_cm(
     cm: npt.NDArray,
     zero_diagonal: bool = False,
     labels: Optional[List[str]] = None,
-    output: str = cfg["visualize"]["save_path"],
+    output: Path = cfg["visualize"]["save_path"],
 ) -> None:
     """
     Plot a confusion matrix.

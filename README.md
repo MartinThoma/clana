@@ -37,6 +37,7 @@ $ pip install -e . --user
 
 ```
 $ clana --help
+Load config from /home/moose/Github/Martin/clana/clana/config.yaml...
 Usage: clana [OPTIONS] COMMAND [ARGS]...
 
   Clana is a toolkit for classifier analysis.
@@ -44,14 +45,12 @@ Usage: clana [OPTIONS] COMMAND [ARGS]...
   See https://arxiv.org/abs/1707.09725, Chapter 4.
 
 Options:
-  --version  Show the version and exit.
-  --help     Show this message and exit.
+  --help  Show this message and exit.
 
 Commands:
-  distribution   Get the distribution of classes in a dataset.
-  get-cm         Generate a confusion matrix from predictions and ground...
-  get-cm-simple  Generate a confusion matrix.
-  visualize      Optimize and visualize a confusion matrix.
+  distribution  Get the distribution of classes in a dataset.
+  get-cm        Generate a confusion matrix file.
+  visualize     Optimize and visualize a confusion matrix.
 
 ```
 
@@ -64,9 +63,10 @@ The visualize command gives you images like this:
 ```
 $ cd docs/
 $ python mnist_example.py  # creates `train-pred.csv` and `test-pred.csv`
-$ clana get-cm --gt gt-train.csv  --predictions train-pred.csv --n 10
-2019-09-14 09:47:30,655 - root - INFO - cm was written to 'cm.json'
-$ clana visualize --cm cm.json --zero_diagonal
+$ clana get-cm standard --gt gt-train.csv  --predictions train-pred.csv --n 10
+Load config from /home/moose/Github/Martin/clana/clana/config.yaml...
+2022-02-06 14:29:20,318 - clana.get_cm - INFO - cm was written to 'cm.json'
+$ clana visualize --cm cm.json --zero-diagonal
 Score: 13475
 2019-09-14 09:49:41,593 - root - INFO - n=10
 2019-09-14 09:49:41,593 - root - INFO - ## Starting Score: 13475.00

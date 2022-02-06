@@ -3,6 +3,7 @@
 # Core Library
 import csv
 import os
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 # Third party
@@ -10,13 +11,13 @@ import yaml
 from pkg_resources import resource_filename
 
 
-def load_labels(labels_file: str, n: int) -> List[str]:
+def load_labels(labels_file: Path, n: int) -> List[str]:
     """
     Load labels from a CSV file.
 
     Parameters
     ----------
-    labels_file : str
+    labels_file : Path
     n : int
 
     Returns
@@ -38,21 +39,21 @@ def load_labels(labels_file: str, n: int) -> List[str]:
 
 
 def load_cfg(
-    yaml_filepath: Optional[str] = None, verbose: bool = False
+    yaml_filepath: Optional[Path] = None, verbose: bool = False
 ) -> Dict[str, Any]:
     """
     Load a YAML configuration file.
 
     Parameters
     ----------
-    yaml_filepath : str, optional (default: package config file)
+    yaml_filepath : Path, optional (default: package config file)
 
     Returns
     -------
     cfg : Dict[str, Any]
     """
     if yaml_filepath is None:
-        yaml_filepath = resource_filename("clana", "config.yaml")
+        yaml_filepath = Path(resource_filename("clana", "config.yaml"))
     # Read YAML experiment definition file
     if verbose:
         print(f"Load config from {yaml_filepath}...")
