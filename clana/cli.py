@@ -32,10 +32,11 @@ logging.getLogger("matplotlib").setLevel("WARN")
 random.seed(0)
 
 entry_point = typer.Typer(
+    add_completion=False,
     help=(
         "Clana is a toolkit for classifier analysis.\n\n"
         "See https://arxiv.org/abs/1707.09725, Chapter 4."
-    )
+    ),
 )
 
 # @typer.version_option(version=clana.__version__)

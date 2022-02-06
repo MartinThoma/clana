@@ -45,12 +45,7 @@ Usage: clana [OPTIONS] COMMAND [ARGS]...
   See https://arxiv.org/abs/1707.09725, Chapter 4.
 
 Options:
-  --install-completion [bash|zsh|fish|powershell|pwsh]
-                                  Install completion for the specified shell.
-  --show-completion [bash|zsh|fish|powershell|pwsh]
-                                  Show completion for the specified shell, to
-                                  copy it or customize the installation.
-  --help                          Show this message and exit.
+  --help  Show this message and exit.
 
 Commands:
   distribution  Get the distribution of classes in a dataset.
