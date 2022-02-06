@@ -20,6 +20,7 @@ import clana
 import clana.distribution
 import clana.get_cm
 import clana.get_cm_simple
+import clana.utils
 import clana.visualize_cm
 
 matplotlib.use("Agg")
@@ -30,15 +31,15 @@ logging.config.dictConfig(config["LOGGING"])
 logging.getLogger("matplotlib").setLevel("WARN")
 random.seed(0)
 
-entry_point = typer.Typer()
+entry_point = typer.Typer(
+    help=(
+        "Clana is a toolkit for classifier analysis.\n\n"
+        "See https://arxiv.org/abs/1707.09725, Chapter 4."
+    )
+)
 
 # @typer.version_option(version=clana.__version__)
 # def entry_point() -> None:
-#     """
-#     Clana is a toolkit for classifier analysis.
-
-#     See https://arxiv.org/abs/1707.09725, Chapter 4.
-#     """
 
 
 gt_option = typer.Option(..., "--gt", exists=True, help="CSV file with delimiter ;")
@@ -48,17 +49,6 @@ predictions_option = typer.Option(
     exists=True,
     help="CSV file with delimiter ;",
 )
-
-get_cm = typer.Typer(help="Generate a confusion matrix file.")
-
-entry_point.add_typer(get_cm, name="get-cm")
-
-clean_option = typer.Option(
-    False,
-    "--clean",
-    is_flag=True,
-    help="Remove classes that the classifier doesn't know",
-)
 labels_option = typer.Option(
     ...,
     "--labels",
@@ -66,12 +56,21 @@ labels_option = typer.Option(
     help="CSV file with delimiter ;",
 )
 
+get_cm = typer.Typer(help="Generate a confusion matrix file.")
+
+entry_point.add_typer(get_cm, name="get-cm")
+
 
 @get_cm.command(name="simple")
 def get_cm_simple(
     label_filepath: Path = labels_option,
     predictions_filepath: Path = predictions_option,
-    clean: bool = clean_option,
+    clean: bool = typer.Option(
+        False,
+        "--clean",
+        is_flag=True,
+        help="Remove classes that the classifier doesn't know",
+    ),
     gt_filepath: Path = gt_option,
 ) -> None:
     """
@@ -84,13 +83,10 @@ def get_cm_simple(
     clana.get_cm_simple.main(label_filepath, gt_filepath, predictions_filepath, clean)
 
 
-classes_option = typer.Option(..., "--n", help="Number of classes")
-
-
 @get_cm.command(name="standard")
 def get_cm_standard(
     predictions_filepath: Path = predictions_option,
-    n: int = classes_option,
+    n: int = typer.Option(..., "--n", help="Number of classes"),
     gt_filepath: Path = gt_option,
 ) -> None:
     """
@@ -108,49 +104,40 @@ def distribution(gt_filepath: Path = gt_option) -> None:
     clana.distribution.main(gt_filepath)
 
 
-cm_file_option = typer.Option(..., "--cm", exists=True)
-perm_file_option = typer.Option(
-    None,
-    "--perm",
-    help="json file which defines a permutation to start with.",
-)
-steps_option = typer.Option(
-    1000,
-    "--steps",
-    show_default=True,
-    help="Number of steps to find a good permutation.",
-)
-labels_option = typer.Option("", "--labels")
-zero_diagonal_option = typer.Option(
-    "--zero_diagonal",
-    is_flag=True,
-    help=(
-        "Good classifiers have the highest elements on the diagonal. "
-        "This option sets the diagonal to zero so that errors "
-        "can be seen more easily."
-    ),
-)
-output_image_path_option = typer.Option(
-    os.path.abspath(config["visualize"]["save_path"]),
-    "--output",
-    exists=False,
-    help="Where to store the image (either .png or .pdf)",
-    show_default=True,
-)
-limit_classes_option = typer.Option(
-    None, "--limit_classes", help="Limit the number of classes in the output"
-)
-
-
 @entry_point.command(name="visualize")
 def visualize(
-    cm_file: Path = cm_file_option,
-    perm_file: Path = perm_file_option,
-    steps: int = steps_option,
+    cm_file: Path = typer.Option(..., "--cm", exists=True),
+    perm_file: Path = typer.Option(
+        None,
+        "--perm",
+        help="json file which defines a permutation to start with.",
+    ),
+    steps: int = typer.Option(
+        1000,
+        "--steps",
+        show_default=True,
+        help="Number of steps to find a good permutation.",
+    ),
     labels_file: Path = labels_option,
-    zero_diagonal: bool = zero_diagonal_option,
-    output_image_path: Path = output_image_path_option,
-    limit_classes: Optional[int] = limit_classes_option,
+    zero_diagonal: bool = typer.Option(
+        "--zero_diagonal",
+        is_flag=True,
+        help=(
+            "Good classifiers have the highest elements on the diagonal. "
+            "This option sets the diagonal to zero so that errors "
+            "can be seen more easily."
+        ),
+    ),
+    output_image_path: Path = typer.Option(
+        os.path.abspath(config["visualize"]["save_path"]),
+        "--output",
+        exists=False,
+        help="Where to store the image (either .png or .pdf)",
+        show_default=True,
+    ),
+    limit_classes: Optional[int] = typer.Option(
+        None, "--limit_classes", help="Limit the number of classes in the output"
+    ),
 ) -> None:
     """Optimize and visualize a confusion matrix."""
     print_file_format_issues(cm_file, labels_file, perm_file)
