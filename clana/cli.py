@@ -135,8 +135,13 @@ def visualize(
         show_default=True,
         help="Number of steps to find a good permutation.",
     ),
-    labels_file: Path = labels_option,
+    labels_file: Path = typer.Option(
+        "",
+        "--labels",
+        help="CSV file with delimiter ;",
+    ),
     zero_diagonal: bool = typer.Option(
+        False,
         "--zero_diagonal",
         is_flag=True,
         help=(
