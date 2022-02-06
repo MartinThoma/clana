@@ -18,7 +18,8 @@ click==8.0.3
     # via
     #   -r requirements/../requirements.txt
     #   black
-coverage[toml]==6.3
+    #   typer
+coverage[toml]==6.3.1
     # via
     #   -r requirements/ci.in
     #   pytest-cov
@@ -64,7 +65,7 @@ flake8-simplify==0.15.1
     # via -r requirements/ci.in
 flake8-string-format==0.3.0
     # via -r requirements/ci.in
-fonttools==4.29.0
+fonttools==4.29.1
     # via
     #   -r requirements/../requirements.txt
     #   matplotlib
@@ -124,7 +125,7 @@ packaging==21.3
     #   pytest
 pathspec==0.9.0
     # via black
-pillow==9.0.0
+pillow==9.0.1
     # via
     #   -r requirements/../requirements.txt
     #   matplotlib
@@ -145,7 +146,7 @@ pyparsing==3.0.7
     #   -r requirements/../requirements.txt
     #   matplotlib
     #   packaging
-pytest==6.2.5
+pytest==7.0.0
     # via
     #   -r requirements/ci.in
     #   pytest-cov
@@ -177,23 +178,24 @@ snowballstemmer==2.2.0
     # via pydocstyle
 testfixtures==6.18.3
     # via flake8-isort
-threadpoolctl==3.0.0
+threadpoolctl==3.1.0
     # via
     #   -r requirements/../requirements.txt
     #   scikit-learn
-toml==0.10.2
-    # via pytest
 tomli==2.0.0
     # via
     #   black
     #   mypy
+    #   pytest
 typed-ast==1.5.2
     # via
     #   black
     #   mypy
+typer==0.4.0
+    # via -r requirements/../requirements.txt
 types-pkg-resources==0.1.3
     # via -r requirements/ci.in
-types-pyyaml==6.0.3
+types-pyyaml==6.0.4
     # via -r requirements/ci.in
 types-setuptools==57.4.8
     # via -r requirements/ci.in

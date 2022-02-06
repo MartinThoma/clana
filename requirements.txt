@@ -5,10 +5,10 @@
 #    pip-compile setup.py
 #
 click==8.0.3
-    # via clana (setup.py)
+    # via typer
 cycler==0.11.0
     # via matplotlib
-fonttools==4.29.0
+fonttools==4.29.1
     # via matplotlib
 importlib-metadata==4.10.1
     # via click
@@ -30,7 +30,7 @@ numpy==1.21.5
     #   scipy
 packaging==21.3
     # via matplotlib
-pillow==9.0.0
+pillow==9.0.1
     # via matplotlib
 pyparsing==3.0.7
     # via
@@ -48,8 +48,10 @@ scipy==1.7.3
     #   scikit-learn
 six==1.16.0
     # via python-dateutil
-threadpoolctl==3.0.0
+threadpoolctl==3.1.0
     # via scikit-learn
+typer==0.4.0
+    # via clana (setup.py)
 typing-extensions==4.0.1
     # via importlib-metadata
 zipp==3.7.0
