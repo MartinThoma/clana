@@ -31,6 +31,13 @@ logging.config.dictConfig(config["LOGGING"])
 logging.getLogger("matplotlib").setLevel("WARN")
 random.seed(0)
 
+
+def version_callback(value: bool) -> None:
+    if value:
+        typer.echo(f"clana {clana.__version__}")
+        raise typer.Exit()
+
+
 entry_point = typer.Typer(
     add_completion=False,
     help=(
@@ -38,6 +45,15 @@ entry_point = typer.Typer(
         "See https://arxiv.org/abs/1707.09725, Chapter 4."
     ),
 )
+
+
+@entry_point.callback()
+def common(
+    ctx: typer.Context,
+    version: bool = typer.Option(None, "--version", callback=version_callback),
+) -> None:
+    pass
+
 
 # @typer.version_option(version=clana.__version__)
 # def entry_point() -> None:
