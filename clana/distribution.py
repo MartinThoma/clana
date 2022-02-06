@@ -1,10 +1,11 @@
 """Get the distribution of classes in a dataset."""
 
 # Core Library
+from pathlib import Path
 from typing import Dict, List
 
 
-def main(gt_filepath: str) -> None:
+def main(gt_filepath: Path) -> None:
     """
     Get the distribution of classes in a file.
 

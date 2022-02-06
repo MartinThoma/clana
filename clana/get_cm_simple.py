@@ -6,6 +6,7 @@ import json
 import logging
 import os
 import sys
+from pathlib import Path
 from typing import Dict, List, Tuple
 
 # Third party
@@ -20,23 +21,23 @@ logger = logging.getLogger(__name__)
 
 
 def main(
-    label_filepath: str, gt_filepath: str, predictions_filepath: str, clean: bool
+    label_filepath: Path, gt_filepath: Path, predictions_filepath: Path, clean: bool
 ) -> None:
     """
     Get a simple confunsion matrix.
 
     Parameters
     ----------
-    label_filepath : str
+    label_filepath : Path
         Path to a CSV file with delimiter ;
-    gt_filepath : str
+    gt_filepath : Path
         Path to a CSV file with delimiter ;
-    predictions : str
+    predictions : Path
         Path to a CSV file with delimiter ;
     clean : bool, optional (default: False)
         Remove classes that the classifier doesn't know
     """
-    label_filepath = os.path.abspath(label_filepath)
+    label_filepath = label_filepath.resolve()
     labels = clana.utils.load_labels(label_filepath, 0)
 
     # Read CSV files

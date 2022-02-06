@@ -8,11 +8,12 @@ classifier analysis.
 import logging.config
 import os
 import random
+from pathlib import Path
 from typing import Optional
 
 # Third party
-import click
 import matplotlib
+import typer
 
 # First party
 import clana
@@ -29,56 +30,49 @@ logging.config.dictConfig(config["LOGGING"])
 logging.getLogger("matplotlib").setLevel("WARN")
 random.seed(0)
 
+entry_point = typer.Typer()
 
-@click.group()
-@click.version_option(version=clana.__version__)
-def entry_point() -> None:
-    """
-    Clana is a toolkit for classifier analysis.
+# @typer.version_option(version=clana.__version__)
+# def entry_point() -> None:
+#     """
+#     Clana is a toolkit for classifier analysis.
 
-    See https://arxiv.org/abs/1707.09725, Chapter 4.
-    """
+#     See https://arxiv.org/abs/1707.09725, Chapter 4.
+#     """
 
 
-gt_option = click.option(
-    "--gt",
-    "gt_filepath",
-    required=True,
-    type=click.Path(exists=True),
-    help="CSV file with delimiter ;",
-)
-predictions_option = click.option(
+gt_option = typer.Option(..., "--gt", exists=True, help="CSV file with delimiter ;")
+predictions_option = typer.Option(
+    ...,
     "--predictions",
-    "predictions_filepath",
-    required=True,
-    type=click.Path(exists=True),
+    exists=True,
     help="CSV file with delimiter ;",
 )
 
+get_cm = typer.Typer(help="Generate a confusion matrix file.")
 
-@entry_point.group()
-def get_cm() -> None:
-    """Generate a confusion matrix file."""
+entry_point.add_typer(get_cm, name="get-cm")
 
-
-@get_cm.command(name="simple")
-@click.option(
-    "--labels",
-    "label_filepath",
-    required=True,
-    type=click.Path(exists=True),
-    help="CSV file with delimiter ;",
-)
-@predictions_option
-@gt_option
-@click.option(
+clean_option = typer.Option(
+    False,
     "--clean",
-    default=False,
     is_flag=True,
     help="Remove classes that the classifier doesn't know",
 )
+labels_option = typer.Option(
+    ...,
+    "--labels",
+    exists=True,
+    help="CSV file with delimiter ;",
+)
+
+
+@get_cm.command(name="simple")
 def get_cm_simple(
-    label_filepath: str, predictions_filepath: str, gt_filepath: str, clean: bool
+    label_filepath: Path = labels_option,
+    predictions_filepath: Path = predictions_option,
+    clean: bool = clean_option,
+    gt_filepath: Path = gt_option,
 ) -> None:
     """
     Generate a confusion matrix.
@@ -90,11 +84,15 @@ def get_cm_simple(
     clana.get_cm_simple.main(label_filepath, gt_filepath, predictions_filepath, clean)
 
 
+classes_option = typer.Option(..., "--n", help="Number of classes")
+
+
 @get_cm.command(name="standard")
-@predictions_option
-@gt_option
-@click.option("--n", "n", required=True, type=int, help="Number of classes")
-def get_cm_standard(predictions_filepath: str, gt_filepath: str, n: int) -> None:
+def get_cm_standard(
+    predictions_filepath: Path = predictions_option,
+    n: int = classes_option,
+    gt_filepath: Path = gt_option,
+) -> None:
     """
     Generate a confusion matrix from predictions and ground truth.
 
@@ -105,29 +103,25 @@ def get_cm_standard(predictions_filepath: str, gt_filepath: str, n: int) -> None
 
 
 @entry_point.command(name="distribution")
-@gt_option
-def distribution(gt_filepath: str) -> None:
+def distribution(gt_filepath: Path = gt_option) -> None:
     """Get the distribution of classes in a dataset."""
     clana.distribution.main(gt_filepath)
 
 
-@entry_point.command(name="visualize")
-@click.option("--cm", "cm_file", type=click.Path(exists=True), required=True)
-@click.option(
+cm_file_option = typer.Option(..., "--cm", exists=True)
+perm_file_option = typer.Option(
+    None,
     "--perm",
-    "perm_file",
     help="json file which defines a permutation to start with.",
-    type=click.Path(),
-    default=None,
 )
-@click.option(
+steps_option = typer.Option(
+    1000,
     "--steps",
-    default=1000,
     show_default=True,
     help="Number of steps to find a good permutation.",
 )
-@click.option("--labels", "labels_file", default="")
-@click.option(
+labels_option = typer.Option("", "--labels")
+zero_diagonal_option = typer.Option(
     "--zero_diagonal",
     is_flag=True,
     help=(
@@ -136,25 +130,27 @@ def distribution(gt_filepath: str) -> None:
         "can be seen more easily."
     ),
 )
-@click.option(
+output_image_path_option = typer.Option(
+    os.path.abspath(config["visualize"]["save_path"]),
     "--output",
-    "output_image_path",
-    type=click.Path(exists=False),
+    exists=False,
     help="Where to store the image (either .png or .pdf)",
-    default=os.path.abspath(config["visualize"]["save_path"]),
     show_default=True,
 )
-@click.option(
-    "--limit_classes", type=int, help="Limit the number of classes in the output"
+limit_classes_option = typer.Option(
+    None, "--limit_classes", help="Limit the number of classes in the output"
 )
+
+
+@entry_point.command(name="visualize")
 def visualize(
-    cm_file: str,
-    perm_file: str,
-    steps: int,
-    labels_file: str,
-    zero_diagonal: bool,
-    output_image_path: str,
-    limit_classes: Optional[int] = None,
+    cm_file: Path = cm_file_option,
+    perm_file: Path = perm_file_option,
+    steps: int = steps_option,
+    labels_file: Path = labels_option,
+    zero_diagonal: bool = zero_diagonal_option,
+    output_image_path: Path = output_image_path_option,
+    limit_classes: Optional[int] = limit_classes_option,
 ) -> None:
     """Optimize and visualize a confusion matrix."""
     print_file_format_issues(cm_file, labels_file, perm_file)
@@ -169,19 +165,21 @@ def visualize(
     )
 
 
-def print_file_format_issues(cm_file: str, labels_file: str, perm_file: str) -> None:
+def print_file_format_issues(cm_file: Path, labels_file: Path, perm_file: Path) -> None:
     """
     Get all potential issues of the file formats.
 
     Parameters
     ----------
-    cm_file : str
-    labels_file : str
-    perm_file : str
+    cm_file : Path
+    labels_file : Path
+    perm_file : Path
     """
-    if not (cm_file.lower().endswith("json") or cm_file.lower().endswith("csv")):
+    if not (
+        str(cm_file).lower().endswith("json") or str(cm_file).lower().endswith("csv")
+    ):
         print(f"[WARNING] A json file is expected for the cm_file, but was {cm_file}")
-    if not (perm_file is None or perm_file.lower().endswith("json")):
+    if not (perm_file is None or str(perm_file).lower().endswith("json")):
         print(
             f"[WARNING] A json file is expected fo the perm_file, but was {perm_file}"
         )

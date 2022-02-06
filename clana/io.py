@@ -9,6 +9,7 @@ import csv
 import hashlib
 import json
 import os
+from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
 
 # Third party
@@ -26,13 +27,13 @@ class ClanaCfg:
     """Methods related to clanas configuration and permutations."""
 
     @classmethod
-    def read_clana_cfg(cls, cfg_file: str) -> Dict[str, Any]:
+    def read_clana_cfg(cls, cfg_file: Path) -> Dict[str, Any]:
         """
         Read a .clana config file which contains permutations.
 
         Parameters
         ----------
-        cfg_file : str
+        cfg_file : Path
 
         Returns
         -------
@@ -46,22 +47,22 @@ class ClanaCfg:
         return cfg
 
     @classmethod
-    def get_cfg_path_from_cm_path(cls, cm_file: str) -> str:
+    def get_cfg_path_from_cm_path(cls, cm_file: Path) -> Path:
         """
         Get the configuration path from the path of the confusion matrix.
 
         Parameters
         ----------
-        cm_file : str
+        cm_file : Path
 
         Returns
         -------
-        cfg_path : str
+        cfg_path : Path
         """
-        return os.path.join(os.path.dirname(os.path.abspath(cm_file)), ".clana")
+        return cm_file.resolve().parent / ".clana"
 
     @classmethod
-    def get_perm(cls, cm_file: str) -> List[int]:
+    def get_perm(cls, cm_file: Path) -> List[int]:
         """
         Get the best permutation found so far for a given cm_file.
 
@@ -69,7 +70,7 @@ class ClanaCfg:
 
         Parameters
         ----------
-        cm_file : str
+        cm_file : Path
 
         Returns
         -------
@@ -94,18 +95,18 @@ class ClanaCfg:
 
     @classmethod
     def store_permutation(
-        cls, cm_file: str, permutation: npt.NDArray, iterations: int
+        cls, cm_file: Path, permutation: npt.NDArray, iterations: int
     ) -> None:
         """
         Store a permutation.
 
         Parameters
         ----------
-        cm_file : str
+        cm_file : Path
         permutation : npt.NDArray
         iterations : int
         """
-        cm_file = os.path.abspath(cm_file)
+        cm_file = cm_file.resolve()
         cfg_file = cls.get_cfg_path_from_cm_path(cm_file)
         if os.path.isfile(cfg_file):
             cfg = ClanaCfg.read_clana_cfg(cfg_file)
@@ -130,13 +131,13 @@ class ClanaCfg:
             yaml.dump(cfg, outfile, default_flow_style=False, allow_unicode=True)
 
 
-def read_confusion_matrix(cm_file: str, make_max: float = INFINITY) -> npt.NDArray:
+def read_confusion_matrix(cm_file: Path, make_max: float = INFINITY) -> npt.NDArray:
     """
     Load confusion matrix.
 
     Parameters
     ----------
-    cm_file : str
+    cm_file : Path
         Path to a JSON file which contains a confusion matrix (List[List[int]])
     make_max : float, optional (default: +Infinity)
         Crop values at this value.
@@ -146,7 +147,7 @@ def read_confusion_matrix(cm_file: str, make_max: float = INFINITY) -> npt.NDArr
     cm : npt.NDArray
     """
     with open(cm_file) as f:
-        if cm_file.lower().endswith("csv"):
+        if str(cm_file).lower().endswith("csv"):
             cm_list = []
             with open(cm_file, newline="") as csvfile:
                 spamreader = csv.reader(csvfile, delimiter=",", quotechar='"')
@@ -167,14 +168,14 @@ def read_confusion_matrix(cm_file: str, make_max: float = INFINITY) -> npt.NDArr
     return cm
 
 
-def read_permutation(cm_file: str, perm_file: Optional[str]) -> List[int]:
+def read_permutation(cm_file: Path, perm_file: Optional[Path]) -> List[int]:
     """
     Load permutation.
 
     Parameters
     ----------
-    cm_file : str
-    perm_file : Optional[str]
+    cm_file : Path
+    perm_file : Optional[Path]
         Path to a JSON file which contains a permutation of n numbers.
 
     Returns
@@ -186,7 +187,7 @@ def read_permutation(cm_file: str, perm_file: Optional[str]) -> List[int]:
         raise ValueError(f"cm_file={cm_file} is not a file")
     if perm_file is not None and os.path.isfile(perm_file):
         with open(perm_file) as data_file:
-            if perm_file.lower().endswith("csv"):
+            if str(perm_file).lower().endswith("csv"):
                 with open(perm_file) as file:
                     content = file.read()
                 perm = [int(el) for el in content.split(",")]
@@ -197,7 +198,7 @@ def read_permutation(cm_file: str, perm_file: Optional[str]) -> List[int]:
     return perm
 
 
-def read_labels(labels_file: str, n: int) -> List[str]:
+def read_labels(labels_file: Path, n: int) -> List[str]:
     """
     Load labels.
 
@@ -206,7 +207,7 @@ def read_labels(labels_file: str, n: int) -> List[str]:
 
     Parameters
     ----------
-    labels_file : str
+    labels_file : Path
     n : int
 
     Returns
@@ -278,7 +279,7 @@ def write_cm(path: str, cm: npt.NDArray) -> None:
         outfile.write(str_)
 
 
-def md5(fname: str) -> str:
+def md5(fname: Path) -> str:
     """Compute MD5 hash of a file."""
     hash_md5 = hashlib.md5()
     with open(fname, "rb") as f:
