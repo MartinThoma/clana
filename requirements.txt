@@ -30,7 +30,7 @@ numpy==1.21.5
     #   scipy
 packaging==21.3
     # via matplotlib
-pillow==9.0.0
+pillow==9.0.1
     # via matplotlib
 pyparsing==3.0.7
     # via
